@@ -15,4 +15,6 @@ android {
 dependencies {
    implementation(projects.commonAndroid)
    implementation(projects.commonCompose)
+
+   implementation(libs.googleMaps)
 }
