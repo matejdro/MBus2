@@ -1,0 +1,6 @@
+plugins {
+   androidLibraryModule
+}
+
+dependencies {
+}
