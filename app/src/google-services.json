@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "227905666050",
+    "project_id": "mbus2-91e86",
+    "storage_bucket": "mbus2-91e86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227905666050:android:af407c7a98cca056a1bb1b",
+        "android_client_info": {
+          "package_name": "com.matejdro.mbus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2pXvyvoIDWssHIIRmcRdQjRDUOk4vLUA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

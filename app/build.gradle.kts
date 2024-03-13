@@ -7,6 +7,9 @@ plugins {
    navigation
    parcelize
    showkase
+
+   alias(libs.plugins.playServices)
+   alias(libs.plugins.crashlytics)
 }
 
 android {
@@ -145,6 +148,7 @@ dependencies {
    implementation(libs.androidx.lifecycle.viewModel)
    implementation(libs.androidx.lifecycle.viewModel.compose)
    implementation(libs.certificateTransparency)
+   implementation(libs.firebase.crashlytics)
    implementation(libs.dispatch)
    implementation(libs.kotlin.immutableCollections)
    implementation(libs.retrofit.moshi)
