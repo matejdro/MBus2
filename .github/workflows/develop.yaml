@@ -50,14 +50,6 @@ jobs:
         run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
       #      - name: "Run Screenshot Tests"
       #        run: "./gradlew --continue verifyPaparazziDebug"
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2
-        if: always()
-        with:
-          comment_mode: failures
-          junit_files: |
-            **/build/outputs/*-results/**/*.xml
-            **/build/*-results/**/*.xml
       #      - name: "Upload Screenshot test failures"
       #        uses: actions/upload-artifact@v3
       #        if: failure()
