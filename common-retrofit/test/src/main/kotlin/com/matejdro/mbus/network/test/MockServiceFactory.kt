@@ -15,7 +15,7 @@ fun MockWebServerScope.serviceFactory(testScope: TestScope): BaseServiceFactory 
       { moshi },
       { NetworkModule.prepareDefaultOkHttpClient().build() },
       ThrowingErrorReporter(testScope),
-      DefaultErrorHandler(),
+      DefaultErrorHandler({ moshi }),
       baseUrl
    )
 }

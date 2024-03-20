@@ -68,8 +68,8 @@ open class MBusApplication : Application() {
             .detectLeakedClosableObjects()
             .detectLeakedRegistrationObjects()
             .detectLeakedSqlLiteObjects()
-            .penaltyListener(ContextCompat.getMainExecutor(this@MBusApplication)) { e ->
-               reportStrictModePenalty(e)
+            .penaltyListener(ContextCompat.getMainExecutor(this@MBusApplication)) { violation ->
+               reportStrictModePenalty(violation)
             }
             .build()
       )
@@ -93,7 +93,13 @@ open class MBusApplication : Application() {
       )
    }
 
-   private fun reportStrictModePenalty(e: Violation) {
+   private fun reportStrictModePenalty(violation: Violation) {
+      val e = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+         violation
+      } else {
+         IllegalStateException("Strict mode violation: $violation")
+      }
+
       if (
          e.cause == null &&
          e.stackTrace.any {
