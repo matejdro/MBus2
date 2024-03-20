@@ -8,6 +8,9 @@ CREATE TABLE dbStop (
 selectAll:
 SELECT * FROM dbStop;
 
+selectInRect:
+SELECT * FROM dbStop WHERE lat >= :minLat AND lat <= :maxLat AND lon >= :minLon AND lon <= :maxLon;
+
 insert:
 REPLACE INTO dbStop VALUES ?;
 

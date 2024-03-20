@@ -4,12 +4,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.stops.model.Stop
 import com.matejdro.mbus.stops.model.toDbStop
 import com.matejdro.mbus.stops.model.toStop
+import com.matejdro.mbus.stops.sqldelight.generated.DbStop
 import com.matejdro.mbus.stops.sqldelight.generated.DbStopQueries
 import com.squareup.anvil.annotations.ContributesBinding
 import dispatch.core.withDefault
@@ -41,7 +43,22 @@ class StopsRepositoryImpl @Inject constructor(
    val loadMutext = Mutex()
 
    override fun getAllStops(): Flow<Outcome<List<Stop>>> {
-      val dbFlow = dbStopQueries.selectAll().asFlow().map { query ->
+      val selectAll = dbStopQueries.selectAll()
+      return loadStopsWithQuery(selectAll)
+   }
+
+   override fun getAllStopsWithinRect(minLat: Double, maxLat: Double, minLon: Double, maxLon: Double): Flow<Outcome<List<Stop>>> {
+      val selectAll = dbStopQueries.selectInRect(
+         minLat = minLat,
+         maxLat = maxLat,
+         minLon = minLon,
+         maxLon = maxLon
+      )
+      return loadStopsWithQuery(selectAll)
+   }
+
+   private fun loadStopsWithQuery(selectAll: Query<DbStop>): Flow<Outcome<List<Stop>>> {
+      val dbFlow = selectAll.asFlow().map { query ->
          withDefault {
             query.awaitAsList().map { it.toStop() }
          }

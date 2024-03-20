@@ -18,6 +18,7 @@ dependencies {
    implementation(projects.stops.api)
 
    implementation(libs.accompanist.permissions)
+   implementation(libs.dispatch)
    implementation(libs.googleMaps)
 
    testImplementation(projects.stops.test)

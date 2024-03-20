@@ -6,6 +6,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -13,11 +14,16 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.AdvancedMarker
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.navigation.screens.Screen
@@ -29,10 +35,12 @@ class HomeMapScreen(
    @Composable
    override fun Content(key: HomeMapScreenKey) {
       val isLocationGranted = requestLocationPermission()
-      val stops = viewModel.stops.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val data = viewModel.stops.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
       val context = LocalContext.current
       val colorScheme = MaterialTheme.colorScheme
+
+      val camera = rememberCameraPositionState()
 
       val mapStyle = remember(colorScheme.background) {
          if (colorScheme.isDarkMode()) {
@@ -43,15 +51,34 @@ class HomeMapScreen(
       }
 
       GoogleMap(
+         cameraPositionState = camera,
          modifier = Modifier.fillMaxSize(),
          properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle)
       ) {
-         for (stop in stops?.data.orEmpty()) {
-            AdvancedMarker(
-               state = MarkerState(LatLng(stop.lat, stop.lon)),
-               title = stop.name
-            )
+         UpdateModelOnCameraChange(camera, viewModel::loadStops)
+
+         val stops = data?.data.orEmpty()
+         key(stops) {
+            for (stop in stops) {
+               key(stop.id) {
+                  Marker(
+                     state = MarkerState(LatLng(stop.lat, stop.lon)),
+                     title = stop.name
+                  )
+               }
+            }
          }
+      }
+   }
+
+   @OptIn(MapsComposeExperimentalApi::class)
+   @Composable
+   private fun UpdateModelOnCameraChange(
+      camera: CameraPositionState,
+      updateCamera: (LatLngBounds) -> Unit,
+   ) {
+      MapEffect(camera.position) {
+         updateCamera(it.projection.visibleRegion.latLngBounds)
       }
    }
 

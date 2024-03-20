@@ -396,21 +396,6 @@ class StopsRepositoryImplTest {
          )
       )
 
-      val expectedStops = listOf(
-         Stop(
-            10,
-            "Stop A",
-            1.0,
-            1.0
-         ),
-         Stop(
-            12,
-            "Stop B",
-            2.0,
-            2.0
-         )
-      )
-
       val latch = CompletableDeferred<Unit>()
 
       launch {
@@ -437,6 +422,63 @@ class StopsRepositoryImplTest {
       runCurrent()
       latch.complete(Unit)
       service.numLoads shouldBe 1
+   }
+
+   @Test
+   fun `Filter stops based on coordinates`() = testScope.runTest {
+      service.providedStops = Stops(
+         listOf(
+            StopDto(
+               1,
+               "Stop A",
+               1.0,
+               20.0
+            ),
+            StopDto(
+               2,
+               "Stop B",
+               2.0,
+               10.0
+            ),
+            StopDto(
+               3,
+               "Stop C",
+               3.0,
+               20.0
+            ),
+            StopDto(
+               4,
+               "Stop D",
+               2.0,
+               30.0
+            ),
+            StopDto(
+               5,
+               "Stop E",
+               2.0,
+               20.0
+            ),
+         )
+      )
+
+      val expectedStops = listOf(
+         Stop(
+            5,
+            "Stop E",
+            2.0,
+            20.0
+         ),
+      )
+
+      repo.getAllStopsWithinRect(
+         minLat = 1.5,
+         maxLat = 2.5,
+         minLon = 15.0,
+         maxLon = 25.0,
+      ).test {
+         runCurrent()
+         expectMostRecentItem() shouldBeSuccessWithData expectedStops
+      }
    }
 }
 
