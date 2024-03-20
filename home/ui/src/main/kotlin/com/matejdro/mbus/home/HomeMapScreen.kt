@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -40,7 +41,9 @@ class HomeMapScreen(
       val context = LocalContext.current
       val colorScheme = MaterialTheme.colorScheme
 
-      val camera = rememberCameraPositionState()
+      val camera = rememberCameraPositionState(init = {
+         this.position = DEFAULT_POSITION
+      })
 
       val mapStyle = remember(colorScheme.background) {
          if (colorScheme.isDarkMode()) {
@@ -104,3 +107,4 @@ class HomeMapScreen(
 
 private fun ColorScheme.isDarkMode() = background.luminance() > HALF_LUMINANCE
 private const val HALF_LUMINANCE = 0.5f
+private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425766468048), 16f, 0f, 0f)
