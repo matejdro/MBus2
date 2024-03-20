@@ -2,12 +2,18 @@ package com.matejdro.mbus.home
 
 import android.Manifest
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -25,9 +31,20 @@ class HomeMapScreen(
       val isLocationGranted = requestLocationPermission()
       val stops = viewModel.stops.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
+      val context = LocalContext.current
+      val colorScheme = MaterialTheme.colorScheme
+
+      val mapStyle = remember(colorScheme.background) {
+         if (colorScheme.isDarkMode()) {
+            null
+         } else {
+            MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_night)
+         }
+      }
+
       GoogleMap(
          modifier = Modifier.fillMaxSize(),
-         properties = MapProperties(isMyLocationEnabled = isLocationGranted)
+         properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle)
       ) {
          for (stop in stops?.data.orEmpty()) {
             AdvancedMarker(
@@ -57,3 +74,6 @@ class HomeMapScreen(
       return enableMyLocation
    }
 }
+
+private fun ColorScheme.isDarkMode() = background.luminance() > HALF_LUMINANCE
+private const val HALF_LUMINANCE = 0.5f
