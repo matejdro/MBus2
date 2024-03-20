@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.catchIntoOutcome
 import si.inova.kotlinova.core.outcome.downgradeTo
@@ -36,6 +38,8 @@ class StopsRepositoryImpl @Inject constructor(
    private val dataStore: DataStore<Preferences>,
    private val timeProvider: TimeProvider,
 ) : StopsRepository {
+   val loadMutext = Mutex()
+
    override fun getAllStops(): Flow<Outcome<List<Stop>>> {
       val dbFlow = dbStopQueries.selectAll().asFlow().map { query ->
          withDefault {
@@ -44,37 +48,43 @@ class StopsRepositoryImpl @Inject constructor(
       }
 
       val statusFlow = flow<Outcome<Unit>> {
-         val lastLoad = dataStore.data.first()[LAST_UPDATE_PREFERENCE]?.let { Instant.ofEpochMilli(it) } ?: Instant.MIN
-         val now = timeProvider.currentInstant()
-
-         val cacheExpireTime = lastLoad + CACHE_DURATION
-         if (cacheExpireTime < now) {
+         if (loadMutext.isLocked) {
             emit(Outcome.Progress())
+         }
 
-            val loadingStatus = catchIntoOutcome {
-               withDefault {
-                  val onlineStops = stopsService.getAllStops().stops.mapNotNull {
-                     it.toDbStop()
-                  }
+         loadMutext.withLock {
+            val lastLoad = dataStore.data.first()[LAST_UPDATE_PREFERENCE]?.let { Instant.ofEpochMilli(it) } ?: Instant.MIN
+            val now = timeProvider.currentInstant()
 
-                  dbStopQueries.transaction {
-                     dbStopQueries.clear()
-                     for (stop in onlineStops) {
-                        dbStopQueries.insert(stop)
+            val cacheExpireTime = lastLoad + CACHE_DURATION
+            if (cacheExpireTime < now) {
+               emit(Outcome.Progress())
+
+               val loadingStatus = catchIntoOutcome {
+                  withDefault {
+                     val onlineStops = stopsService.getAllStops().stops.mapNotNull {
+                        it.toDbStop()
+                     }
+
+                     dbStopQueries.transaction {
+                        dbStopQueries.clear()
+                        for (stop in onlineStops) {
+                           dbStopQueries.insert(stop)
+                        }
+                     }
+
+                     dataStore.edit {
+                        it[LAST_UPDATE_PREFERENCE] = now.toEpochMilli()
                      }
                   }
 
-                  dataStore.edit {
-                     it[LAST_UPDATE_PREFERENCE] = now.toEpochMilli()
-                  }
+                  Outcome.Success(Unit)
                }
 
-               Outcome.Success(Unit)
+               emit(loadingStatus)
+            } else {
+               emit(Outcome.Success(Unit))
             }
-
-            emit(loadingStatus)
-         } else {
-            emit(Outcome.Success(Unit))
          }
       }
 
