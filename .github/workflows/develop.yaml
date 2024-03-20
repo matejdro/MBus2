@@ -19,7 +19,7 @@ jobs:
       - name: Install screenshot test dependencies
         run: "sudo apt-get install -y libfreetype6 fontconfig fonts-dejavu"
       - name: Globally enable build cache and parallel execution
-        run: "echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' >> ~/.gradle/gradle.properties"
+        run: "echo -e 'mkdir -p ~/.gradle/ && org.gradle.caching=true\norg.gradle.parallel=true' >> ~/.gradle/gradle.properties"
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
