@@ -4,6 +4,6 @@ import com.matejdro.mbus.stops.model.Stops
 import retrofit2.http.GET
 
 interface StopsService {
-   @GET("GetAllStops")
+   @GET("GetAllStopPoints")
    suspend fun getAllStops(): Stops
 }
