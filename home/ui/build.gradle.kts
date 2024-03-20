@@ -15,7 +15,10 @@ android {
 dependencies {
    implementation(projects.commonAndroid)
    implementation(projects.commonCompose)
+   implementation(projects.stops.api)
 
    implementation(libs.accompanist.permissions)
    implementation(libs.googleMaps)
+
+   testImplementation(projects.stops.test)
 }

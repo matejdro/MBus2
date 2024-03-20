@@ -13,7 +13,6 @@ class NetworkUrlModule {
    @Provides
    @BaseServiceFactory.BaseUrl
    fun provideBaseUrl(): String {
-      // TODO Bus API
-      error("Retrofit base url not provided")
+      return "https://marprom-proxy.derp.si/OBA/"
    }
 }

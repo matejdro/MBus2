@@ -140,6 +140,7 @@ dependencies {
    implementation(projects.commonRetrofit.android)
    implementation(projects.commonCompose)
    implementation(projects.home.ui)
+   implementation(projects.stops.data)
 
    implementation(libs.androidx.activity.compose)
    implementation(libs.androidx.core)
