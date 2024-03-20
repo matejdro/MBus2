@@ -1,7 +1,9 @@
 package com.matejdro.mbus.stops
 
 import com.matejdro.mbus.stops.model.Stop
+import kotlinx.coroutines.flow.Flow
+import si.inova.kotlinova.core.outcome.Outcome
 
 interface StopsRepository {
-   suspend fun getAllStops(): List<Stop>
+   fun getAllStops(): Flow<Outcome<List<Stop>>>
 }

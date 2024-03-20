@@ -1,5 +1,6 @@
 package com.matejdro.mbus.stops.model
 
+import com.matejdro.mbus.stops.sqldelight.generated.DbStop
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -15,11 +16,20 @@ data class StopDto(
    val lon: Double?,
 )
 
-fun StopDto.toStop(): Stop? {
+fun StopDto.toDbStop(): DbStop? {
    if (lat == null || lon == null) return null
 
+   return DbStop(
+      id.toLong(),
+      name,
+      lat,
+      lon
+   )
+}
+
+fun DbStop.toStop(): Stop {
    return Stop(
-      id,
+      id.toInt(),
       name,
       lat,
       lon

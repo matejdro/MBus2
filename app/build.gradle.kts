@@ -7,6 +7,7 @@ plugins {
    navigation
    parcelize
    showkase
+   sqldelight
 
    alias(libs.plugins.playServices)
    alias(libs.plugins.crashlytics)
@@ -134,6 +135,15 @@ android {
    }
 }
 
+sqldelight {
+   databases {
+      create("Database") {
+         packageName.set("com.matejdro.mbus")
+         dependency(projects.stops.data)
+      }
+   }
+}
+
 dependencies {
    implementation(projects.commonAndroid)
    implementation(projects.commonNavigation)
@@ -154,6 +164,7 @@ dependencies {
    implementation(libs.kotlin.immutableCollections)
    implementation(libs.retrofit.moshi)
    implementation(libs.simpleStack)
+   implementation(libs.sqldelight.android)
 
    implementation(libs.androidx.datastore)
    implementation(libs.androidx.datastore.preferences)

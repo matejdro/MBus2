@@ -1,0 +1,15 @@
+CREATE TABLE dbStop (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    lat REAL NOT NULL,
+    lon REAL NOT NULL
+);
+
+selectAll:
+SELECT * FROM dbStop;
+
+insert:
+REPLACE INTO dbStop VALUES ?;
+
+clear:
+DELETE FROM dbStop;

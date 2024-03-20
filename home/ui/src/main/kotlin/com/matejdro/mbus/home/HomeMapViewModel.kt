@@ -24,6 +24,6 @@ class HomeMapViewModel @Inject constructor(
    }
 
    private fun loadStops() = resources.launchResourceControlTask(_stops) {
-      emit(Outcome.Success(stopsRepository.getAllStops()))
+      emitAll(stopsRepository.getAllStops())
    }
 }

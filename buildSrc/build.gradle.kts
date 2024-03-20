@@ -50,6 +50,7 @@ dependencies {
    implementation(libs.moduleGraphAssert)
    implementation(libs.moshi.ir)
    implementation(libs.orgJson)
+   implementation(libs.sqldelight.gradle)
    implementation(libs.versionsCheckerPlugin)
    implementation(libs.ksp)
    implementation(libs.tomlj)

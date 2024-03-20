@@ -1,11 +1,19 @@
 package com.matejdro.mbus.stops
 
 import com.matejdro.mbus.stops.model.Stop
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import si.inova.kotlinova.core.outcome.Outcome
 
 class FakeStopsRepository : StopsRepository {
-   var providedStops: List<Stop>? = null
+   private var providedStops = MutableStateFlow<Outcome<List<Stop>>?>(null)
 
-   override suspend fun getAllStops(): List<Stop> {
-      return providedStops ?: error("stops not provided")
+   fun provideStops(stops: Outcome<List<Stop>>) {
+      providedStops.value = stops
+   }
+
+   override fun getAllStops(): Flow<Outcome<List<Stop>>> {
+      return providedStops.map { it ?: error("fake stops not provided") }
    }
 }

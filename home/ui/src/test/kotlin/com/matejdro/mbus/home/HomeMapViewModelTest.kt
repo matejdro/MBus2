@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
 import si.inova.kotlinova.core.test.outcomes.testCoroutineResourceManager
 
@@ -17,7 +18,7 @@ class HomeMapViewModelTest {
 
    @Test
    fun `Provide stops at startup`() = testScope.runTest {
-      stopsRepo.providedStops = FAKE_STOPS
+      stopsRepo.provideStops(Outcome.Success(FAKE_STOPS))
 
       viewModel.onServiceRegistered()
       runCurrent()
