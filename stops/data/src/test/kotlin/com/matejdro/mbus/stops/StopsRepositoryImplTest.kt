@@ -11,6 +11,8 @@ import com.matejdro.mbus.stops.model.Stops
 import com.matejdro.mbus.stops.sqldelight.generated.Database
 import com.matejdro.mbus.stops.sqldelight.generated.DbStopQueries
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -372,6 +374,69 @@ class StopsRepositoryImplTest {
             exceptionType = NoNetworkException::class.java
          )
       }
+   }
+
+   @Test
+   fun `Only load from the network once at a time`() = testScope.runTest {
+      service.providedStops = Stops(
+         listOf(
+            StopDto(
+               10,
+               "Stop A",
+               1.0,
+               1.0
+            ),
+            StopDto(
+               12,
+               "Stop B",
+               2.0,
+               2.0
+            )
+
+         )
+      )
+
+      val expectedStops = listOf(
+         Stop(
+            10,
+            "Stop A",
+            1.0,
+            1.0
+         ),
+         Stop(
+            12,
+            "Stop B",
+            2.0,
+            2.0
+         )
+      )
+
+      val latch = CompletableDeferred<Unit>()
+
+      launch {
+         repo.getAllStops().test {
+            latch.join()
+            cancelAndIgnoreRemainingEvents()
+         }
+      }
+
+      launch {
+         repo.getAllStops().test {
+            latch.join()
+            cancelAndIgnoreRemainingEvents()
+         }
+      }
+
+      launch {
+         repo.getAllStops().test {
+            latch.join()
+            cancelAndIgnoreRemainingEvents()
+         }
+      }
+
+      runCurrent()
+      latch.complete(Unit)
+      service.numLoads shouldBe 1
    }
 }
 

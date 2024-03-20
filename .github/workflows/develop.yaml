@@ -9,7 +9,10 @@ env:
   BUILD_NUMBER: ${{ github.run_number }}
 jobs:
   build-app:
-    runs-on: "ubuntu"
+    concurrency:
+      group: "develop-build"
+      cancel-in-progress: true
+    runs-on: "ubuntu-latest"
     steps:
       # Preparation
 
