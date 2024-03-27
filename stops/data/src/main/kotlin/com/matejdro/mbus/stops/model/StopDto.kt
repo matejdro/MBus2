@@ -1,6 +1,6 @@
 package com.matejdro.mbus.stops.model
 
-import com.matejdro.mbus.stops.sqldelight.generated.DbStop
+import com.matejdro.mbus.sqldelight.generated.DbStop
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

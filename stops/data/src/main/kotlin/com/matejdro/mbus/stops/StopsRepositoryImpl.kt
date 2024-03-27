@@ -8,11 +8,11 @@ import app.cash.sqldelight.Query
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.di.ApplicationScope
+import com.matejdro.mbus.sqldelight.generated.DbStop
+import com.matejdro.mbus.sqldelight.generated.DbStopQueries
 import com.matejdro.mbus.stops.model.Stop
 import com.matejdro.mbus.stops.model.toDbStop
 import com.matejdro.mbus.stops.model.toStop
-import com.matejdro.mbus.stops.sqldelight.generated.DbStop
-import com.matejdro.mbus.stops.sqldelight.generated.DbStopQueries
 import com.squareup.anvil.annotations.ContributesBinding
 import dispatch.core.withDefault
 import kotlinx.coroutines.flow.Flow

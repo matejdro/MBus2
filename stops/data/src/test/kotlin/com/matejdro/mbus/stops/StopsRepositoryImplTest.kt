@@ -4,12 +4,12 @@ import androidx.datastore.preferences.core.emptyPreferences
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import com.matejdro.mbus.common.test.datastore.InMemoryDataStore
+import com.matejdro.mbus.sqldelight.generated.Database
+import com.matejdro.mbus.sqldelight.generated.DbStopQueries
 import com.matejdro.mbus.stops.di.StopsModule
 import com.matejdro.mbus.stops.model.Stop
 import com.matejdro.mbus.stops.model.StopDto
 import com.matejdro.mbus.stops.model.Stops
-import com.matejdro.mbus.stops.sqldelight.generated.Database
-import com.matejdro.mbus.stops.sqldelight.generated.DbStopQueries
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch

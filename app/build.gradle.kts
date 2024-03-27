@@ -139,7 +139,7 @@ sqldelight {
    databases {
       create("Database") {
          packageName.set("com.matejdro.mbus")
-         dependency(projects.stops.data)
+         dependency(projects.sharedDb)
       }
    }
 }
@@ -150,6 +150,7 @@ dependencies {
    implementation(projects.commonRetrofit.android)
    implementation(projects.commonCompose)
    implementation(projects.home.ui)
+   implementation(projects.sharedDb)
    implementation(projects.stops.data)
 
    implementation(libs.androidx.activity.compose)
