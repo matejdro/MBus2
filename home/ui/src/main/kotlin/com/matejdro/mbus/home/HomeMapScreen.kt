@@ -26,12 +26,16 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
+import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.navigation.instructions.navigateTo
+import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.Screen
 
 @OptIn(ExperimentalPermissionsApi::class)
 class HomeMapScreen(
    private val viewModel: HomeMapViewModel,
+   private val navigator: Navigator,
 ) : Screen<HomeMapScreenKey>() {
    @Composable
    override fun Content(key: HomeMapScreenKey) {
@@ -66,7 +70,11 @@ class HomeMapScreen(
                key(stop.id) {
                   Marker(
                      state = MarkerState(LatLng(stop.lat, stop.lon)),
-                     title = stop.name
+                     title = stop.name,
+                     onClick = {
+                        navigator.navigateTo(StopScheduleScreenKey(stop.id))
+                        true
+                     }
                   )
                }
             }

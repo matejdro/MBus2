@@ -151,6 +151,8 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(projects.home.ui)
    implementation(projects.sharedDb)
+   implementation(projects.schedule.data)
+   implementation(projects.schedule.ui)
    implementation(projects.stops.data)
 
    implementation(libs.androidx.activity.compose)

@@ -11,6 +11,7 @@ import dagger.Provides
 import dagger.multibindings.Multibinds
 import okhttp3.OkHttpClient
 import si.inova.kotlinova.retrofit.interceptors.BypassCacheInterceptor
+import java.time.Duration
 import javax.inject.Singleton
 
 @Module
@@ -60,8 +61,13 @@ abstract class NetworkModule {
                   diskCache = certificateTransparencyDiskCache
                }
             )
+            .callTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
       }
    }
 }
 
 interface MoshiAdapter
+
+private const val TIMEOUT_SECONDS = 30L

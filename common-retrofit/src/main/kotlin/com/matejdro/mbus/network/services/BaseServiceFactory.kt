@@ -1,5 +1,6 @@
 package com.matejdro.mbus.network.services
 
+import com.matejdro.mbus.network.converters.DateConverterFactory
 import com.matejdro.mbus.network.exceptions.DefaultErrorHandler
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +50,7 @@ open class BaseServiceFactory @Inject constructor(
          .callFactory { updatedClient.value.newCall(it) }
          .baseUrl(baseUrl)
          .addConverterFactory(LazyRetrofitConverterFactory(moshiConverter))
+         .addConverterFactory(DateConverterFactory)
          .addCallAdapterFactory(StaleWhileRevalidateCallAdapterFactory(scope.errorHandler, errorReporter))
          .addCallAdapterFactory(ErrorHandlingAdapterFactory(coroutineScope, scope.errorHandler))
          .build()
