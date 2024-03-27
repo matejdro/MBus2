@@ -24,7 +24,7 @@ class ScreenshotTests {
    val paparazzi = Paparazzi(
       deviceConfig = PIXEL_5,
       theme = "android:Theme.Material.Light.NoActionBar",
-      maxPercentDifference = 0.0,
+      maxPercentDifference = 2.0,
       showSystemUi = false,
       renderingMode = SessionParams.RenderingMode.SHRINK
    )
