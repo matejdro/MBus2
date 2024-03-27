@@ -9,7 +9,7 @@ interface ServiceFactory {
       var errorHandler: ErrorHandler? = defaultErrorHandler
       var okHttpCustomizer: (OkHttpClient.Builder.() -> Unit)? = null
 
-      var cache: Boolean = true
+      var cache: Boolean = false
    }
 }
 
