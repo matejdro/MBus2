@@ -201,7 +201,7 @@ internal fun ScheduleScreenSuccessPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST),
-         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 5, 30) }),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
       )
    }
 }
@@ -213,7 +213,7 @@ internal fun ScheduleScreenLoadingPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Progress(),
-         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 5, 30) }),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
       )
    }
 }
@@ -225,7 +225,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Progress(PREVIEW_FAKE_LIST),
-         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 5, 30) }),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
       )
    }
 }
@@ -237,7 +237,7 @@ internal fun ScheduleScreenErrorPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Error(UnknownCauseException()),
-         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 5, 30) }),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
       )
    }
 }
@@ -249,7 +249,7 @@ internal fun ScheduleScreenRefreshErrorPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Error(UnknownCauseException(), PREVIEW_FAKE_LIST),
-         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 5, 30) }),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
       )
    }
 }
@@ -267,17 +267,17 @@ val PREVIEW_FAKE_LIST = StopSchedule(
       ),
       Arrival(
          PREVIEW_EXPECTED_LINE_2,
-         LocalDateTime.of(2024, 3, 30, 10, 20),
+         LocalDateTime.of(2024, 3, 31, 10, 20),
          "Mesto -> MB"
       ),
       Arrival(
          PREVIEW_EXPECTED_LINE_6,
-         LocalDateTime.of(2024, 3, 30, 11, 0),
+         LocalDateTime.of(2024, 4, 2, 11, 0),
          "MB -> Mesto"
       ),
       Arrival(
          PREVIEW_EXPECTED_LINE_18,
-         LocalDateTime.of(2024, 3, 30, 11, 20),
+         LocalDateTime.of(2024, 4, 20, 11, 20),
          "MB -> Mesto"
       ),
    ),
