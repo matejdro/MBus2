@@ -15,6 +15,8 @@ git add app-screenshot-tests/src/test/snapshots
 
 if [[ -n $(git status --porcelain=v1 | grep "^[A|M|D|R]") ]]
 then
+  git config --global user.email "ci@github.com"
+  git config --global user.name "Build Bot"
   git commit -m "chore: add new screenshot tests"
   git push origin HEAD:$1
 fi
