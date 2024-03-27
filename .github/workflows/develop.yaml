@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mapping-app-develop-release.txt
-          path: app/build/outputs/mapping/developRelease/mapping.txt
+          path: app/build/outputs/mapping/release/mapping.txt
 
       # Tests
 
