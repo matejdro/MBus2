@@ -2,25 +2,22 @@ package com.matejdro.mbus.common.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import si.inova.kotlinova.core.outcome.Outcome
-import si.inova.kotlinova.core.outcome.downgradeTo
 
-class ListPaginatedDataStream<P, T>(private val pages: List<List<T>>, mapper: (List<T>) -> P) : PaginatedDataStream<P> {
+class ListPaginatedDataStream<P : PaginationResult, T>(
+   private val pages: List<List<T>>,
+   mapper: (List<T>, hasAnyDataLeft: Boolean) -> Outcome<P>,
+) : PaginatedDataStream<P> {
 
    private val pagesToShow = MutableStateFlow<Int>(1)
-   private val currentStatus = MutableStateFlow<Outcome<Unit>>(Outcome.Success<Unit>(Unit))
 
-   override val data: Flow<PaginatedDataStream.PaginationResult<P>> = combine(pagesToShow, currentStatus) { pagesToShow, status ->
+   override val data: Flow<Outcome<P>> = pagesToShow.map { pagesToShow ->
       val allData = pages.take(pagesToShow).flatten()
-      PaginatedDataStream.PaginationResult(Outcome.Success(mapper(allData)).downgradeTo(status), pagesToShow >= pages.size)
+      mapper(allData, pagesToShow > pages.size)
    }
 
    override fun nextPage() {
       pagesToShow.value++
-   }
-
-   fun setStatus(status: Outcome<Unit>) {
-      currentStatus.value = status
    }
 }

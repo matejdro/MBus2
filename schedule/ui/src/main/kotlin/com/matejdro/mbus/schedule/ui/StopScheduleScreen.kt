@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,10 +43,12 @@ import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
 import com.matejdro.mbus.ui.errors.commonUserFriendlyMessage
+import com.matejdro.mbus.ui.lists.DetectScrolledToBottom
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
+import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.time.FakeAndroidTimeProvider
 import si.inova.kotlinova.core.time.TimeProvider
@@ -66,6 +70,7 @@ class StopScheduleScreen(
          ScheduleScreenContent(
             state,
             timeProvider,
+            viewModel::loadNextPage
          )
       }
    }
@@ -76,6 +81,7 @@ class StopScheduleScreen(
 private fun ScheduleScreenContent(
    data: Outcome<StopSchedule>,
    timeProvider: TimeProvider,
+   loadNextPage: () -> Unit,
 ) {
    Column {
       TopAppBar(title = { data.data?.stopName?.let { Text(it) } })
@@ -86,12 +92,18 @@ private fun ScheduleScreenContent(
       val stopSchedule = data.data
 
       if (stopSchedule != null) {
-         LazyColumn(Modifier.weight(1f)) {
+         val state = rememberLazyListState()
+
+         state.DetectScrolledToBottom(loadNextPage)
+
+         LazyColumn(Modifier.weight(1f), state) {
             stopImageItem(stopSchedule)
 
             itemsWithDivider(stopSchedule.arrivals) {
                ScheduleItem(it, timeProvider)
             }
+
+            bottomLoading(stopSchedule, data)
          }
       }
    }
@@ -112,7 +124,7 @@ private fun ColumnScope.TopError(data: Outcome<StopSchedule>) {
 
 @Composable
 private fun ColumnScope.TopLoading(data: Outcome<StopSchedule>) {
-   if (data is Outcome.Progress) {
+   if (data is Outcome.Progress && data.style != LoadingStyle.ADDITIONAL_DATA) {
       CircularProgressIndicator(
          Modifier.Companion
             .align(Alignment.CenterHorizontally)
@@ -155,6 +167,26 @@ private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
             fontSize = 14.sp,
             text = it.direction
          )
+      }
+   }
+}
+
+private fun LazyListScope.bottomLoading(
+   stopSchedule: StopSchedule,
+   data: Outcome<StopSchedule>,
+) {
+   if (stopSchedule.hasAnyDataLeft == true) {
+      item {
+         Box(
+            Modifier
+               .fillMaxWidth()
+               .height(32.dp),
+            Alignment.Center
+         ) {
+            if (data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA) {
+               CircularProgressIndicator(Modifier.size(32.dp))
+            }
+         }
       }
    }
 }
@@ -222,6 +254,7 @@ internal fun ScheduleScreenSuccessPreview() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {}
       )
    }
 }
@@ -234,6 +267,7 @@ internal fun ScheduleScreenLoadingPreview() {
       ScheduleScreenContent(
          Outcome.Progress(),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {}
       )
    }
 }
@@ -246,6 +280,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
       ScheduleScreenContent(
          Outcome.Progress(PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {}
       )
    }
 }
@@ -258,6 +293,7 @@ internal fun ScheduleScreenErrorPreview() {
       ScheduleScreenContent(
          Outcome.Error(UnknownCauseException()),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {}
       )
    }
 }
@@ -270,6 +306,26 @@ internal fun ScheduleScreenRefreshErrorPreview() {
       ScheduleScreenContent(
          Outcome.Error(UnknownCauseException(), PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {}
+      )
+   }
+}
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun ScheduleScreenRefreshLoadingMorePreview() {
+   PreviewTheme() {
+      ScheduleScreenContent(
+         Outcome.Progress(
+            PREVIEW_FAKE_LIST.copy(
+               hasAnyDataLeft = true,
+               arrivals = PREVIEW_FAKE_LIST.arrivals.take(1)
+            ),
+            style = LoadingStyle.ADDITIONAL_DATA
+         ),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {}
       )
    }
 }
@@ -304,4 +360,5 @@ val PREVIEW_FAKE_LIST = StopSchedule(
    "Forest 77",
    "http://stopimage.com",
    "A stop in the forest",
+   false
 )

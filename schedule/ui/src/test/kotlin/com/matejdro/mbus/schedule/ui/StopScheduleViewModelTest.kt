@@ -1,5 +1,6 @@
 package com.matejdro.mbus.schedule.ui
 
+import app.cash.turbine.test
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.FakeScheduleRepository
 import com.matejdro.mbus.schedule.model.Arrival
@@ -47,6 +48,7 @@ class StopScheduleViewModelTest {
          "Forest 77",
          "http://stopimage.com",
          "A stop in the forest",
+         false
       )
 
       repo.provideSchedule(
@@ -63,6 +65,106 @@ class StopScheduleViewModelTest {
       runCurrent()
 
       vm.schedule.value shouldBeSuccessWithData arrivals
+   }
+
+   @Test
+   @Suppress("LongMethod") // Lots of data to define
+   fun `Provide Paginated data`() = scope.runTest {
+      val expectedFirstPage = StopSchedule(
+         listOf(
+            Arrival(
+               TEST_EXPECTED_LINE_2,
+               LocalDateTime.of(2024, 5, 30, 10, 0),
+               "MB -> Mesto"
+            ),
+            Arrival(
+               TEST_EXPECTED_LINE_2,
+               LocalDateTime.of(2024, 5, 30, 10, 20),
+               "Mesto -> MB"
+            ),
+         ),
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+      )
+
+      val expectedSecondPage = StopSchedule(
+         listOf(
+            Arrival(
+               TEST_EXPECTED_LINE_2,
+               LocalDateTime.of(2024, 5, 30, 10, 0),
+               "MB -> Mesto"
+            ),
+            Arrival(
+               TEST_EXPECTED_LINE_2,
+               LocalDateTime.of(2024, 5, 30, 10, 20),
+               "Mesto -> MB"
+            ),
+            Arrival(
+               TEST_EXPECTED_LINE_6,
+               LocalDateTime.of(2024, 5, 30, 11, 0),
+               "MB -> Mesto"
+            ),
+            Arrival(
+               TEST_EXPECTED_LINE_2,
+               LocalDateTime.of(2024, 5, 30, 11, 20),
+               "MB -> Mesto"
+            ),
+         ),
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+      )
+
+      val firstPage = listOf(
+         Arrival(
+            TEST_EXPECTED_LINE_2,
+            LocalDateTime.of(2024, 5, 30, 10, 0),
+            "MB -> Mesto"
+         ),
+         Arrival(
+            TEST_EXPECTED_LINE_2,
+            LocalDateTime.of(2024, 5, 30, 10, 20),
+            "Mesto -> MB"
+         ),
+      )
+
+      val secondPage = listOf(
+         Arrival(
+            TEST_EXPECTED_LINE_6,
+            LocalDateTime.of(2024, 5, 30, 11, 0),
+            "MB -> Mesto"
+         ),
+         Arrival(
+            TEST_EXPECTED_LINE_2,
+            LocalDateTime.of(2024, 5, 30, 11, 20),
+            "MB -> Mesto"
+         ),
+      )
+
+      repo.provideSchedule(
+         12,
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         firstPage,
+         secondPage
+      )
+
+      vm.key = StopScheduleScreenKey(12)
+
+      vm.onServiceRegistered()
+
+      vm.schedule.test {
+         runCurrent()
+         expectMostRecentItem().shouldBeSuccessWithData(expectedFirstPage)
+
+         vm.loadNextPage()
+         runCurrent()
+         expectMostRecentItem().shouldBeSuccessWithData(expectedSecondPage)
+      }
    }
 }
 

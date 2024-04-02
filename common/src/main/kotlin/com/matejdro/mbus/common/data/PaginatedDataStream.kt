@@ -3,12 +3,11 @@ package com.matejdro.mbus.common.data
 import kotlinx.coroutines.flow.Flow
 import si.inova.kotlinova.core.outcome.Outcome
 
-interface PaginatedDataStream<T> {
-   val data: Flow<PaginationResult<T>>
+interface PaginatedDataStream<T : PaginationResult> {
+   val data: Flow<Outcome<T>>
    fun nextPage()
+}
 
-   data class PaginationResult<T>(
-      val items: Outcome<T>,
-      val hasAnyDataLeft: Boolean,
-   )
+interface PaginationResult {
+   val hasAnyDataLeft: Boolean
 }
