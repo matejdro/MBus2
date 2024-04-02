@@ -91,6 +91,8 @@ android {
    buildTypes {
       getByName("debug") {
          signingConfig = signingConfigs.getByName("debug")
+
+         manifestPlaceholders["crashlyticsCollectionEnabled"] = false
       }
 
       create("proguardedDebug") {
@@ -112,6 +114,8 @@ android {
          matchingFallbacks += "debug"
 
          signingConfig = signingConfigs.getByName("debug")
+
+         manifestPlaceholders["crashlyticsCollectionEnabled"] = false
       }
 
       create("benchmark") {
@@ -119,6 +123,7 @@ android {
          initWith(buildTypes.getByName("release"))
          signingConfig = signingConfigs.getByName("debug")
          matchingFallbacks += listOf("release")
+         manifestPlaceholders["crashlyticsCollectionEnabled"] = true
       }
 
       getByName("release") {
@@ -131,6 +136,7 @@ android {
          )
 
          signingConfig = signingConfigs.getByName("release")
+         manifestPlaceholders["crashlyticsCollectionEnabled"] = true
       }
    }
 }
