@@ -228,7 +228,7 @@ private fun Arrival.timeText(today: LocalDate): String {
       arrivalDate == today.plusDays(1) -> stringResource(R.string.tomorrow)
       arrivalDate < today.plusDays(DAYS_IN_A_WEEK_MINUS_ONE) -> {
          arrivalDate.dayOfWeek.getDisplayName(
-            TextStyle.FULL_STANDALONE,
+            TextStyle.FULL,
             Locale.getDefault()
          )
       }
