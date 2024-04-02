@@ -5,12 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,63 +80,81 @@ private fun ScheduleScreenContent(
    Column {
       TopAppBar(title = { data.data?.stopName?.let { Text(it) } })
 
-      if (data is Outcome.Progress) {
-         CircularProgressIndicator(
-            Modifier
-               .align(Alignment.CenterHorizontally)
-               .padding(32.dp)
-         )
-      }
-
-      if (data is Outcome.Error) {
-         Text(
-            text = data.exception.commonUserFriendlyMessage(),
-            Modifier
-               .align(Alignment.CenterHorizontally)
-               .padding(32.dp),
-            color = MaterialTheme.colorScheme.error
-         )
-      }
+      TopLoading(data)
+      TopError(data)
 
       val stopSchedule = data.data
 
       if (stopSchedule != null) {
          LazyColumn(Modifier.weight(1f)) {
-            stopSchedule.stopImage?.let {
-               item {
-                  AsyncImage(
-                     model = it,
-                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                     contentScale = ContentScale.Crop,
-                     contentDescription = null
-                  )
-               }
-            }
+            stopImageItem(stopSchedule)
 
             itemsWithDivider(stopSchedule.arrivals) {
-               Row(
-                  Modifier.padding(16.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(16.dp)
-               ) {
-                  LineLabel(it.line)
-
-                  Column {
-                     Text(
-                        fontSize = 20.sp,
-                        text = it.timeText(timeProvider.currentLocalDate())
-                     )
-
-                     Text(
-                        fontSize = 14.sp,
-                        text = it.direction
-                     )
-                  }
-               }
+               ScheduleItem(it, timeProvider)
             }
          }
+      }
+   }
+}
+
+@Composable
+private fun ColumnScope.TopError(data: Outcome<StopSchedule>) {
+   if (data is Outcome.Error) {
+      Text(
+         text = data.exception.commonUserFriendlyMessage(),
+         Modifier.Companion
+            .align(Alignment.CenterHorizontally)
+            .padding(32.dp),
+         color = MaterialTheme.colorScheme.error
+      )
+   }
+}
+
+@Composable
+private fun ColumnScope.TopLoading(data: Outcome<StopSchedule>) {
+   if (data is Outcome.Progress) {
+      CircularProgressIndicator(
+         Modifier.Companion
+            .align(Alignment.CenterHorizontally)
+            .padding(32.dp)
+      )
+   }
+}
+
+private fun LazyListScope.stopImageItem(stopSchedule: StopSchedule) {
+   stopSchedule.stopImage?.let {
+      item {
+         AsyncImage(
+            model = it,
+            modifier = Modifier
+               .fillMaxWidth()
+               .height(200.dp),
+            contentScale = ContentScale.Crop,
+            contentDescription = null
+         )
+      }
+   }
+}
+
+@Composable
+private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
+   Row(
+      Modifier.padding(16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(16.dp)
+   ) {
+      LineLabel(it.line)
+
+      Column {
+         Text(
+            fontSize = 20.sp,
+            text = it.timeText(timeProvider.currentLocalDate())
+         )
+
+         Text(
+            fontSize = 14.sp,
+            text = it.direction
+         )
       }
    }
 }
