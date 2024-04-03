@@ -123,6 +123,12 @@ class StopsRepositoryImpl @Inject constructor(
          dbStopQueries.replace(stop.toDbStop())
       }
    }
+
+   override suspend fun getStop(id: Int): Stop? {
+      return withDefault {
+         dbStopQueries.selectSingle(id.toLong()).executeAsOneOrNull()?.toStop()
+      }
+   }
 }
 
 private val LAST_UPDATE_PREFERENCE = longPreferencesKey("last_stops_update")

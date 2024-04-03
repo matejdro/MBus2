@@ -12,8 +12,10 @@ class FakeSchedulesService(
    private val providedSchedules = HashMap<Pair<Int, LocalDate>, StopScheduleDto>()
    var providedLines: LinesDto? = null
    var numLineLoads: Int = 0
+   var numScheduleLoads: Int = 0
 
    override suspend fun getSchedule(stopId: Int, date: LocalDate): StopScheduleDto {
+      numScheduleLoads++
       helper.intercept()
 
       return providedSchedules.get(stopId to date) ?: error("Schedule for stop $stopId on $date not provided")

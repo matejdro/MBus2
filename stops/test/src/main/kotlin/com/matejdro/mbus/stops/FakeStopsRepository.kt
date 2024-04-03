@@ -46,4 +46,10 @@ class FakeStopsRepository : StopsRepository {
          }
       }
    }
+
+   override suspend fun getStop(id: Int): Stop? {
+      val providedStops = providedStops.value ?: error("fake stops not provided")
+
+      return providedStops.data?.firstOrNull { it.id == id }
+   }
 }

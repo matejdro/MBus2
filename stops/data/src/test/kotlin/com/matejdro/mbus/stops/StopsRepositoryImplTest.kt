@@ -632,6 +632,39 @@ class StopsRepositoryImplTest {
          )
       }
    }
+
+   @Test
+   fun `Provide single stop after first load`() = testScope.runTest {
+      service.providedStops = Stops(
+         listOf(
+            StopDto(
+               10,
+               "Stop A",
+               1.0,
+               1.0
+            ),
+            StopDto(
+               12,
+               "Stop B",
+               2.0,
+               2.0
+            )
+
+         )
+      )
+
+      repo.getAllStops().test {
+         runCurrent()
+         cancelAndConsumeRemainingEvents()
+      }
+
+      repo.getStop(10) shouldBe Stop(
+         10,
+         "Stop A",
+         1.0,
+         1.0
+      )
+   }
 }
 
 private fun createTestStopQueries(): DbStopQueries {

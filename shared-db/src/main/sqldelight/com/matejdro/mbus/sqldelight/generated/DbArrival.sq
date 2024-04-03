@@ -1,0 +1,24 @@
+CREATE TABLE dbArrival (
+    lineId INTEGER NOT NULL,
+    stopId INTEGER NOT NULL,
+    arrivalTime TEXT NOT NULL,
+    direction TEXT NOT NULL,
+    FOREIGN KEY(lineId) REFERENCES dbLine(id),
+    FOREIGN KEY(stopId) REFERENCES dbStop(id)
+);
+
+selectAllOnStop:
+SELECT * FROM dbArrival INNER JOIN dbLine ON dbArrival.lineId = dbLine.id WHERE
+    stopId = :stopId AND
+    arrivalTime >= :startTime AND
+    arrivalTime <= :endTime
+    ORDER BY arrivalTime ASC;
+
+insert:
+REPLACE INTO dbArrival VALUES ?;
+
+clearStop:
+DELETE FROM dbArrival WHERE
+    stopId = :stopId AND
+    arrivalTime >= :startTime AND
+    arrivalTime <= :endTime;

@@ -6,6 +6,7 @@ import com.matejdro.mbus.network.services.ServiceFactory
 import com.matejdro.mbus.network.services.create
 import com.matejdro.mbus.schedule.SchedulesService
 import com.matejdro.mbus.sqldelight.generated.Database
+import com.matejdro.mbus.sqldelight.generated.DbArrivalQueries
 import com.matejdro.mbus.sqldelight.generated.DbLineQueries
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
@@ -22,5 +23,11 @@ object SchedulesModule {
    @Singleton
    fun provideLineQueries(driver: SqlDriver): DbLineQueries {
       return Database(driver).dbLineQueries
+   }
+
+   @Provides
+   @Singleton
+   fun provideArrivalQueries(driver: SqlDriver): DbArrivalQueries {
+      return Database(driver).dbArrivalQueries
    }
 }

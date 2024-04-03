@@ -8,6 +8,9 @@ CREATE TABLE dbStop (
     description TEXT DEFAULT NULL
 );
 
+selectSingle:
+SELECT * FROM dbStop WHERE id = ?;
+
 selectAll:
 SELECT * FROM dbStop;
 

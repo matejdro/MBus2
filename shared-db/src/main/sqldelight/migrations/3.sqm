@@ -1,0 +1,8 @@
+CREATE TABLE dbArrival (
+    lineId INTEGER NOT NULL,
+    stopId INTEGER NOT NULL,
+    arrivalTime TEXT NOT NULL,
+    direction TEXT NOT NULL,
+    FOREIGN KEY(lineId) REFERENCES dbLine(id),
+    FOREIGN KEY(stopId) REFERENCES dbStop(id)
+);
