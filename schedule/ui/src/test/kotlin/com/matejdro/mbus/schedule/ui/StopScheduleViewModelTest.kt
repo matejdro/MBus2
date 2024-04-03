@@ -86,7 +86,7 @@ class StopScheduleViewModelTest {
          "Forest 77",
          "http://stopimage.com",
          "A stop in the forest",
-         false,
+         true,
       )
 
       val expectedSecondPage = StopSchedule(

@@ -14,7 +14,7 @@ class ListPaginatedDataStream<P : PaginationResult, T>(
 
    override val data: Flow<Outcome<P>> = pagesToShow.map { pagesToShow ->
       val allData = pages.take(pagesToShow).flatten()
-      mapper(allData, pagesToShow > pages.size)
+      mapper(allData, pagesToShow < pages.size)
    }
 
    override fun nextPage() {
