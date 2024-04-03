@@ -24,6 +24,7 @@ import si.inova.kotlinova.core.test.outcomes.shouldBeProgressWithData
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
 import si.inova.kotlinova.core.test.time.virtualTimeProvider
 import si.inova.kotlinova.retrofit.InterceptionStyle
+import java.time.Instant
 import kotlin.time.Duration.Companion.hours
 
 class StopsRepositoryImplTest {
@@ -288,10 +289,10 @@ class StopsRepositoryImplTest {
 
       val expectedStops = listOf(
          Stop(
-            13,
+            12,
             "Stop C",
-            2.0,
-            2.0
+            3.0,
+            4.0
          )
       )
 
@@ -310,10 +311,10 @@ class StopsRepositoryImplTest {
          service.providedStops = Stops(
             listOf(
                StopDto(
-                  13,
+                  12,
                   "Stop C",
-                  2.0,
-                  2.0
+                  3.0,
+                  4.0
                ),
             )
          )
@@ -479,6 +480,75 @@ class StopsRepositoryImplTest {
          runCurrent()
          expectMostRecentItem() shouldBeSuccessWithData expectedStops
       }
+   }
+
+   @Test
+   fun `Remember last stop update`() = testScope.runTest {
+      service.providedStops = Stops(
+         listOf(
+            StopDto(
+               10,
+               "Stop A",
+               1.0,
+               1.0
+            ),
+            StopDto(
+               12,
+               "Stop B",
+               2.0,
+               2.0
+            )
+
+         )
+      )
+
+      repo.getAllStops().test {
+         runCurrent()
+         cancelAndConsumeRemainingEvents()
+      }
+
+      repo.setLastStopUpdate(10, Instant.ofEpochMilli(100L))
+      repo.setLastStopUpdate(12, Instant.ofEpochMilli(200L))
+
+      repo.getLastStopUpdate(10) shouldBe Instant.ofEpochMilli(100L)
+   }
+
+   @Test
+   fun `Remember last stop update even after updates`() = testScope.runTest {
+      service.providedStops = Stops(
+         listOf(
+            StopDto(
+               10,
+               "Stop A",
+               1.0,
+               1.0
+            ),
+            StopDto(
+               12,
+               "Stop B",
+               2.0,
+               2.0
+            )
+
+         )
+      )
+
+      repo.getAllStops().test {
+         runCurrent()
+         cancelAndConsumeRemainingEvents()
+      }
+
+      repo.setLastStopUpdate(10, Instant.ofEpochMilli(100L))
+      repo.setLastStopUpdate(12, Instant.ofEpochMilli(200L))
+
+      advanceTimeBy(50.hours)
+
+      repo.getAllStops().test {
+         runCurrent()
+         cancelAndConsumeRemainingEvents()
+      }
+
+      repo.getLastStopUpdate(10) shouldBe Instant.ofEpochMilli(100L)
    }
 }
 

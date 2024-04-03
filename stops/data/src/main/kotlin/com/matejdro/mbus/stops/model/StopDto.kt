@@ -23,7 +23,8 @@ fun StopDto.toDbStop(): DbStop? {
       id.toLong(),
       name,
       lat,
-      lon
+      lon,
+      null
    )
 }
 

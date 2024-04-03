@@ -2,7 +2,8 @@ CREATE TABLE dbStop (
     id INTEGER PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
     lat REAL NOT NULL,
-    lon REAL NOT NULL
+    lon REAL NOT NULL,
+    lastScheduleUpdate INTEGER DEFAULT NULL
 );
 
 selectAll:
@@ -12,7 +13,22 @@ selectInRect:
 SELECT * FROM dbStop WHERE lat >= :minLat AND lat <= :maxLat AND lon >= :minLon AND lon <= :maxLon;
 
 insert:
-REPLACE INTO dbStop VALUES ?;
+INSERT INTO dbStop VALUES ?;
+
+update:
+UPDATE dbStop SET name = :name, lat = :lat, lon = :lon WHERE id = :id;
 
 clear:
 DELETE FROM dbStop;
+
+deleteNotMatching:
+DELETE FROM dbStop WHERE id NOT IN ?;
+
+exists:
+SELECT COUNT(1) > 0 FROM dbStop WHERE id = :id;
+
+getLastUpdate:
+SELECT lastScheduleUpdate FROM dbStop WHERE id = :id;
+
+setLastUpdate:
+UPDATE dbStop SET lastScheduleUpdate = :lastUpdate WHERE id = :id;

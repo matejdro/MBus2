@@ -83,12 +83,7 @@ class StopsRepositoryImpl @Inject constructor(
                         it.toDbStop()
                      }
 
-                     dbStopQueries.transaction {
-                        dbStopQueries.clear()
-                        for (stop in onlineStops) {
-                           dbStopQueries.insert(stop)
-                        }
-                     }
+                     saveStopsToDatabase(onlineStops)
 
                      dataStore.edit {
                         it[LAST_UPDATE_PREFERENCE] = now.toEpochMilli()
@@ -107,6 +102,31 @@ class StopsRepositoryImpl @Inject constructor(
 
       return combine(dbFlow, statusFlow) { data, status ->
          Outcome.Success(data).downgradeTo(status)
+      }
+   }
+
+   private fun saveStopsToDatabase(onlineStops: List<DbStop>) {
+      dbStopQueries.transaction {
+         dbStopQueries.deleteNotMatching(onlineStops.map { it.id.toLong() })
+         for (stop in onlineStops) {
+            if (dbStopQueries.exists(stop.id).executeAsOne()) {
+               dbStopQueries.update(stop.name, stop.lat, stop.lon, stop.id)
+            } else {
+               dbStopQueries.insert(stop)
+            }
+         }
+      }
+   }
+
+   override suspend fun getLastStopUpdate(id: Long): Instant? {
+      return withDefault {
+         dbStopQueries.getLastUpdate(id).executeAsOneOrNull()?.lastScheduleUpdate?.let { Instant.ofEpochMilli(it) }
+      }
+   }
+
+   override suspend fun setLastStopUpdate(id: Long, updateTime: Instant) {
+      return withDefault {
+         dbStopQueries.setLastUpdate(updateTime.toEpochMilli(), id)
       }
    }
 }
