@@ -46,7 +46,9 @@ jobs:
       # Tests
 
       - name: Lint
-        run: "./gradlew lintRelease detektRelease detektReleaseUnitTest assertModuleGraph generateDatabaseSchema verifyDebugDatabaseMigration"
+        run: "./gradlew lintRelease detektRelease detektReleaseUnitTest assertModuleGraph verifyDebugDatabaseMigration"
+      - name: Double check db with generated schema
+        run: "./gradlew generateDatabaseSchema verifyDebugDatabaseMigration"
       - name: Compile Unit Tests
         run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
       - name: Run Unit Tests
