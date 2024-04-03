@@ -7,6 +7,9 @@ CREATE TABLE dbLine (
 selectAll:
 SELECT * FROM dbLine;
 
+selectSpecific:
+SELECT * FROM dbLine WHERE id IN ?;
+
 insert:
 REPLACE INTO dbLine VALUES ?;
 

@@ -214,6 +214,20 @@ class LinesRepositoryImplTest {
       latch.complete(Unit)
       service.numLineLoads shouldBe 1
    }
+
+   @Test
+   fun `Provide specific lines from network on first load`() = testScope.runTest {
+      service.providedLines = GENERAL_PROVIDED_LINES
+
+      val expectedLines = listOf(
+         Line(2, "2", 0xFFFF0000.toInt()),
+      )
+
+      repo.getSomeLines(listOf(2)).test {
+         runCurrent()
+         expectMostRecentItem() shouldBeSuccessWithData expectedLines
+      }
+   }
 }
 
 private val GENERAL_PROVIDED_LINES = LinesDto(

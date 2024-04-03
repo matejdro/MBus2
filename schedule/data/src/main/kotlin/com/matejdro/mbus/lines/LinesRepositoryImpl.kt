@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.di.ApplicationScope
@@ -11,6 +12,7 @@ import com.matejdro.mbus.schedule.SchedulesService
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.models.toDbLine
 import com.matejdro.mbus.schedule.models.toLine
+import com.matejdro.mbus.sqldelight.generated.DbLine
 import com.matejdro.mbus.sqldelight.generated.DbLineQueries
 import com.squareup.anvil.annotations.ContributesBinding
 import kotlinx.coroutines.flow.Flow
@@ -41,9 +43,17 @@ class LinesRepositoryImpl @Inject constructor(
    private val loadMutext = Mutex()
 
    override fun getAllLines(): Flow<Outcome<List<Line>>> {
-      val dbFlow = dbLineQueries.selectAll().asFlow().map { query ->
+      return queryLines(dbLineQueries.selectAll())
+   }
+
+   override fun getSomeLines(ids: Collection<Int>): Flow<Outcome<List<Line>>> {
+      return queryLines(dbLineQueries.selectSpecific(ids.map { it.toLong() }))
+   }
+
+   private fun queryLines(query: Query<DbLine>): Flow<Outcome<List<Line>>> {
+      val dbFlow = query.asFlow().map { updatedQuery ->
          dispatch.core.withDefault {
-            query.awaitAsList().map { it.toLine() }
+            updatedQuery.awaitAsList().map { it.toLine() }
          }
       }
 

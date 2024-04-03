@@ -6,4 +6,5 @@ import si.inova.kotlinova.core.outcome.Outcome
 
 interface LinesRepository {
    fun getAllLines(): Flow<Outcome<List<Line>>>
+   fun getSomeLines(ids: Collection<Int>): Flow<Outcome<List<Line>>>
 }
