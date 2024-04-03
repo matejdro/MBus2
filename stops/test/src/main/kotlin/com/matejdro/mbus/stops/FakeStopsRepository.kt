@@ -4,13 +4,12 @@ import com.matejdro.mbus.stops.model.Stop
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
-import java.time.Instant
 
 class FakeStopsRepository : StopsRepository {
    private var providedStops = MutableStateFlow<Outcome<List<Stop>>?>(null)
-   private var lastUpdates = HashMap<Long, Instant>()
    var numLoads = 0
 
    fun provideStops(stops: Outcome<List<Stop>>) {
@@ -34,11 +33,17 @@ class FakeStopsRepository : StopsRepository {
       }
    }
 
-   override suspend fun getLastStopUpdate(id: Long): Instant? {
-      return lastUpdates[id]
-   }
-
-   override suspend fun setLastStopUpdate(id: Long, updateTime: Instant) {
-      lastUpdates[id] = updateTime
+   override suspend fun update(stop: Stop) {
+      providedStops.update { outcome ->
+         outcome?.mapData { list ->
+            list.map {
+               if (it.id == stop.id) {
+                  stop
+               } else {
+                  it
+               }
+            }
+         }
+      }
    }
 }

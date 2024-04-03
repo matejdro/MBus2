@@ -3,6 +3,7 @@ package com.matejdro.mbus.stops.model
 import com.matejdro.mbus.sqldelight.generated.DbStop
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.time.Instant
 
 @JsonClass(generateAdapter = true)
 data class StopDto(
@@ -20,19 +21,36 @@ fun StopDto.toDbStop(): DbStop? {
    if (lat == null || lon == null) return null
 
    return DbStop(
-      id.toLong(),
-      name,
-      lat,
-      lon,
-      null
+      id = id.toLong(),
+      name = name,
+      lat = lat,
+      lon = lon,
+      lastScheduleUpdate = null,
+      imageUrl = null,
+      description = null
    )
 }
 
 fun DbStop.toStop(): Stop {
    return Stop(
-      id.toInt(),
-      name,
-      lat,
-      lon
+      id = id.toInt(),
+      name = name,
+      lat = lat,
+      lon = lon,
+      description = description,
+      imageUrl = imageUrl,
+      lastScheduleUpdate = lastScheduleUpdate?.let { Instant.ofEpochMilli(it) }
+   )
+}
+
+fun Stop.toDbStop(): DbStop {
+   return DbStop(
+      id = id.toLong(),
+      name = name,
+      lat = lat,
+      lon = lon,
+      lastScheduleUpdate = lastScheduleUpdate?.toEpochMilli(),
+      imageUrl = imageUrl,
+      description = description,
    )
 }

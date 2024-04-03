@@ -3,7 +3,9 @@ CREATE TABLE dbStop (
     name TEXT NOT NULL,
     lat REAL NOT NULL,
     lon REAL NOT NULL,
-    lastScheduleUpdate INTEGER DEFAULT NULL
+    lastScheduleUpdate INTEGER DEFAULT NULL,
+    imageUrl TEXT DEFAULT NULL,
+    description TEXT DEFAULT NULL
 );
 
 selectAll:
@@ -18,6 +20,9 @@ INSERT INTO dbStop VALUES ?;
 update:
 UPDATE dbStop SET name = :name, lat = :lat, lon = :lon WHERE id = :id;
 
+replace:
+REPLACE INTO dbStop VALUES ?;
+
 clear:
 DELETE FROM dbStop;
 
@@ -26,9 +31,3 @@ DELETE FROM dbStop WHERE id NOT IN ?;
 
 exists:
 SELECT COUNT(1) > 0 FROM dbStop WHERE id = :id;
-
-getLastUpdate:
-SELECT lastScheduleUpdate FROM dbStop WHERE id = :id;
-
-setLastUpdate:
-UPDATE dbStop SET lastScheduleUpdate = :lastUpdate WHERE id = :id;

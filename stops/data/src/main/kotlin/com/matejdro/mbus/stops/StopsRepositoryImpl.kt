@@ -118,15 +118,9 @@ class StopsRepositoryImpl @Inject constructor(
       }
    }
 
-   override suspend fun getLastStopUpdate(id: Long): Instant? {
-      return withDefault {
-         dbStopQueries.getLastUpdate(id).executeAsOneOrNull()?.lastScheduleUpdate?.let { Instant.ofEpochMilli(it) }
-      }
-   }
-
-   override suspend fun setLastStopUpdate(id: Long, updateTime: Instant) {
-      return withDefault {
-         dbStopQueries.setLastUpdate(updateTime.toEpochMilli(), id)
+   override suspend fun update(stop: Stop) {
+      withDefault {
+         dbStopQueries.replace(stop.toDbStop())
       }
    }
 }

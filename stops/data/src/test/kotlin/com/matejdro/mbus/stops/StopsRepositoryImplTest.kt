@@ -483,7 +483,8 @@ class StopsRepositoryImplTest {
    }
 
    @Test
-   fun `Remember last stop update`() = testScope.runTest {
+   @Suppress("LongMethod") // Test Data
+   fun `Remember stop metadata`() = testScope.runTest {
       service.providedStops = Stops(
          listOf(
             StopDto(
@@ -507,13 +508,57 @@ class StopsRepositoryImplTest {
          cancelAndConsumeRemainingEvents()
       }
 
-      repo.setLastStopUpdate(10, Instant.ofEpochMilli(100L))
-      repo.setLastStopUpdate(12, Instant.ofEpochMilli(200L))
+      repo.update(
+         Stop(
+            10,
+            "Stop A",
+            1.0,
+            1.0,
+            "A stop",
+            "http://images.com/a.png",
+            Instant.ofEpochMilli(200L)
+         ),
+      )
+      repo.update(
+         Stop(
+            12,
+            "Stop B",
+            2.0,
+            2.0,
+            "B stop",
+            "http://images.com/b.png",
+            Instant.ofEpochMilli(100L)
+         )
+      )
 
-      repo.getLastStopUpdate(10) shouldBe Instant.ofEpochMilli(100L)
+      repo.getAllStops().test {
+         runCurrent()
+         expectMostRecentItem() shouldBeSuccessWithData listOf(
+            Stop(
+               10,
+               "Stop A",
+               1.0,
+               1.0,
+               "A stop",
+               "http://images.com/a.png",
+               Instant.ofEpochMilli(200L)
+            ),
+            Stop(
+               12,
+               "Stop B",
+               2.0,
+               2.0,
+               "B stop",
+               "http://images.com/b.png",
+               Instant.ofEpochMilli(100L)
+            )
+
+         )
+      }
    }
 
    @Test
+   @Suppress("LongMethod") // Test Data
    fun `Remember last stop update even after updates`() = testScope.runTest {
       service.providedStops = Stops(
          listOf(
@@ -538,17 +583,54 @@ class StopsRepositoryImplTest {
          cancelAndConsumeRemainingEvents()
       }
 
-      repo.setLastStopUpdate(10, Instant.ofEpochMilli(100L))
-      repo.setLastStopUpdate(12, Instant.ofEpochMilli(200L))
-
       advanceTimeBy(50.hours)
+
+      repo.update(
+         Stop(
+            10,
+            "Stop A",
+            1.0,
+            1.0,
+            "A stop",
+            "http://images.com/a.png",
+            Instant.ofEpochMilli(200L)
+         ),
+      )
+      repo.update(
+         Stop(
+            12,
+            "Stop B",
+            2.0,
+            2.0,
+            "B stop",
+            "http://images.com/b.png",
+            Instant.ofEpochMilli(100L)
+         )
+      )
 
       repo.getAllStops().test {
          runCurrent()
-         cancelAndConsumeRemainingEvents()
+         expectMostRecentItem() shouldBeSuccessWithData listOf(
+            Stop(
+               10,
+               "Stop A",
+               1.0,
+               1.0,
+               "A stop",
+               "http://images.com/a.png",
+               Instant.ofEpochMilli(200L)
+            ),
+            Stop(
+               12,
+               "Stop B",
+               2.0,
+               2.0,
+               "B stop",
+               "http://images.com/b.png",
+               Instant.ofEpochMilli(100L)
+            )
+         )
       }
-
-      repo.getLastStopUpdate(10) shouldBe Instant.ofEpochMilli(100L)
    }
 }
 
