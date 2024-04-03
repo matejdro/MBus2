@@ -1,0 +1,5 @@
+CREATE TABLE dbLine (
+    id INTEGER PRIMARY KEY NOT NULL,
+    label TEXT NOT NULL,
+    color INTEGER NOT NULL
+);

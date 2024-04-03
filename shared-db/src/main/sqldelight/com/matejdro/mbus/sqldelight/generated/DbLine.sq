@@ -1,0 +1,14 @@
+CREATE TABLE dbLine (
+    id INTEGER PRIMARY KEY NOT NULL,
+    label TEXT NOT NULL,
+    color INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM dbLine;
+
+insert:
+REPLACE INTO dbLine VALUES ?;
+
+clear:
+DELETE FROM dbLine;

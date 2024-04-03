@@ -10,6 +10,7 @@ dependencies {
    implementation(projects.commonRetrofit)
    implementation(projects.sharedDb)
 
+   implementation(libs.androidx.datastore.preferences.core)
    implementation(libs.dispatch)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlin.coroutines)

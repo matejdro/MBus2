@@ -11,6 +11,7 @@ class FakeSchedulesService(
 ) : SchedulesService, FakeService by helper {
    private val providedSchedules = HashMap<Pair<Int, LocalDate>, StopScheduleDto>()
    var providedLines: LinesDto? = null
+   var numLineLoads: Int = 0
 
    override suspend fun getSchedule(stopId: Int, date: LocalDate): StopScheduleDto {
       helper.intercept()
@@ -19,6 +20,8 @@ class FakeSchedulesService(
    }
 
    override suspend fun getLines(): LinesDto {
+      numLineLoads++
+      helper.intercept()
       return providedLines ?: error("Fake lines not provided")
    }
 

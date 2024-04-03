@@ -1,9 +1,10 @@
 package com.matejdro.mbus.schedule
 
 import com.matejdro.mbus.common.data.PaginatedDataStream
+import com.matejdro.mbus.common.data.awaitFirstSuccess
 import com.matejdro.mbus.common.di.ApplicationScope
+import com.matejdro.mbus.lines.LinesRepository
 import com.matejdro.mbus.schedule.model.Arrival
-import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
 import com.squareup.anvil.annotations.ContributesBinding
 import dispatch.core.flowOnDefault
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class ScheduleRepositoryImpl @Inject constructor(
    private val service: SchedulesService,
    private val timeProvider: TimeProvider,
+   private val linesRepository: LinesRepository,
 ) : ScheduleRepository {
    override fun getScheduleForStop(stopId: Int): PaginatedDataStream<StopSchedule> {
       return object : PaginatedDataStream<StopSchedule> {
@@ -54,8 +56,8 @@ class ScheduleRepositoryImpl @Inject constructor(
    }
 
    private suspend fun loadSchedule(now: LocalDateTime, stopId: Int, wholeDay: Boolean = false): StopSchedule {
-      val lines = service.getLines().lines.associate {
-         it.lineId to Line(it.lineId, it.code, it.color)
+      val lines = linesRepository.getAllLines().awaitFirstSuccess().associateBy {
+         it.id
       }
 
       val cutoffPoint = if (wholeDay) {
@@ -69,7 +71,7 @@ class ScheduleRepositoryImpl @Inject constructor(
 
       val arrivals = todaysSchedule.schedules
          .flatMap { schedule ->
-            val line = lines[schedule.lineId] ?: error("Unknown line ${schedule.lineId}")
+            val line = lines[schedule.lineId] ?: return@flatMap emptyList()
             schedule.routeAndSchedules.flatMap { routeList ->
                routeList.departures
                   .filter { it >= cutoffPoint }

@@ -1,10 +1,10 @@
 package com.matejdro.mbus.schedule
 
 import app.cash.turbine.test
+import com.matejdro.mbus.lines.FakeLinesRepository
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
-import com.matejdro.mbus.schedule.models.LinesDto
 import com.matejdro.mbus.schedule.models.StopScheduleDto
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -26,16 +26,17 @@ import java.time.LocalTime
 class ScheduleRepositoryImplTest {
    private val scope = TestScopeWithDispatcherProvider()
    private val service = FakeSchedulesService()
+   private val linesRepo = FakeLinesRepository()
    private val timeProvider = scope.virtualTimeProvider(
       currentLocalDate = { LocalDate.of(2024, 3, 30) },
       currentLocalTime = { LocalTime.of(9, 30) }
    )
 
-   private val repo = ScheduleRepositoryImpl(service, timeProvider)
+   private val repo = ScheduleRepositoryImpl(service, timeProvider, linesRepo)
 
    @BeforeEach
    fun setUp() {
-      service.providedLines = PROVIDED_LINES
+      linesRepo.provideLines(Outcome.Success(PROVIDED_LINES))
       service.provideSchedule(42, LocalDate.of(2024, 3, 30), PROVIDED_DATA_STOP_42_MAR_30)
       service.provideSchedule(42, LocalDate.of(2024, 3, 31), PROVIDED_DATA_STOP_42_MAR_31)
    }
@@ -242,9 +243,7 @@ private val PROVIDED_DATA_STOP_42_MAR_31 = StopScheduleDto(
    )
 )
 
-private val PROVIDED_LINES = LinesDto(
-   listOf(
-      LinesDto.Line("6", 0xFF00FF00.toInt(), "Linija 6", 6),
-      LinesDto.Line("2", 0xFFFF0000.toInt(), "Linija 2", 2),
-   )
+private val PROVIDED_LINES = listOf(
+   Line(6, "6", 0xFF00FF00.toInt()),
+   Line(2, "2", 0xFFFF0000.toInt()),
 )
