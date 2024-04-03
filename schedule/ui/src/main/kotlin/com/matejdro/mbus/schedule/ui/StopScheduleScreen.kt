@@ -47,7 +47,7 @@ import com.matejdro.mbus.ui.lists.DetectScrolledToBottom
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.compose.time.LocalDateFormatter
-import si.inova.kotlinova.core.exceptions.UnknownCauseException
+import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.time.FakeAndroidTimeProvider
@@ -113,7 +113,9 @@ private fun ScheduleScreenContent(
 private fun ColumnScope.TopError(data: Outcome<StopSchedule>) {
    if (data is Outcome.Error) {
       Text(
-         text = data.exception.commonUserFriendlyMessage(),
+         text = data.exception.commonUserFriendlyMessage(
+            hasExistingData = !data.data?.arrivals.isNullOrEmpty()
+         ),
          Modifier.Companion
             .align(Alignment.CenterHorizontally)
             .padding(32.dp),
@@ -291,7 +293,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
 internal fun ScheduleScreenErrorPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
-         Outcome.Error(UnknownCauseException()),
+         Outcome.Error(NoNetworkException()),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {}
       )
@@ -304,7 +306,7 @@ internal fun ScheduleScreenErrorPreview() {
 internal fun ScheduleScreenRefreshErrorPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
-         Outcome.Error(UnknownCauseException(), PREVIEW_FAKE_LIST),
+         Outcome.Error(NoNetworkException(), PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {}
       )

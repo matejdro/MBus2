@@ -22,9 +22,11 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.test.TestScopeWithDispatcherProvider
+import si.inova.kotlinova.core.test.outcomes.shouldBeErrorWith
 import si.inova.kotlinova.core.test.outcomes.shouldBeProgressWithData
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
 import si.inova.kotlinova.core.test.time.virtualTimeProvider
@@ -503,6 +505,103 @@ class ScheduleRepositoryImplTest {
       }
 
       service.numScheduleLoads shouldBe 2
+   }
+
+   @Test
+   @Suppress("LongMethod") // Long test data
+   fun `Continue loading cached pages despite network issues`() = scope.runTest {
+      prepareLines()
+      val stream = repo.getScheduleForStop(42)
+
+      stream.data.test {
+         runCurrent()
+
+         stream.nextPage()
+         runCurrent()
+         cancelAndConsumeRemainingEvents()
+      }
+
+      delay(50.hours)
+      service.interceptAllFutureCallsWith(InterceptionStyle.Error(NoNetworkException()))
+
+      stream.data.test {
+         runCurrent()
+         expectMostRecentItem().shouldBeErrorWith(
+            expectedData = StopSchedule(
+               listOf(
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 30, 10, 0),
+                     "MB -> Mesto"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 30, 10, 20),
+                     "Mesto -> MB"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_6,
+                     LocalDateTime.of(2024, 3, 30, 11, 0),
+                     "MB -> Mesto"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 30, 11, 20),
+                     "MB -> Mesto"
+                  ),
+               ),
+               "Forest 77",
+               "http://stopimage.com",
+               "A stop in the forest",
+               true
+            ),
+            exceptionType = NoNetworkException::class.java
+         )
+
+         stream.nextPage()
+         runCurrent()
+         expectMostRecentItem().shouldBeErrorWith(
+            expectedData = StopSchedule(
+               listOf(
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 30, 10, 0),
+                     "MB -> Mesto"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 30, 10, 20),
+                     "Mesto -> MB"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_6,
+                     LocalDateTime.of(2024, 3, 30, 11, 0),
+                     "MB -> Mesto"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 30, 11, 20),
+                     "MB -> Mesto"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_2,
+                     LocalDateTime.of(2024, 3, 31, 5, 20),
+                     "MB -> Mesto"
+                  ),
+                  Arrival(
+                     TEST_EXPECTED_LINE_6,
+                     LocalDateTime.of(2024, 3, 31, 9, 0),
+                     "MB -> Mesto"
+                  ),
+               ),
+               "Forest 77",
+               "http://stopimage.com",
+               "A stop in the forest",
+               true
+            ),
+            exceptionType = NoNetworkException::class.java
+         )
+      }
    }
 
    private suspend fun TestScope.prepareLines() {

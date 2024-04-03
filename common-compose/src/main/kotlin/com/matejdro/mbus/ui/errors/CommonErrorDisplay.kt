@@ -7,9 +7,17 @@ import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.CauseException
 
 @Composable
-fun CauseException.commonUserFriendlyMessage(): String {
+fun CauseException.commonUserFriendlyMessage(
+   hasExistingData: Boolean = false,
+): String {
    return if (this is NoNetworkException) {
-      stringResource(R.string.error_no_network)
+      stringResource(
+         if (hasExistingData) {
+            R.string.error_no_network_with_existing_data
+         } else {
+            R.string.error_no_network
+         }
+      )
    } else {
       stringResource(R.string.error_unknown)
    }

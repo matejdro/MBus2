@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
@@ -139,7 +140,11 @@ class ScheduleRepositoryImpl @Inject constructor(
 
          emit(Outcome.Progress(existingMetadata, style = loadingStyle))
 
-         loadScheduleFromNewtwork(existingStopMetadata, currentDate, now)
+         try {
+            loadScheduleFromNewtwork(existingStopMetadata, currentDate, now)
+         } catch (e: CauseException) {
+            emit(Outcome.Error(e, existingMetadata))
+         }
       }
    }
 
