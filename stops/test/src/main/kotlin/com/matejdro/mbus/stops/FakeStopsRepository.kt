@@ -3,6 +3,7 @@ package com.matejdro.mbus.stops
 import com.matejdro.mbus.stops.model.Stop
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import si.inova.kotlinova.core.outcome.Outcome
@@ -47,9 +48,15 @@ class FakeStopsRepository : StopsRepository {
       }
    }
 
-   override suspend fun getStop(id: Int): Stop? {
-      val providedStops = providedStops.value ?: error("fake stops not provided")
+   override suspend fun setWhitelistedLines(id: Int, whitelistedLines: Set<Int>) {
+      getStop(id).first()?.copy(whitelistedLines = whitelistedLines)?.let { update(it) }
+   }
 
-      return providedStops.data?.firstOrNull { it.id == id }
+   override fun getStop(id: Int): Flow<Stop?> {
+      return providedStops
+         .map { outcome ->
+            val nonNullOutcome = outcome ?: error("fake stops not provided")
+            nonNullOutcome.data?.firstOrNull { it.id == id }
+         }
    }
 }

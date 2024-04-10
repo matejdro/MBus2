@@ -17,7 +17,8 @@ class FakeScheduleRepository : ScheduleRepository {
                schedulePages.stopName,
                schedulePages.stopImage,
                schedulePages.stopDescription,
-               hasAnyDataLeft
+               hasAnyDataLeft,
+               list.map { it.line }.distinctBy { it.id },
             )
          )
       }

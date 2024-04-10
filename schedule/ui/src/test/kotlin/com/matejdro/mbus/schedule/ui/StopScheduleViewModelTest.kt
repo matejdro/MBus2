@@ -6,10 +6,15 @@ import com.matejdro.mbus.schedule.FakeScheduleRepository
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
+import com.matejdro.mbus.stops.FakeStopsRepository
+import com.matejdro.mbus.stops.model.Stop
+import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
 import si.inova.kotlinova.core.test.outcomes.testCoroutineResourceManager
 import java.time.LocalDateTime
@@ -17,8 +22,9 @@ import java.time.LocalDateTime
 class StopScheduleViewModelTest {
    private val scope = TestScope()
    private val repo = FakeScheduleRepository()
+   private val stopRepo = FakeStopsRepository()
 
-   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo)
+   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo, stopRepo)
 
    @Test
    fun `Provide data`() = scope.runTest {
@@ -48,7 +54,8 @@ class StopScheduleViewModelTest {
          "Forest 77",
          "http://stopimage.com",
          "A stop in the forest",
-         false
+         false,
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
       )
 
       repo.provideSchedule(
@@ -87,6 +94,7 @@ class StopScheduleViewModelTest {
          "http://stopimage.com",
          "A stop in the forest",
          true,
+         listOf(TEST_EXPECTED_LINE_2),
       )
 
       val expectedSecondPage = StopSchedule(
@@ -116,6 +124,7 @@ class StopScheduleViewModelTest {
          "http://stopimage.com",
          "A stop in the forest",
          false,
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6)
       )
 
       val firstPage = listOf(
@@ -165,6 +174,50 @@ class StopScheduleViewModelTest {
          runCurrent()
          expectMostRecentItem().shouldBeSuccessWithData(expectedSecondPage)
       }
+   }
+
+   @Test
+   fun `Save line filter`() = scope.runTest {
+      vm.key = StopScheduleScreenKey(12)
+
+      repo.provideSchedule(
+         12,
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         emptyList(),
+      )
+
+      stopRepo.provideStops(
+         Outcome.Success(
+            listOf(
+               Stop(
+                  12,
+                  "Forest 77",
+                  0.0,
+                  0.0,
+                  "http://stopimage.com",
+                  "A stop in the forest",
+               )
+            )
+         )
+      )
+
+      vm.onServiceRegistered()
+      runCurrent()
+
+      vm.setFilter(setOf(6))
+      runCurrent()
+
+      stopRepo.getStop(12).first() shouldBe Stop(
+         12,
+         "Forest 77",
+         0.0,
+         0.0,
+         "http://stopimage.com",
+         "A stop in the forest",
+         whitelistedLines = setOf(6)
+      )
    }
 }
 

@@ -8,4 +8,6 @@ data class StopSchedule(
    val stopImage: String?,
    val stopDescription: String,
    override val hasAnyDataLeft: Boolean,
+   val allLines: List<Line>,
+   val whitelistedLines: Set<Int> = emptySet(),
 ) : PaginationResult

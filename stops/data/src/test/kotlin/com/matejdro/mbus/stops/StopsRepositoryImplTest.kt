@@ -12,6 +12,7 @@ import com.matejdro.mbus.stops.model.StopDto
 import com.matejdro.mbus.stops.model.Stops
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -516,7 +517,8 @@ class StopsRepositoryImplTest {
             1.0,
             "A stop",
             "http://images.com/a.png",
-            Instant.ofEpochMilli(200L)
+            Instant.ofEpochMilli(200L),
+            setOf(3, 2, 1)
          ),
       )
       repo.update(
@@ -541,7 +543,8 @@ class StopsRepositoryImplTest {
                1.0,
                "A stop",
                "http://images.com/a.png",
-               Instant.ofEpochMilli(200L)
+               Instant.ofEpochMilli(200L),
+               setOf(3, 2, 1)
             ),
             Stop(
                12,
@@ -658,12 +661,57 @@ class StopsRepositoryImplTest {
          cancelAndConsumeRemainingEvents()
       }
 
-      repo.getStop(10) shouldBe Stop(
+      repo.getStop(10).first() shouldBe Stop(
          10,
          "Stop A",
          1.0,
          1.0
       )
+   }
+
+   @Test
+   @Suppress("LongMethod") // Test Data
+   fun `Set whitelisted lines`() = testScope.runTest {
+      service.providedStops = Stops(
+         listOf(
+            StopDto(
+               10,
+               "Stop A",
+               1.0,
+               1.0
+            ),
+            StopDto(
+               12,
+               "Stop B",
+               2.0,
+               2.0
+            )
+
+         )
+      )
+
+      repo.getAllStops().test {
+         runCurrent()
+         cancelAndConsumeRemainingEvents()
+      }
+
+      repo.getStop(12).test {
+         runCurrent()
+
+         repo.setWhitelistedLines(12, setOf(1, 2, 3))
+         runCurrent()
+
+         expectMostRecentItem() shouldBe Stop(
+            12,
+            "Stop B",
+            2.0,
+            2.0,
+            null,
+            null,
+            null,
+            setOf(1, 2, 3)
+         )
+      }
    }
 }
 

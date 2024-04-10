@@ -5,7 +5,8 @@ CREATE TABLE dbStop (
     lon REAL NOT NULL,
     lastScheduleUpdate INTEGER DEFAULT NULL,
     imageUrl TEXT DEFAULT NULL,
-    description TEXT DEFAULT NULL
+    description TEXT DEFAULT NULL,
+    lineWhitelist TEXT NOT NULL DEFAULT ""
 );
 
 selectSingle:
@@ -22,6 +23,9 @@ INSERT INTO dbStop VALUES ?;
 
 update:
 UPDATE dbStop SET name = :name, lat = :lat, lon = :lon WHERE id = :id;
+
+updateWhitelist:
+UPDATE dbStop SET lineWhitelist = :lineWhitelist WHERE id = :id;
 
 replace:
 REPLACE INTO dbStop VALUES ?;

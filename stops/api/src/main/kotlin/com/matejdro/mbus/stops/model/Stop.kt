@@ -10,4 +10,5 @@ data class Stop(
    val description: String? = null,
    val imageUrl: String? = null,
    val lastScheduleUpdate: Instant? = null,
+   val whitelistedLines: Set<Int> = emptySet(),
 )

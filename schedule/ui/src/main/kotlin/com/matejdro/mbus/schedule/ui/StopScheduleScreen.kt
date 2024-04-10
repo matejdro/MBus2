@@ -1,7 +1,10 @@
+@file:Suppress("TooManyFunctions") // Previews. Waiting for https://github.com/detekt/detekt/issues/6516 to get merged
+
 package com.matejdro.mbus.schedule.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,15 +21,22 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,10 +77,26 @@ class StopScheduleScreen(
    override fun Content(key: StopScheduleScreenKey) {
       val state = viewModel.schedule.collectAsStateWithLifecycleAndBlinkingPrevention().value
       if (state != null) {
+         var dialogShown by remember { mutableStateOf(false) }
+         val data = state.data
+
+         if (dialogShown && data != null) {
+            FilterDialog(
+               data.allLines,
+               data.whitelistedLines,
+               { dialogShown = false },
+               {
+                  dialogShown = false
+                  viewModel.setFilter(it)
+               }
+            )
+         }
+
          ScheduleScreenContent(
             state,
             timeProvider,
-            viewModel::loadNextPage
+            viewModel::loadNextPage,
+            { dialogShown = true }
          )
       }
    }
@@ -82,9 +108,24 @@ private fun ScheduleScreenContent(
    data: Outcome<StopSchedule>,
    timeProvider: TimeProvider,
    loadNextPage: () -> Unit,
+   showFilter: () -> Unit,
 ) {
    Column {
-      TopAppBar(title = { data.data?.stopName?.let { Text(it) } })
+      TopAppBar(
+         title = { data.data?.stopName?.let { Text(it) } },
+         actions = {
+            Icon(
+               painterResource(R.drawable.ic_filter),
+               stringResource(R.string.filter_lines),
+               tint = if (data.data?.whitelistedLines.isNullOrEmpty()) {
+                  LocalContentColor.current
+               } else {
+                  MaterialTheme.colorScheme.error
+               },
+               modifier = Modifier.clickable(onClick = showFilter)
+            )
+         }
+      )
 
       TopLoading(data)
       TopError(data)
@@ -194,7 +235,7 @@ private fun LazyListScope.bottomLoading(
 }
 
 @Composable
-private fun LineLabel(line: Line) {
+internal fun LineLabel(line: Line) {
    val lineColor = Color(line.color)
    val textColor: Color = if (lineColor.luminance() > LUMINANCE_HALF_BRIGHT) {
       Color.Black
@@ -256,6 +297,7 @@ internal fun ScheduleScreenSuccessPreview() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {}
       )
    }
@@ -269,6 +311,7 @@ internal fun ScheduleScreenLoadingPreview() {
       ScheduleScreenContent(
          Outcome.Progress(),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {}
       )
    }
@@ -282,6 +325,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
       ScheduleScreenContent(
          Outcome.Progress(PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {}
       )
    }
@@ -295,6 +339,7 @@ internal fun ScheduleScreenErrorPreview() {
       ScheduleScreenContent(
          Outcome.Error(NoNetworkException()),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {}
       )
    }
@@ -308,6 +353,7 @@ internal fun ScheduleScreenRefreshErrorPreview() {
       ScheduleScreenContent(
          Outcome.Error(NoNetworkException(), PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {}
       )
    }
@@ -327,14 +373,29 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
             style = LoadingStyle.ADDITIONAL_DATA
          ),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {}
       )
    }
 }
 
-private val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
-private val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
-private val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
+   PreviewTheme() {
+      ScheduleScreenContent(
+         Outcome.Success(PREVIEW_FAKE_LIST.copy(whitelistedLines = setOf(2, 6, 18))),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
+         {}
+      )
+   }
+}
+
+internal val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
+internal val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
+internal val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
 
 val PREVIEW_FAKE_LIST = StopSchedule(
    listOf(
@@ -362,5 +423,6 @@ val PREVIEW_FAKE_LIST = StopSchedule(
    "Forest 77",
    "http://stopimage.com",
    "A stop in the forest",
-   false
+   false,
+   listOf(PREVIEW_EXPECTED_LINE_2, PREVIEW_EXPECTED_LINE_6, PREVIEW_EXPECTED_LINE_18)
 )

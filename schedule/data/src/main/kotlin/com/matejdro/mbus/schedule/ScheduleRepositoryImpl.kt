@@ -13,15 +13,18 @@ import com.matejdro.mbus.stops.model.Stop
 import com.squareup.anvil.annotations.ContributesBinding
 import dispatch.core.flowOnDefault
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.transform
 import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
@@ -66,27 +69,41 @@ class ScheduleRepositoryImpl @Inject constructor(
             var currentDate = timeProvider.currentLocalDate()
             var loadingMore = false
 
-            while (currentCoroutineContext().isActive) {
-               val nextDay = currentDate.plusDays(1)
-               maxTime.value = nextDay.atStartOfDay()
+            emitAll(
+               nextPageChannel.receiveAsFlow().onStart { emit(Unit) }.flatMapLatest {
+                  val nextDay = currentDate.plusDays(1)
+                  maxTime.value = nextDay.atStartOfDay()
 
-               loadDataForADay(stopId, currentDate, loadingMore)
-
-               nextPageChannel.receive()
-               currentDate = nextDay
-               loadingMore = true
-            }
+                  loadDataForADay(stopId, currentDate, loadingMore)
+                     .onCompletion {
+                        currentDate = nextDay
+                        loadingMore = true
+                     }
+               }
+            )
          }
 
          override val data: Flow<Outcome<StopSchedule>>
             get() = combine(statusFlow, dbFlow) { status, data ->
-               status.mapData {
+               status.mapData { scheduleMetadata ->
+                  val filteredData = if (scheduleMetadata.whitelistedLines.isEmpty()) {
+                     data
+                  } else {
+                     data.filter {
+                        scheduleMetadata.whitelistedLines.contains(it.line.id)
+                     }
+                  }
+
+                  val allLines = data.map { it.line }.distinctBy { it.id }.sortedBy { it.label.toIntOrNull() ?: it.id }
+
                   StopSchedule(
-                     data,
-                     it.stopName,
-                     it.stopImage,
-                     it.stopDescription,
-                     it.hasAnyDataLeft
+                     filteredData,
+                     scheduleMetadata.stopName,
+                     scheduleMetadata.stopImage,
+                     scheduleMetadata.stopDescription,
+                     scheduleMetadata.hasAnyDataLeft,
+                     allLines,
+                     scheduleMetadata.whitelistedLines
                   )
                }
             }.flowOnDefault()
@@ -97,58 +114,60 @@ class ScheduleRepositoryImpl @Inject constructor(
       }
    }
 
-   private suspend fun FlowCollector<Outcome<ScheduleMetadata>>.loadDataForADay(
+   private fun loadDataForADay(
       stopId: Int,
       currentDate: LocalDate,
       loadingMore: Boolean,
-   ) {
+   ): Flow<Outcome<ScheduleMetadata>> {
       val now = timeProvider.currentInstant()
 
-      val existingStopMetadata =
-         requireNotNull(stopsRepository.getStop(stopId)) { "Stop should not be null, how did user get here?" }
+      return stopsRepository.getStop(stopId).transform { existingStopMetadata ->
+         requireNotNull(existingStopMetadata) { "Stop should not be null, how did user get here?" }
 
-      val dayStart = currentDate.atStartOfDay().toIsoString()
-      val dayEnd = currentDate.plusDays(1).atStartOfDay().toIsoString()
+         val dayStart = currentDate.atStartOfDay().toIsoString()
+         val dayEnd = currentDate.plusDays(1).atStartOfDay().toIsoString()
 
-      val existingData = dbArrivalQueries.selectAllOnStop(
-         stopId.toLong(),
-         dayStart,
-         dayEnd
-      ).executeAsList()
+         val existingData = dbArrivalQueries.selectAllOnStop(
+            stopId.toLong(),
+            dayStart,
+            dayEnd
+         ).executeAsList()
 
-      val description = existingStopMetadata.description
-      val cacheExpirationDate = existingStopMetadata.lastScheduleUpdate?.plus(CACHE_DURATION)
+         val description = existingStopMetadata.description
+         val cacheExpirationDate = existingStopMetadata.lastScheduleUpdate?.plus(CACHE_DURATION)
 
-      val existingMetadata = ScheduleMetadata(
-         existingStopMetadata.name,
-         existingStopMetadata.imageUrl,
-         description.orEmpty(),
-         true
-      )
+         val existingMetadata = ScheduleMetadata(
+            existingStopMetadata.name,
+            existingStopMetadata.imageUrl,
+            description.orEmpty(),
+            true,
+            existingStopMetadata.whitelistedLines,
+         )
 
-      if (existingData.isNotEmpty() &&
-         cacheExpirationDate != null &&
-         cacheExpirationDate > now
-      ) {
-         emit(Outcome.Success(existingMetadata))
-      } else {
-         val loadingStyle = if (loadingMore) {
-            LoadingStyle.ADDITIONAL_DATA
+         if (existingData.isNotEmpty() &&
+            cacheExpirationDate != null &&
+            cacheExpirationDate > now
+         ) {
+            emit(Outcome.Success(existingMetadata))
          } else {
-            LoadingStyle.NORMAL
-         }
+            val loadingStyle = if (loadingMore) {
+               LoadingStyle.ADDITIONAL_DATA
+            } else {
+               LoadingStyle.NORMAL
+            }
 
-         emit(Outcome.Progress(existingMetadata, style = loadingStyle))
+            emit(Outcome.Progress(existingMetadata, style = loadingStyle))
 
-         try {
-            loadScheduleFromNewtwork(existingStopMetadata, currentDate, now)
-         } catch (e: CauseException) {
-            emit(Outcome.Error(e, existingMetadata))
+            try {
+               loadScheduleFromNetwork(existingStopMetadata, currentDate, now)
+            } catch (e: CauseException) {
+               emit(Outcome.Error(e, existingMetadata))
+            }
          }
       }
    }
 
-   private suspend fun FlowCollector<Outcome<ScheduleMetadata>>.loadScheduleFromNewtwork(
+   private suspend fun FlowCollector<Outcome<ScheduleMetadata>>.loadScheduleFromNetwork(
       stop: Stop,
       today: LocalDate,
       now: Instant,
@@ -195,7 +214,8 @@ class ScheduleRepositoryImpl @Inject constructor(
                stop.name,
                onlineSchedule.staticData.image,
                onlineSchedule.staticData.description,
-               true
+               true,
+               emptySet()
             )
          )
       )
@@ -211,6 +231,7 @@ private data class ScheduleMetadata(
    val stopImage: String?,
    val stopDescription: String,
    val hasAnyDataLeft: Boolean,
+   val whitelistedLines: Set<Int>,
 )
 
 private const val CUTOFF_POINT_MINUTES_BEFORE_NOW = 10L

@@ -5,8 +5,10 @@ import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.ScheduleRepository
 import com.matejdro.mbus.schedule.model.StopSchedule
+import com.matejdro.mbus.stops.StopsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
@@ -16,6 +18,7 @@ import javax.inject.Inject
 class StopScheduleViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val scheduleRepository: ScheduleRepository,
+   private val stopRepo: StopsRepository,
 ) : SingleScreenViewModel<StopScheduleScreenKey>(resources.scope) {
    private val _schedule = MutableStateFlow<Outcome<StopSchedule>>(Outcome.Progress())
    val schedule: StateFlow<Outcome<StopSchedule>> = _schedule
@@ -37,6 +40,10 @@ class StopScheduleViewModel @Inject constructor(
       if (_schedule.value.data?.hasAnyDataLeft != false) {
          lastPaginator?.nextPage()
       }
+   }
+
+   fun setFilter(filter: Set<Int>) = coroutineScope.launch {
+      stopRepo.setWhitelistedLines(key.stopId, filter)
    }
 }
 

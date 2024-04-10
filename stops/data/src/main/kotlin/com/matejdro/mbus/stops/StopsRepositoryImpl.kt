@@ -14,6 +14,7 @@ import com.matejdro.mbus.stops.model.Stop
 import com.matejdro.mbus.stops.model.toDbStop
 import com.matejdro.mbus.stops.model.toStop
 import com.squareup.anvil.annotations.ContributesBinding
+import dispatch.core.flowOnDefault
 import dispatch.core.withDefault
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -124,10 +125,14 @@ class StopsRepositoryImpl @Inject constructor(
       }
    }
 
-   override suspend fun getStop(id: Int): Stop? {
-      return withDefault {
-         dbStopQueries.selectSingle(id.toLong()).executeAsOneOrNull()?.toStop()
+   override suspend fun setWhitelistedLines(id: Int, whitelistedLines: Set<Int>) {
+      withDefault {
+         dbStopQueries.updateWhitelist(whitelistedLines.joinToString(","), id.toLong())
       }
+   }
+
+   override fun getStop(id: Int): Flow<Stop?> {
+      return dbStopQueries.selectSingle(id.toLong()).asFlow().map { it.executeAsOneOrNull()?.toStop() }.flowOnDefault()
    }
 }
 

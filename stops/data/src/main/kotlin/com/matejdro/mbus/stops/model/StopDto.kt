@@ -27,7 +27,8 @@ fun StopDto.toDbStop(): DbStop? {
       lon = lon,
       lastScheduleUpdate = null,
       imageUrl = null,
-      description = null
+      description = null,
+      lineWhitelist = ""
    )
 }
 
@@ -39,7 +40,8 @@ fun DbStop.toStop(): Stop {
       lon = lon,
       description = description,
       imageUrl = imageUrl,
-      lastScheduleUpdate = lastScheduleUpdate?.let { Instant.ofEpochMilli(it) }
+      lastScheduleUpdate = lastScheduleUpdate?.let { Instant.ofEpochMilli(it) },
+      whitelistedLines = lineWhitelist.split(",").mapNotNull { if (it.isEmpty()) null else it.toInt() }.toSet()
    )
 }
 
@@ -52,5 +54,6 @@ fun Stop.toDbStop(): DbStop {
       lastScheduleUpdate = lastScheduleUpdate?.toEpochMilli(),
       imageUrl = imageUrl,
       description = description,
+      lineWhitelist = whitelistedLines.joinToString(",")
    )
 }

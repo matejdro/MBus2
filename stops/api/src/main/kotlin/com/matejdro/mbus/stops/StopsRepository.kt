@@ -6,7 +6,7 @@ import si.inova.kotlinova.core.outcome.Outcome
 
 interface StopsRepository {
    fun getAllStops(): Flow<Outcome<List<Stop>>>
-   suspend fun getStop(id: Int): Stop?
+   fun getStop(id: Int): Flow<Stop?>
    fun getAllStopsWithinRect(
       minLat: Double,
       maxLat: Double,
@@ -15,4 +15,5 @@ interface StopsRepository {
    ): Flow<Outcome<List<Stop>>>
 
    suspend fun update(stop: Stop)
+   suspend fun setWhitelistedLines(id: Int, whitelistedLines: Set<Int>)
 }
