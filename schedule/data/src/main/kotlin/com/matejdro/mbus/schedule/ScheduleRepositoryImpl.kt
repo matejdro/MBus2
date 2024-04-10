@@ -3,7 +3,9 @@ package com.matejdro.mbus.schedule
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.data.PaginatedDataStream
+import com.matejdro.mbus.common.data.awaitFirstSuccess
 import com.matejdro.mbus.common.di.ApplicationScope
+import com.matejdro.mbus.lines.LinesRepository
 import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.schedule.models.toArrival
 import com.matejdro.mbus.sqldelight.generated.DbArrival
@@ -43,6 +45,7 @@ class ScheduleRepositoryImpl @Inject constructor(
    private val service: SchedulesService,
    private val timeProvider: TimeProvider,
    private val stopsRepository: StopsRepository,
+   private val linesRepository: LinesRepository,
    private val dbArrivalQueries: DbArrivalQueries,
 ) : ScheduleRepository {
    override fun getScheduleForStop(stopId: Int): PaginatedDataStream<StopSchedule> {
@@ -173,6 +176,9 @@ class ScheduleRepositoryImpl @Inject constructor(
       now: Instant,
    ) {
       val onlineSchedule = service.getSchedule(stop.id, today)
+
+      val allLines = onlineSchedule.schedules.map { it.lineId }
+      linesRepository.getSomeLines(allLines).awaitFirstSuccess() // Ensure lines are loaded into db before proceeding
 
       val dayStart = today.atStartOfDay().toIsoString()
       val dayEnd = today.plusDays(1).atStartOfDay().toIsoString()

@@ -17,7 +17,6 @@ import com.matejdro.mbus.stops.model.Stop
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -59,6 +58,7 @@ class ScheduleRepositoryImplTest {
       service,
       timeProvider,
       stopsRepository,
+      linesRepo,
       SchedulesModule.provideArrivalQueries(db)
    )
 
@@ -78,7 +78,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return mapped data from the server`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -117,7 +116,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return mapped data from the server for the subsequent days`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -170,7 +168,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return regular loading outcome while loading`() = scope.runTest {
-      prepareLines()
       service.interceptAllFutureCallsWith(InterceptionStyle.InfiniteLoad)
 
       val stream = repo.getScheduleForStop(42)
@@ -186,7 +183,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return loading more outcome while loading extra pages`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -205,7 +201,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return data from cache after reload`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -251,7 +246,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return data from server again when cache is expired`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -299,7 +293,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Ignore cache duration of other stops`() = scope.runTest {
-      prepareLines()
       service.provideSchedule(43, LocalDate.of(2024, 3, 30), PROVIDED_DATA_STOP_42_MAR_30)
 
       val streamForStop42 = repo.getScheduleForStop(42)
@@ -329,7 +322,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return updated data from server again when cache is expired`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -378,7 +370,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return loading with old data even if data has expired`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -426,7 +417,6 @@ class ScheduleRepositoryImplTest {
    @Test
    @Suppress("LongMethod") // Long test data
    fun `Load subsequent days from DB when available`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -518,7 +508,6 @@ class ScheduleRepositoryImplTest {
    @Test
    @Suppress("LongMethod") // Long test data
    fun `Continue loading cached pages despite network issues`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -616,7 +605,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Provide line whitelist`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -660,7 +648,6 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Filter lines when whitelist is set`() = scope.runTest {
-      prepareLines()
       val stream = repo.getScheduleForStop(42)
 
       stream.data.test {
@@ -694,13 +681,6 @@ class ScheduleRepositoryImplTest {
             TEST_EXPECTED_ALL_LINES,
             setOf(2)
          )
-      }
-   }
-
-   private suspend fun TestScope.prepareLines() {
-      linesRepo.getAllLines().test {
-         runCurrent()
-         cancelAndConsumeRemainingEvents()
       }
    }
 }
