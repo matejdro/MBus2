@@ -1,6 +1,5 @@
 package com.matejdro.mbus.schedule.ui
 
-import android.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,11 +69,11 @@ internal fun FilterDialog(
 
                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   TextButton(onClick = onCancel) {
-                     Text(stringResource(R.string.cancel))
+                     Text(stringResource(android.R.string.cancel))
                   }
 
                   TextButton(onClick = { onSubmit(selectedLinesInDialog.toSet()) }) {
-                     Text(stringResource(R.string.ok))
+                     Text(stringResource(android.R.string.ok))
                   }
                }
             }
