@@ -64,7 +64,12 @@ jobs:
           name: failed-screenshot-tests
           path: app-screenshot-tests/build/paparazzi/failures
 
-
+      - name: Tag build
+        env:
+          TAG_BUILD: "1.0.0-alpha${{env.BUILD_NUMBER}}"
+        run: |
+          git tag ${{env.TAG_BUILD}}
+          git push origin ${{env.TAG_BUILD}}
       - name: "Publish release"
         uses: actions/upload-artifact@v3
         with:
