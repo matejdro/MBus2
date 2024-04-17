@@ -219,7 +219,7 @@ private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
             )
          }
 
-         DelayBadge(delayMin)
+         delayMin?.let { DelayBadge(it) }
 
          Text(
             fontSize = 14.sp,
@@ -234,26 +234,24 @@ private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
 }
 
 @Composable
-private fun DelayBadge(delayMin: Int?) {
-   if (delayMin != null) {
-      val delayText = if (delayMin == 0) {
-         stringResource(R.string.on_time)
-      } else if (delayMin >= 0) {
-         stringResource(R.string.late, delayMin)
-      } else {
-         stringResource(R.string.early, -delayMin)
-      }
-
-      Text(
-         fontSize = 14.sp,
-         text = delayText,
-         color = MaterialTheme.colorScheme.onTertiary,
-         modifier = Modifier
-            .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
-            .background(MaterialTheme.colorScheme.tertiary, shape = MaterialTheme.shapes.small)
-            .padding(4.dp)
-      )
+private fun DelayBadge(delayMin: Int) {
+   val delayText = if (delayMin == 0) {
+      stringResource(R.string.on_time)
+   } else if (delayMin >= 0) {
+      stringResource(R.string.late, delayMin)
+   } else {
+      stringResource(R.string.early, -delayMin)
    }
+
+   Text(
+      fontSize = 14.sp,
+      text = delayText,
+      color = MaterialTheme.colorScheme.onTertiary,
+      modifier = Modifier
+         .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
+         .background(MaterialTheme.colorScheme.tertiary, shape = MaterialTheme.shapes.small)
+         .padding(4.dp)
+   )
 }
 
 private fun LazyListScope.bottomLoading(
