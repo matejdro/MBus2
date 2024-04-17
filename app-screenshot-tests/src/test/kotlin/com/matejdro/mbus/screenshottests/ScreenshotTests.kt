@@ -5,6 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.detectEnvironment
 import com.airbnb.android.showkase.models.Showkase
 import com.airbnb.android.showkase.models.ShowkaseBrowserComponent
 import com.android.ide.common.rendering.api.SessionParams
@@ -26,7 +27,11 @@ class ScreenshotTests {
       theme = "android:Theme.Material.Light.NoActionBar",
       maxPercentDifference = 0.0,
       showSystemUi = false,
-      renderingMode = SessionParams.RenderingMode.SHRINK
+      renderingMode = SessionParams.RenderingMode.SHRINK,
+      environment = detectEnvironment().run {
+         // Workaround for the https://github.com/cashapp/paparazzi/issues/1025
+         copy(compileSdkVersion = 33, platformDir = platformDir.replace("34", "33"))
+      }
    )
 
    object PreviewProvider : TestParameter.TestParameterValuesProvider {
