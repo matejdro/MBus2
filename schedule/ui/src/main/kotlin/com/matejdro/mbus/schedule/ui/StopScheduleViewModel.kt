@@ -37,7 +37,8 @@ class StopScheduleViewModel @Inject constructor(
    }
 
    fun loadNextPage() {
-      if (_schedule.value.data?.hasAnyDataLeft != false) {
+      val existingData = _schedule.value.data
+      if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
          lastPaginator?.nextPage()
       }
    }
