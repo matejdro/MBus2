@@ -1,5 +1,6 @@
 import com.android.build.api.variant.BuildConfigField
-import java.io.FileNotFoundException
+import com.android.build.api.variant.VariantOutputConfiguration
+import java.util.Optional
 
 plugins {
    androidAppModule
@@ -24,36 +25,44 @@ android {
       applicationId = "com.matejdro.mbus"
       targetSdk = 33
       versionCode = 1
-      versionName = "1.0"
+      versionName = "1.0.0"
 
       testInstrumentationRunner = "com.matejdro.mbus.instrumentation.TestRunner"
       testInstrumentationRunnerArguments += "clearPackageData" to "true"
 
       androidComponents {
-         onVariants {
-            it.buildConfigFields.put(
-               "GIT_HASH",
-               gitVersionProvider.flatMap { task ->
-                  task.gitVersionOutputFile.map { file ->
-                     val gitHash = try {
-                        file.asFile.readText(Charsets.UTF_8)
-                     } catch (e: FileNotFoundException) {
-                        // See https://github.com/gradle/gradle/issues/19252
-                        throw IllegalStateException(
-                           "Failed to load git configuration. " +
-                              "Please disable configuration cache for this one build and try again",
-                           e
-                        )
-                     }
+         onVariants { variant ->
+            val mainOutput =
+               variant.outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
 
-                     BuildConfigField(
-                        "String",
-                        "\"$gitHash\"",
-                        "Git Version"
-                     )
-                  }
+            val gitHashProvider = providers.exec {
+               commandLine("git", "rev-parse", "--short", "HEAD")
+            }.standardOutput.asText.map { it.trim() }
+
+            val baseVersionName = defaultConfig.versionName
+            val buildNumberProvider = provider { Optional.ofNullable(System.getenv("BUILD_NUMBER")?.toInt()) }
+
+            val appendedVersionName = buildNumberProvider.flatMap { buildNumber ->
+               if (buildNumber.isPresent) {
+                  provider { "$baseVersionName-alpha${buildNumber.get()}" }
+               } else {
+                  gitHashProvider.map { gitHash -> "$baseVersionName-local-$gitHash" }
+               }
+            }
+
+            variant.buildConfigFields.put(
+               "VERSION_NAME",
+               appendedVersionName.map {
+                  BuildConfigField(
+                     "String",
+                     "\"$it\"",
+                     "App version"
+                  )
                }
             )
+
+            mainOutput.versionName.set(appendedVersionName)
+            mainOutput.versionCode.set(buildNumberProvider.map { it.orElse(1) })
          }
       }
    }
