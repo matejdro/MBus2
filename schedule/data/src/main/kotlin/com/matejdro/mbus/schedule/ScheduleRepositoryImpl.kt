@@ -6,6 +6,8 @@ import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.common.data.awaitFirstSuccess
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.lines.LinesRepository
+import com.matejdro.mbus.live.models.LiveArrivalRepository
+import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.schedule.models.toArrival
 import com.matejdro.mbus.sqldelight.generated.DbArrival
@@ -47,11 +49,13 @@ class ScheduleRepositoryImpl @Inject constructor(
    private val stopsRepository: StopsRepository,
    private val linesRepository: LinesRepository,
    private val dbArrivalQueries: DbArrivalQueries,
+   private val liveArrivalsRepository: LiveArrivalRepository,
 ) : ScheduleRepository {
    override fun getScheduleForStop(stopId: Int): PaginatedDataStream<StopSchedule> {
       return object : PaginatedDataStream<StopSchedule> {
          val nextPageChannel = Channel<Unit>(1)
          val maxTime = MutableStateFlow<LocalDateTime>(LocalDateTime.MIN)
+         val liveCutoffTime = timeProvider.currentLocalDateTime().plusHours(1)
 
          val dbFlow = maxTime.flatMapLatest { maxTime ->
             val nowLocal = timeProvider.currentLocalDateTime()
@@ -67,6 +71,7 @@ class ScheduleRepositoryImpl @Inject constructor(
          }.map { query ->
             query.awaitAsList().map { it.toArrival() }
          }
+            .insertLiveArrivals(stopId, liveCutoffTime)
 
          val statusFlow: Flow<Outcome<ScheduleMetadata>> = flow {
             var currentDate = timeProvider.currentLocalDate()
@@ -225,6 +230,15 @@ class ScheduleRepositoryImpl @Inject constructor(
             )
          )
       )
+   }
+
+   private fun Flow<List<Arrival>>.insertLiveArrivals(stopId: Int, liveCutoffTime: LocalDateTime): Flow<List<Arrival>> {
+      return flatMapLatest { arrivals ->
+         val (imminentArrivals, otherArrivals) = arrivals.partition { it.arrival < liveCutoffTime }
+         liveArrivalsRepository.addLiveArrivals(stopId, imminentArrivals).map { imminentWithLive ->
+            imminentWithLive + otherArrivals
+         }
+      }
    }
 }
 

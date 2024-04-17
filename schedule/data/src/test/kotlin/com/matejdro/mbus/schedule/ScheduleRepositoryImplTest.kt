@@ -5,6 +5,7 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import com.matejdro.mbus.common.test.datastore.InMemoryDataStore
 import com.matejdro.mbus.lines.LinesRepositoryImpl
+import com.matejdro.mbus.live.FakeLiveArrivalRepository
 import com.matejdro.mbus.schedule.di.SchedulesModule
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
@@ -54,12 +55,15 @@ class ScheduleRepositoryImplTest {
       timeProvider
    )
 
+   private val liveArrivalRepository = FakeLiveArrivalRepository()
+
    private val repo = ScheduleRepositoryImpl(
       service,
       timeProvider,
       stopsRepository,
       linesRepo,
-      SchedulesModule.provideArrivalQueries(db)
+      SchedulesModule.provideArrivalQueries(db),
+      liveArrivalRepository
    )
 
    @BeforeEach
@@ -680,6 +684,123 @@ class ScheduleRepositoryImplTest {
             true,
             TEST_EXPECTED_ALL_LINES,
             setOf(2)
+         )
+      }
+   }
+
+   @Test
+   fun `Map data through live repository`() = scope.runTest {
+      val stream = repo.getScheduleForStop(42)
+
+      liveArrivalRepository.swapMap = mapOf(
+         Arrival(
+            TEST_EXPECTED_LINE_2,
+            LocalDateTime.of(2024, 3, 30, 10, 20),
+            "Mesto -> MB"
+         ) to Arrival(
+            TEST_EXPECTED_LINE_2,
+            LocalDateTime.of(2024, 3, 30, 10, 25),
+            "Mesto -> MB",
+            5
+         )
+      )
+
+      stream.data.test {
+         runCurrent()
+         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
+            listOf(
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 10, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 10, 25),
+                  "Mesto -> MB",
+                  5
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 30, 11, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 11, 20),
+                  "MB -> Mesto",
+               ),
+            ),
+            "Forest 77",
+            "http://stopimage.com",
+            "A stop in the forest",
+            true,
+            TEST_EXPECTED_ALL_LINES,
+         )
+      }
+   }
+
+   @Test
+   fun `Do not map live data for subsequent days`() = scope.runTest {
+      val stream = repo.getScheduleForStop(42)
+
+      liveArrivalRepository.swapMap = mapOf(
+         Arrival(
+            TEST_EXPECTED_LINE_6,
+            LocalDateTime.of(2024, 3, 31, 9, 0),
+            "MB -> Mesto"
+         ) to Arrival(
+            TEST_EXPECTED_LINE_6,
+            LocalDateTime.of(2024, 3, 31, 10, 0),
+            "MB -> Mesto",
+            5
+         )
+      )
+
+      stream.data.test {
+         runCurrent()
+
+         stream.nextPage()
+         runCurrent()
+
+         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
+            listOf(
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 10, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 10, 20),
+                  "Mesto -> MB"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 30, 11, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 11, 20),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 31, 5, 20),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 31, 9, 0),
+                  "MB -> Mesto"
+               ),
+            ),
+            "Forest 77",
+            "http://stopimage.com",
+            "A stop in the forest",
+            true,
+            TEST_EXPECTED_ALL_LINES,
          )
       }
    }

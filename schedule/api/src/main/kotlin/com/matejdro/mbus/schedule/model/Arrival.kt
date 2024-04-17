@@ -6,4 +6,5 @@ data class Arrival(
    val line: Line,
    val arrival: LocalDateTime,
    val direction: String,
+   val liveDelayMin: Int? = null,
 )

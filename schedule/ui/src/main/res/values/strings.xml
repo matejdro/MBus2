@@ -2,4 +2,8 @@
 <resources>
     <string name="tomorrow">Tomorrow</string>
     <string name="filter_lines">Filter lines</string>
+    <string name="live_arrival">Live Arrival</string>
+    <string name="late">%1$s min late</string>
+    <string name="early">%1$s min early</string>
+    <string name="on_time">On time</string>
 </resources>

@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -193,6 +194,8 @@ private fun LazyListScope.stopImageItem(stopSchedule: StopSchedule) {
 
 @Composable
 private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
+   val delayMin = it.liveDelayMin
+
    Row(
       Modifier.padding(16.dp),
       verticalAlignment = Alignment.CenterVertically,
@@ -200,17 +203,56 @@ private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
    ) {
       LineLabel(it.line)
 
-      Column {
-         Text(
-            fontSize = 20.sp,
-            text = it.timeText(timeProvider.currentLocalDate())
-         )
+      Column(Modifier.weight(1f)) {
+         Row {
+            if (delayMin != null && delayMin != 0) {
+               Text(
+                  fontSize = 20.sp,
+                  text = it.timeText(timeProvider.currentLocalDate(), plusMinutes = -delayMin),
+                  textDecoration = TextDecoration.LineThrough,
+                  modifier = Modifier.padding(end = 4.dp)
+               )
+            }
+            Text(
+               fontSize = 20.sp,
+               text = it.timeText(timeProvider.currentLocalDate())
+            )
+         }
+
+         DelayBadge(delayMin)
 
          Text(
             fontSize = 14.sp,
             text = it.direction
          )
       }
+
+      if (delayMin != null) {
+         Icon(painterResource(R.drawable.ic_gps), stringResource(R.string.live_arrival))
+      }
+   }
+}
+
+@Composable
+private fun DelayBadge(delayMin: Int?) {
+   if (delayMin != null) {
+      val delayText = if (delayMin == 0) {
+         stringResource(R.string.on_time)
+      } else if (delayMin >= 0) {
+         stringResource(R.string.late, delayMin)
+      } else {
+         stringResource(R.string.early, -delayMin)
+      }
+
+      Text(
+         fontSize = 14.sp,
+         text = delayText,
+         color = MaterialTheme.colorScheme.onTertiary,
+         modifier = Modifier
+            .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
+            .background(MaterialTheme.colorScheme.tertiary, shape = MaterialTheme.shapes.small)
+            .padding(4.dp)
+      )
    }
 }
 
@@ -260,10 +302,10 @@ internal fun LineLabel(line: Line) {
 }
 
 @Composable
-private fun Arrival.timeText(today: LocalDate): String {
+private fun Arrival.timeText(today: LocalDate, plusMinutes: Int = 0): String {
    val dateFormatter = LocalDateFormatter.current
 
-   val timeText = dateFormatter.ofLocalizedTime().format(arrival)
+   val timeText = dateFormatter.ofLocalizedTime().format(arrival.plusMinutes(plusMinutes.toLong()))
    val arrivalDate = arrival.toLocalDate()
 
    val dateText = when {
@@ -407,17 +449,20 @@ val PREVIEW_FAKE_LIST = StopSchedule(
       Arrival(
          PREVIEW_EXPECTED_LINE_2,
          LocalDateTime.of(2024, 3, 31, 10, 20),
-         "Mesto -> MB"
+         "Mesto -> MB",
+         6
       ),
       Arrival(
          PREVIEW_EXPECTED_LINE_6,
          LocalDateTime.of(2024, 4, 2, 11, 0),
-         "MB -> Mesto"
+         "MB -> Mesto",
+         -3
       ),
       Arrival(
          PREVIEW_EXPECTED_LINE_18,
          LocalDateTime.of(2024, 4, 20, 11, 20),
-         "MB -> Mesto"
+         "MB -> Mesto",
+         0
       ),
    ),
    "Forest 77",
