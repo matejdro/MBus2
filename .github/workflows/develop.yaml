@@ -64,14 +64,28 @@ jobs:
           name: failed-screenshot-tests
           path: app-screenshot-tests/build/paparazzi/failures
 
+      - name: Generate Changelog
+        id: changelog
+        uses: inovait/actions-common/changelog-since-last-build@v3
+        with:
+          git_commit_url_prefix: 'https://github.com/matejdro/MBus2/commit/'
       - name: Tag build
         env:
           TAG_BUILD: "1.0.0-alpha${{env.BUILD_NUMBER}}"
         run: |
           git tag ${{env.TAG_BUILD}}
           git push origin ${{env.TAG_BUILD}}
-      - name: "Publish release"
+      - name: "Publish arficats to action"
         uses: actions/upload-artifact@v3
         with:
           name: release-apk
           path: app/build/outputs/**/*-release.apk
+      - name: Create a Release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: 1.0.0-alpha${{ env.BUILD_NUMBER }}
+          tag: 1.0.0-alpha${{ env.BUILD_NUMBER }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          artifacts: app/build/outputs/release/app-release.apk
