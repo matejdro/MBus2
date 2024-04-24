@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_no_network">Ni internetne povezave</string>
+    <string name="error_no_network_with_existing_data">Ni internetne povezave. Prikazani podatki morda niso več točni.</string>
+    <string name="error_unknown">Nekaj je šlo narobe</string>
+</resources>

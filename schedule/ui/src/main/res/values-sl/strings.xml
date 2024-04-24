@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="filter_lines">Filtriraj linije</string>
+    <string name="live_arrival">Prihod linije</string>
+    <string name="late">zamuja %1$s min</string>
+    <string name="early">%1$s min prej</string>
+    <string name="on_time">Točen</string>
+    <string name="line_filter">Filter linij</string>
+    <string name="select_time">Izberi čas</string>
+</resources>
