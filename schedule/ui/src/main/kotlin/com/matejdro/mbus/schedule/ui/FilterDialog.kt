@@ -5,15 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
+import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.schedule.model.Line
+import com.matejdro.mbus.ui.components.AlertDialogWithContent
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
 
@@ -42,44 +39,26 @@ internal fun FilterDialog(
       mutableStateListOf(*initialSelection)
    }
 
-   BasicAlertDialog(
+   AlertDialogWithContent(
       onDismissRequest = onCancel,
-      content = {
-         Surface(
-            shape = MaterialTheme.shapes.large,
-            color = AlertDialogDefaults.containerColor,
-            tonalElevation = AlertDialogDefaults.TonalElevation,
-         ) {
-            Column(
-               modifier = Modifier
-                  .padding(24.dp)
-                  .verticalScroll(rememberScrollState())
-            ) {
-               Text(
-                  "Line filter",
-                  style = MaterialTheme.typography.headlineSmall,
-                  modifier = Modifier.padding(16.dp)
-               )
-
-               Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                  for (line in allLines) {
-                     FilterRow(selectedLinesInDialog, line)
-                  }
-               }
-
-               Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                  TextButton(onClick = onCancel) {
-                     Text(stringResource(android.R.string.cancel))
-                  }
-
-                  TextButton(onClick = { onSubmit(selectedLinesInDialog.toSet()) }) {
-                     Text(stringResource(android.R.string.ok))
-                  }
-               }
-            }
+      title = { Text(stringResource(R.string.line_filter)) },
+      confirmButton = {
+         TextButton(onClick = { onSubmit(selectedLinesInDialog.toSet()) }) {
+            Text(stringResource(android.R.string.ok))
+         }
+      },
+      dismissButton = {
+         TextButton(onClick = onCancel) {
+            Text(stringResource(android.R.string.cancel))
          }
       }
-   )
+   ) {
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
+         for (line in allLines) {
+            FilterRow(selectedLinesInDialog, line)
+         }
+      }
+   }
 }
 
 @Composable
