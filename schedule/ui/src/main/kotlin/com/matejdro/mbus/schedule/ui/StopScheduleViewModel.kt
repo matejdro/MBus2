@@ -37,6 +37,21 @@ class StopScheduleViewModel @Inject constructor(
       load(timeProvider.currentLocalDateTime(), false)
    }
 
+   fun loadNextPage() {
+      val existingData = _schedule.value.data
+      if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
+         lastPaginator?.nextPage()
+      }
+   }
+
+   fun setFilter(filter: Set<Int>) = coroutineScope.launch {
+      stopRepo.setWhitelistedLines(key.stopId, filter)
+   }
+
+   fun changeDate(newDateTime: LocalDateTime) {
+      load(newDateTime, true)
+   }
+
    private fun load(date: LocalDateTime, customTimeSet: Boolean) = resources.launchResourceControlTask(_schedule) {
       val paginator = scheduleRepository.getScheduleForStop(key.stopId, date)
       lastPaginator = paginator
@@ -60,21 +75,6 @@ class StopScheduleViewModel @Inject constructor(
             }
          }
       )
-   }
-
-   fun loadNextPage() {
-      val existingData = _schedule.value.data
-      if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
-         lastPaginator?.nextPage()
-      }
-   }
-
-   fun setFilter(filter: Set<Int>) = coroutineScope.launch {
-      stopRepo.setWhitelistedLines(key.stopId, filter)
-   }
-
-   fun changeDate(newDateTime: LocalDateTime) {
-      load(newDateTime, true)
    }
 }
 
