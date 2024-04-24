@@ -5,10 +5,16 @@ import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.StopSchedule
 import si.inova.kotlinova.core.outcome.Outcome
+import java.time.LocalDateTime
 
 class FakeScheduleRepository : ScheduleRepository {
    private val providedSchedules = HashMap<Int, FakeSchedules>()
-   override fun getScheduleForStop(stopId: Int): PaginatedDataStream<StopSchedule> {
+
+   var lastRequestedDate: LocalDateTime? = null
+
+   override fun getScheduleForStop(stopId: Int, from: LocalDateTime): PaginatedDataStream<StopSchedule> {
+      lastRequestedDate = from
+
       val schedulePages = providedSchedules.get(stopId) ?: error("Schedule for stop $stopId not provided")
       return ListPaginatedDataStream(schedulePages.arrivals) { list, hasAnyDataLeft ->
          Outcome.Success(

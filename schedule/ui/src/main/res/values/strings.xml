@@ -7,4 +7,5 @@
     <string name="early">%1$s min early</string>
     <string name="on_time">On time</string>
     <string name="line_filter">Line filter</string>
+    <string name="select_time">Select time</string>
 </resources>

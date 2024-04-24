@@ -66,11 +66,14 @@ class ScheduleRepositoryImplTest {
       liveArrivalRepository
    )
 
+   val today = timeProvider.currentLocalDateTime()
+
    @BeforeEach
    fun setUp() {
       service.providedLines = PROVIDED_LINES
       service.provideSchedule(42, LocalDate.of(2024, 3, 30), PROVIDED_DATA_STOP_42_MAR_30)
       service.provideSchedule(42, LocalDate.of(2024, 3, 31), PROVIDED_DATA_STOP_42_MAR_31)
+      service.provideSchedule(42, LocalDate.of(2024, 4, 1), PROVIDED_DATA_STOP_42_APR_1)
       stopsRepository.provideStops(
          Outcome.Success(
             listOf(
@@ -82,7 +85,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return mapped data from the server`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -120,7 +123,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return mapped data from the server for the subsequent days`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -174,7 +177,7 @@ class ScheduleRepositoryImplTest {
    fun `Return regular loading outcome while loading`() = scope.runTest {
       service.interceptAllFutureCallsWith(InterceptionStyle.InfiniteLoad)
 
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -187,7 +190,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return loading more outcome while loading extra pages`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -205,7 +208,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return data from cache after reload`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -250,7 +253,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return data from server again when cache is expired`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -299,8 +302,8 @@ class ScheduleRepositoryImplTest {
    fun `Ignore cache duration of other stops`() = scope.runTest {
       service.provideSchedule(43, LocalDate.of(2024, 3, 30), PROVIDED_DATA_STOP_42_MAR_30)
 
-      val streamForStop42 = repo.getScheduleForStop(42)
-      val streamForStop43 = repo.getScheduleForStop(42)
+      val streamForStop42 = repo.getScheduleForStop(42, today)
+      val streamForStop43 = repo.getScheduleForStop(42, today)
 
       streamForStop42.data.test {
          runCurrent()
@@ -326,7 +329,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return updated data from server again when cache is expired`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -374,7 +377,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Return loading with old data even if data has expired`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -421,7 +424,7 @@ class ScheduleRepositoryImplTest {
    @Test
    @Suppress("LongMethod") // Long test data
    fun `Load subsequent days from DB when available`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -512,7 +515,7 @@ class ScheduleRepositoryImplTest {
    @Test
    @Suppress("LongMethod") // Long test data
    fun `Continue loading cached pages despite network issues`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -609,7 +612,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Provide line whitelist`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -652,7 +655,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Filter lines when whitelist is set`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       stream.data.test {
          runCurrent()
@@ -690,7 +693,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Map data through live repository`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       liveArrivalRepository.swapMap = mapOf(
          Arrival(
@@ -742,7 +745,7 @@ class ScheduleRepositoryImplTest {
 
    @Test
    fun `Do not map live data for subsequent days`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42)
+      val stream = repo.getScheduleForStop(42, today)
 
       liveArrivalRepository.swapMap = mapOf(
          Arrival(
@@ -793,6 +796,112 @@ class ScheduleRepositoryImplTest {
                Arrival(
                   TEST_EXPECTED_LINE_6,
                   LocalDateTime.of(2024, 3, 31, 9, 0),
+                  "MB -> Mesto"
+               ),
+            ),
+            "Forest 77",
+            "http://stopimage.com",
+            "A stop in the forest",
+            true,
+            TEST_EXPECTED_ALL_LINES,
+         )
+      }
+   }
+
+   @Test
+   fun `Return mapped data for a different time`() = scope.runTest {
+      val stream = repo.getScheduleForStop(
+         42,
+         LocalDateTime.of(2024, 3, 31, 8, 0)
+      )
+
+      stream.data.test {
+         runCurrent()
+         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
+            listOf(
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 31, 9, 0),
+                  "MB -> Mesto"
+               ),
+            ),
+            "Forest 77",
+            "http://stopimage.com",
+            "A stop in the forest",
+            true,
+            listOf(TEST_EXPECTED_LINE_6),
+         )
+      }
+   }
+
+   @Test
+   fun `Do not map live data for days other than today`() = scope.runTest {
+      val stream = repo.getScheduleForStop(
+         42,
+         LocalDateTime.of(2024, 3, 31, 8, 0)
+      )
+
+      liveArrivalRepository.swapMap = mapOf(
+         Arrival(
+            TEST_EXPECTED_LINE_6,
+            LocalDateTime.of(2024, 3, 31, 9, 0),
+            "MB -> Mesto"
+         ) to Arrival(
+            TEST_EXPECTED_LINE_6,
+            LocalDateTime.of(2024, 3, 31, 10, 0),
+            "MB -> Mesto",
+            5
+         )
+      )
+
+      stream.data.test {
+         runCurrent()
+
+         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
+            listOf(
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 31, 9, 0),
+                  "MB -> Mesto"
+               ),
+            ),
+            "Forest 77",
+            "http://stopimage.com",
+            "A stop in the forest",
+            true,
+            listOf(TEST_EXPECTED_LINE_6),
+         )
+      }
+   }
+
+   @Test
+   fun `Return mapped data from the server for the subsequent days after a different time`() = scope.runTest {
+      val stream = repo.getScheduleForStop(
+         42,
+         LocalDateTime.of(2024, 3, 31, 8, 0)
+      )
+
+      stream.data.test {
+         runCurrent()
+
+         stream.nextPage()
+         runCurrent()
+
+         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
+            listOf(
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 31, 9, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 4, 1, 4, 20),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 4, 1, 8, 0),
                   "MB -> Mesto"
                ),
             ),
@@ -915,6 +1024,40 @@ private val PROVIDED_DATA_STOP_42_MAR_31 = StopScheduleDto(
             StopScheduleDto.Schedule.RouteAndSchedule(
                listOf(
                   LocalTime.of(9, 0),
+               ),
+               "MB -> Mesto"
+            )
+         ),
+      )
+   ),
+   StopScheduleDto.StaticData(
+      "A stop in the forest",
+      "http://stopimage.com",
+      "Forest 77"
+   )
+)
+
+private val PROVIDED_DATA_STOP_42_APR_1 = StopScheduleDto(
+   listOf(
+      StopScheduleDto.Schedule(
+         2,
+         "2",
+         listOf(
+            StopScheduleDto.Schedule.RouteAndSchedule(
+               listOf(
+                  LocalTime.of(4, 20),
+               ),
+               "MB -> Mesto"
+            ),
+         )
+      ),
+      StopScheduleDto.Schedule(
+         6,
+         "6",
+         listOf(
+            StopScheduleDto.Schedule.RouteAndSchedule(
+               listOf(
+                  LocalTime.of(8, 0),
                ),
                "MB -> Mesto"
             )

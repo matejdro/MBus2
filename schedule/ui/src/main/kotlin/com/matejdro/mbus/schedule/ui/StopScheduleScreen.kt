@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +51,6 @@ import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
-import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
 import com.matejdro.mbus.ui.errors.commonUserFriendlyMessage
@@ -66,6 +66,8 @@ import si.inova.kotlinova.core.time.TimeProvider
 import si.inova.kotlinova.navigation.screens.Screen
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.FormatStyle
 import java.time.format.TextStyle
 import java.util.Locale
@@ -78,17 +80,28 @@ class StopScheduleScreen(
    override fun Content(key: StopScheduleScreenKey) {
       val state = viewModel.schedule.collectAsStateWithLifecycleAndBlinkingPrevention().value
       if (state != null) {
-         var dialogShown by remember { mutableStateOf(false) }
          val data = state.data
-
-         if (dialogShown && data != null) {
+         var filterDialogShown by remember { mutableStateOf(false) }
+         if (filterDialogShown && data != null) {
             FilterDialog(
                data.allLines,
                data.whitelistedLines,
-               { dialogShown = false },
+               { filterDialogShown = false },
                {
-                  dialogShown = false
+                  filterDialogShown = false
                   viewModel.setFilter(it)
+               }
+            )
+         }
+
+         var timeDialogShown by remember { mutableStateOf(false) }
+         if (timeDialogShown && data != null) {
+            TimePickerDialog(
+               ZonedDateTime.now(),
+               { timeDialogShown = false },
+               {
+                  timeDialogShown = false
+                  viewModel.changeDate(it.toLocalDateTime())
                }
             )
          }
@@ -97,7 +110,8 @@ class StopScheduleScreen(
             state,
             timeProvider,
             viewModel::loadNextPage,
-            { dialogShown = true }
+            { filterDialogShown = true },
+            { timeDialogShown = true }
          )
       }
    }
@@ -106,15 +120,29 @@ class StopScheduleScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleScreenContent(
-   data: Outcome<StopSchedule>,
+   data: Outcome<ScheduleUiState>,
    timeProvider: TimeProvider,
    loadNextPage: () -> Unit,
    showFilter: () -> Unit,
+   showTimePicker: () -> Unit,
 ) {
    Column {
       TopAppBar(
          title = { data.data?.stopName?.let { Text(it) } },
          actions = {
+            Icon(
+               painterResource(R.drawable.ic_select_time),
+               stringResource(R.string.select_time),
+               tint = if (data.data?.customTimeSet != true) {
+                  LocalContentColor.current
+               } else {
+                  MaterialTheme.colorScheme.error
+               },
+               modifier = Modifier
+                  .clickable(onClick = showTimePicker)
+                  .padding(8.dp)
+            )
+
             Icon(
                painterResource(R.drawable.ic_filter),
                stringResource(R.string.filter_lines),
@@ -123,7 +151,9 @@ private fun ScheduleScreenContent(
                } else {
                   MaterialTheme.colorScheme.error
                },
-               modifier = Modifier.clickable(onClick = showFilter)
+               modifier = Modifier
+                  .clickable(onClick = showFilter)
+                  .padding(8.dp)
             )
          }
       )
@@ -152,7 +182,7 @@ private fun ScheduleScreenContent(
 }
 
 @Composable
-private fun ColumnScope.TopError(data: Outcome<StopSchedule>) {
+private fun ColumnScope.TopError(data: Outcome<ScheduleUiState>) {
    if (data is Outcome.Error) {
       Text(
          text = data.exception.commonUserFriendlyMessage(
@@ -167,7 +197,7 @@ private fun ColumnScope.TopError(data: Outcome<StopSchedule>) {
 }
 
 @Composable
-private fun ColumnScope.TopLoading(data: Outcome<StopSchedule>) {
+private fun ColumnScope.TopLoading(data: Outcome<ScheduleUiState>) {
    if (data is Outcome.Progress && data.style != LoadingStyle.ADDITIONAL_DATA) {
       CircularProgressIndicator(
          Modifier.Companion
@@ -177,7 +207,7 @@ private fun ColumnScope.TopLoading(data: Outcome<StopSchedule>) {
    }
 }
 
-private fun LazyListScope.stopImageItem(stopSchedule: StopSchedule) {
+private fun LazyListScope.stopImageItem(stopSchedule: ScheduleUiState) {
    stopSchedule.stopImage?.let {
       item {
          AsyncImage(
@@ -255,8 +285,8 @@ private fun DelayBadge(delayMin: Int) {
 }
 
 private fun LazyListScope.bottomLoading(
-   stopSchedule: StopSchedule,
-   data: Outcome<StopSchedule>,
+   stopSchedule: ScheduleUiState,
+   data: Outcome<ScheduleUiState>,
 ) {
    if (stopSchedule.hasAnyDataLeft == true) {
       item {
@@ -338,7 +368,8 @@ internal fun ScheduleScreenSuccessPreview() {
          Outcome.Success(PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
       )
    }
 }
@@ -352,7 +383,8 @@ internal fun ScheduleScreenLoadingPreview() {
          Outcome.Progress(),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
       )
    }
 }
@@ -366,7 +398,8 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
          Outcome.Progress(PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
       )
    }
 }
@@ -380,7 +413,8 @@ internal fun ScheduleScreenErrorPreview() {
          Outcome.Error(NoNetworkException()),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
       )
    }
 }
@@ -394,7 +428,8 @@ internal fun ScheduleScreenRefreshErrorPreview() {
          Outcome.Error(NoNetworkException(), PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
       )
    }
 }
@@ -414,12 +449,13 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
          ),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
       )
    }
 }
 
-@FullScreenPreviews
+@Preview
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
@@ -428,7 +464,23 @@ internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
          Outcome.Success(PREVIEW_FAKE_LIST.copy(whitelistedLines = setOf(2, 6, 18))),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
-         {}
+         {},
+         {},
+      )
+   }
+}
+
+@Preview
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun ScheduleScreenSuccessWithTimeSetApplied() {
+   PreviewTheme() {
+      ScheduleScreenContent(
+         Outcome.Success(PREVIEW_FAKE_LIST.copy(customTimeSet = true)),
+         FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
+         {},
+         {},
       )
    }
 }
@@ -437,8 +489,8 @@ internal val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
 internal val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
 internal val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
 
-val PREVIEW_FAKE_LIST = StopSchedule(
-   listOf(
+val PREVIEW_FAKE_LIST = ScheduleUiState(
+   arrivals = listOf(
       Arrival(
          PREVIEW_EXPECTED_LINE_2,
          LocalDateTime.of(2024, 3, 30, 10, 0),
@@ -463,9 +515,12 @@ val PREVIEW_FAKE_LIST = StopSchedule(
          0
       ),
    ),
-   "Forest 77",
-   "http://stopimage.com",
-   "A stop in the forest",
-   false,
-   listOf(PREVIEW_EXPECTED_LINE_2, PREVIEW_EXPECTED_LINE_6, PREVIEW_EXPECTED_LINE_18)
+   stopName = "Forest 77",
+   stopImage = "http://stopimage.com",
+   stopDescription = "A stop in the forest",
+   hasAnyDataLeft = false,
+   allLines = listOf(PREVIEW_EXPECTED_LINE_2, PREVIEW_EXPECTED_LINE_6, PREVIEW_EXPECTED_LINE_18),
+   whitelistedLines = emptySet(),
+   selectedTime = ZonedDateTime.of(2024, 4, 20, 11, 20, 0, 0, ZoneId.of("UTC")),
+   customTimeSet = false
 )

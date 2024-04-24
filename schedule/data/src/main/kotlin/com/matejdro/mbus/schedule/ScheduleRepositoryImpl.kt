@@ -51,15 +51,14 @@ class ScheduleRepositoryImpl @Inject constructor(
    private val dbArrivalQueries: DbArrivalQueries,
    private val liveArrivalsRepository: LiveArrivalRepository,
 ) : ScheduleRepository {
-   override fun getScheduleForStop(stopId: Int): PaginatedDataStream<StopSchedule> {
+   override fun getScheduleForStop(stopId: Int, from: LocalDateTime): PaginatedDataStream<StopSchedule> {
       return object : PaginatedDataStream<StopSchedule> {
          val nextPageChannel = Channel<Unit>(1)
          val maxTime = MutableStateFlow<LocalDateTime>(LocalDateTime.MIN)
          val liveCutoffTime = timeProvider.currentLocalDateTime().plusHours(1)
 
          val dbFlow = maxTime.flatMapLatest { maxTime ->
-            val nowLocal = timeProvider.currentLocalDateTime()
-            val minTimeIsoString = nowLocal.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
+            val minTimeIsoString = from.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
                .let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) }
             val maxTimeString = maxTime.toIsoString()
 
@@ -74,7 +73,7 @@ class ScheduleRepositoryImpl @Inject constructor(
             .insertLiveArrivals(stopId, liveCutoffTime)
 
          val statusFlow: Flow<Outcome<ScheduleMetadata>> = flow {
-            var currentDate = timeProvider.currentLocalDate()
+            var currentDate = from.toLocalDate()
             var loadingMore = false
 
             emitAll(

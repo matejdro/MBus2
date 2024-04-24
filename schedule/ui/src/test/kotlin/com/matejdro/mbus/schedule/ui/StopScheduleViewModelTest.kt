@@ -17,14 +17,23 @@ import org.junit.jupiter.api.Test
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
 import si.inova.kotlinova.core.test.outcomes.testCoroutineResourceManager
+import si.inova.kotlinova.core.test.time.virtualTimeProvider
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class StopScheduleViewModelTest {
    private val scope = TestScope()
    private val repo = FakeScheduleRepository()
    private val stopRepo = FakeStopsRepository()
+   private val timeProvider = scope.virtualTimeProvider(
+      currentLocalDate = { LocalDate.of(2024, 3, 30) },
+      currentLocalTime = { LocalTime.of(9, 30) }
+   )
 
-   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo, stopRepo)
+   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo, stopRepo, timeProvider)
 
    @Test
    fun `Provide data`() = scope.runTest {
@@ -58,6 +67,18 @@ class StopScheduleViewModelTest {
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
       )
 
+      val expectedData = ScheduleUiState(
+         arrivals.arrivals,
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         emptySet(),
+         ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
+         false
+      )
+
       repo.provideSchedule(
          12,
          "Forest 77",
@@ -71,13 +92,13 @@ class StopScheduleViewModelTest {
       vm.onServiceRegistered()
       runCurrent()
 
-      vm.schedule.value shouldBeSuccessWithData arrivals
+      vm.schedule.value shouldBeSuccessWithData expectedData
    }
 
    @Test
    @Suppress("LongMethod") // Lots of data to define
    fun `Provide Paginated data`() = scope.runTest {
-      val expectedFirstPage = StopSchedule(
+      val expectedFirstPage = ScheduleUiState(
          listOf(
             Arrival(
                TEST_EXPECTED_LINE_2,
@@ -95,9 +116,12 @@ class StopScheduleViewModelTest {
          "A stop in the forest",
          true,
          listOf(TEST_EXPECTED_LINE_2),
+         emptySet(),
+         ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
+         false
       )
 
-      val expectedSecondPage = StopSchedule(
+      val expectedSecondPage = ScheduleUiState(
          listOf(
             Arrival(
                TEST_EXPECTED_LINE_2,
@@ -124,7 +148,10 @@ class StopScheduleViewModelTest {
          "http://stopimage.com",
          "A stop in the forest",
          false,
-         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6)
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         emptySet(),
+         ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
+         false
       )
 
       val firstPage = listOf(
@@ -218,6 +245,49 @@ class StopScheduleViewModelTest {
          "A stop in the forest",
          whitelistedLines = setOf(6)
       )
+   }
+
+   @Test
+   fun `Load data from different date`() = scope.runTest {
+      val arrivals = StopSchedule(
+         emptyList(),
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+         emptyList(),
+      )
+
+      val expectedData = ScheduleUiState(
+         arrivals.arrivals,
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+         emptyList(),
+         emptySet(),
+         ZonedDateTime.of(2024, 3, 20, 8, 25, 0, 0, ZoneId.of("UTC")),
+         true
+      )
+
+      repo.provideSchedule(
+         12,
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         arrivals.arrivals,
+      )
+
+      vm.key = StopScheduleScreenKey(12)
+
+      vm.onServiceRegistered()
+      runCurrent()
+
+      vm.changeDate(LocalDateTime.of(2024, 3, 20, 8, 25))
+      runCurrent()
+
+      repo.lastRequestedDate shouldBe LocalDateTime.of(2024, 3, 20, 8, 25)
+      vm.schedule.value shouldBeSuccessWithData expectedData
    }
 }
 
