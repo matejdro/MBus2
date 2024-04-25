@@ -14,7 +14,7 @@ data class LiveArrivalsDto(
       @Json(name = "ArrivalTime")
       val arrivalTime: LocalTime,
       @Json(name = "DelayMin")
-      val delayMin: Int = 0,
+      val delayMin: Int?,
       @Json(name = "LineId")
       val lineId: Int,
    )

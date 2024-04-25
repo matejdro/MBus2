@@ -37,7 +37,7 @@ class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService
             val matchingLiveArrival =
                liveArrivalForThisStop.firstOrNull { it.lineId == arrival.line.id && it.arrivalTime == arrivalTime }
 
-            if (matchingLiveArrival != null) {
+            if (matchingLiveArrival != null && matchingLiveArrival.delayMin != null) {
                arrival.copy(
                   arrival = arrival.arrival.plusMinutes(matchingLiveArrival.delayMin.toLong()),
                   liveDelayMin = matchingLiveArrival.delayMin

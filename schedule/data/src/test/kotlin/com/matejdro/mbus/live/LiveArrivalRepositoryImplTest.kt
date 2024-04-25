@@ -373,6 +373,54 @@ class LiveArrivalRepositoryImplTest {
          )
       }
    }
+
+   @Test
+   fun `Ignore arrivals with no delay info`() = scope.runTest {
+      service.provideArrivals(
+         77,
+         LiveArrivalsDto(
+            listOf(
+               LiveArrivalsDto.LiveArrivalDto(
+                  LocalTime.of(10, 20),
+                  null,
+                  2
+               ),
+               LiveArrivalsDto.LiveArrivalDto(
+                  LocalTime.of(11, 0),
+                  -2,
+                  6
+               )
+            )
+         )
+      )
+
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 10, 0),
+               "MB -> Mesto"
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 10, 20),
+               "Mesto -> MB",
+            ),
+            Arrival(
+               FAKE_LINE_6,
+               LocalDateTime.of(2024, 3, 30, 10, 58),
+               "MB -> Mesto",
+               -2
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 11, 20),
+               "MB -> Mesto"
+            ),
+         )
+      }
+   }
 }
 
 private val FAKE_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
