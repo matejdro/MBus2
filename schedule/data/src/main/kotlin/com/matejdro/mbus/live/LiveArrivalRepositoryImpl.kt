@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeoutOrNull
 import si.inova.kotlinova.core.exceptions.NoNetworkException
@@ -45,7 +46,7 @@ class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService
                arrival
             }
          }
-      }
+      }.onStart { emit(originalArrivals) }
    }
 
    private fun tickerFlow(): Flow<Unit> {
