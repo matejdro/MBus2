@@ -102,12 +102,17 @@ open class MBusApplication : Application() {
 
       if (
          e.cause == null &&
-         e.stackTrace.any {
-            it.className.contains("UnixSecureDirectoryStream") ||
-               it.className.contains("UnixDirectoryStream")
-         }
+         (
+            STRICT_MODE_EXCLUSIONS.any {
+               e.toString().contains(it)
+            } ||
+               e.stackTrace.any { stackTraceElement ->
+                  STRICT_MODE_EXCLUSIONS.any {
+                     stackTraceElement.className.contains(it)
+                  }
+               }
+            )
       ) {
-         // workaround for the https://issuetracker.google.com/issues/270704908
          return
       }
 
@@ -122,3 +127,10 @@ open class MBusApplication : Application() {
       DaggerMainApplicationComponent.factory().create(this)
    }
 }
+
+private val STRICT_MODE_EXCLUSIONS = listOf(
+   "UnixSecureDirectoryStream", // https://issuetracker.google.com/issues/270704908
+   "UnixDirectoryStream", // https://issuetracker.google.com/issues/270704908,
+   "coil.RealImageLoader", // https://github.com/coil-kt/coil/issues/1878
+   "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
+)
