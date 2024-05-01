@@ -741,6 +741,8 @@ class ScheduleRepositoryImplTest {
             TEST_EXPECTED_ALL_LINES,
          )
       }
+
+      liveArrivalRepository.lastDeleteNonLiveArrivalsBefore shouldBe LocalDateTime.of(2024, 3, 30, 9, 30)
    }
 
    @Test
@@ -832,6 +834,8 @@ class ScheduleRepositoryImplTest {
             listOf(TEST_EXPECTED_LINE_6),
          )
       }
+
+      liveArrivalRepository.lastDeleteNonLiveArrivalsBefore shouldBe LocalDateTime.of(2024, 3, 30, 9, 30)
    }
 
    @Test

@@ -15,13 +15,18 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeoutOrNull
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.flow.onlyFlowWhenUserPresent
+import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @ContributesBinding(ApplicationScope::class)
 class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService: SchedulesService) : LiveArrivalRepository {
-   override fun addLiveArrivals(stopId: Int, originalArrivals: List<Arrival>): Flow<List<Arrival>> {
+   override fun addLiveArrivals(
+      stopId: Int,
+      originalArrivals: List<Arrival>,
+      deleteNonLiveArrivalsBefore: LocalDateTime,
+   ): Flow<List<Arrival>> {
       return tickerFlow().map { _ ->
          val liveArrivalForThisStop = withTimeoutOrNull(LOAD_TIMEOUT) {
             try {
@@ -31,7 +36,7 @@ class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService
             }
          } ?: return@map originalArrivals
 
-         originalArrivals.map { arrival ->
+         originalArrivals.mapNotNull { arrival ->
             val arrivalTime = arrival.arrival.toLocalTime()
 
             val matchingLiveArrival =
@@ -42,6 +47,8 @@ class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService
                   arrival = arrival.arrival.plusMinutes(matchingLiveArrival.delayMin.toLong()),
                   liveDelayMin = matchingLiveArrival.delayMin
                )
+            } else if (arrival.arrival < deleteNonLiveArrivalsBefore) {
+               null
             } else {
                arrival
             }

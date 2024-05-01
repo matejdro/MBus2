@@ -234,9 +234,10 @@ class ScheduleRepositoryImpl @Inject constructor(
    private fun Flow<List<Arrival>>.insertLiveArrivals(stopId: Int, liveCutoffTime: LocalDateTime): Flow<List<Arrival>> {
       return flatMapLatest { arrivals ->
          val (imminentArrivals, otherArrivals) = arrivals.partition { it.arrival < liveCutoffTime }
-         liveArrivalsRepository.addLiveArrivals(stopId, imminentArrivals).map { imminentWithLive ->
-            imminentWithLive + otherArrivals
-         }
+         liveArrivalsRepository.addLiveArrivals(stopId, imminentArrivals, timeProvider.currentLocalDateTime())
+            .map { imminentWithLive ->
+               imminentWithLive + otherArrivals
+            }
       }
    }
 }
