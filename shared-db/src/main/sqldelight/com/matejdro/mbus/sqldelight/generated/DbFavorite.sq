@@ -1,0 +1,20 @@
+CREATE TABLE dbFavorite (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    stops TEXT NOT NULL DEFAULT ""
+);
+
+selectAll:
+SELECT * FROM dbFavorite ORDER BY name ASC;
+
+selectSingle:
+SELECT * FROM dbFavorite WHERE id = ?;
+
+insert:
+INSERT INTO dbFavorite (name, stops) VALUES ?;
+
+updateStops:
+UPDATE dbFavorite SET stops = :stops WHERE id = :stopId;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

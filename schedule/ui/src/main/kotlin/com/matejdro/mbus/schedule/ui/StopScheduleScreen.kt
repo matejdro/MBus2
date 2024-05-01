@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
+import com.matejdro.mbus.navigation.keys.AddToFavouritesDialogScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.schedule.model.Arrival
@@ -57,6 +58,7 @@ import com.matejdro.mbus.ui.errors.commonUserFriendlyMessage
 import com.matejdro.mbus.ui.lists.DetectScrolledToBottom
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.compose.result.registerResultReceiver
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.LoadingStyle
@@ -75,6 +77,7 @@ import java.util.Locale
 class StopScheduleScreen(
    private val viewModel: StopScheduleViewModel,
    private val timeProvider: TimeProvider,
+   private val addToFavouritesDialogScreen: Screen<AddToFavouritesDialogScreenKey>,
 ) : Screen<StopScheduleScreenKey>() {
    @Composable
    override fun Content(key: StopScheduleScreenKey) {
@@ -106,12 +109,24 @@ class StopScheduleScreen(
             )
          }
 
+         var favoriteDialogShown by remember { mutableStateOf(false) }
+         if (favoriteDialogShown && data != null) {
+            val closeDialogReceiver = registerResultReceiver<Unit> {
+               favoriteDialogShown = false
+            }
+
+            addToFavouritesDialogScreen.Content(
+               AddToFavouritesDialogScreenKey(key.stopId, data.stopName, closeDialogReceiver)
+            )
+         }
+
          ScheduleScreenContent(
             state,
             timeProvider,
             viewModel::loadNextPage,
             { filterDialogShown = true },
-            { timeDialogShown = true }
+            { timeDialogShown = true },
+            { favoriteDialogShown = true }
          )
       }
    }
@@ -125,6 +140,7 @@ private fun ScheduleScreenContent(
    loadNextPage: () -> Unit,
    showFilter: () -> Unit,
    showTimePicker: () -> Unit,
+   showAddFavoritePicker: () -> Unit,
 ) {
    Column {
       TopAppBar(
@@ -153,6 +169,14 @@ private fun ScheduleScreenContent(
                },
                modifier = Modifier
                   .clickable(onClick = showFilter)
+                  .padding(8.dp)
+            )
+
+            Icon(
+               painterResource(R.drawable.ic_favorite),
+               stringResource(R.string.add_to_favorites),
+               modifier = Modifier
+                  .clickable(onClick = showAddFavoritePicker)
                   .padding(8.dp)
             )
          }
@@ -370,6 +394,7 @@ internal fun ScheduleScreenSuccessPreview() {
          {},
          {},
          {},
+         {},
       )
    }
 }
@@ -382,6 +407,7 @@ internal fun ScheduleScreenLoadingPreview() {
       ScheduleScreenContent(
          Outcome.Progress(),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {},
          {},
          {},
@@ -400,6 +426,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
          {},
          {},
          {},
+         {},
       )
    }
 }
@@ -415,6 +442,7 @@ internal fun ScheduleScreenErrorPreview() {
          {},
          {},
          {},
+         {},
       )
    }
 }
@@ -427,6 +455,7 @@ internal fun ScheduleScreenRefreshErrorPreview() {
       ScheduleScreenContent(
          Outcome.Error(NoNetworkException(), PREVIEW_FAKE_LIST),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {},
          {},
          {},
@@ -451,6 +480,7 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
          {},
          {},
          {},
+         {},
       )
    }
 }
@@ -466,6 +496,7 @@ internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
          {},
          {},
          {},
+         {},
       )
    }
 }
@@ -478,6 +509,7 @@ internal fun ScheduleScreenSuccessWithTimeSetApplied() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST.copy(customTimeSet = true)),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
+         {},
          {},
          {},
          {},

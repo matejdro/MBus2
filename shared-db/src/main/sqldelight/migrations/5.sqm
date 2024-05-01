@@ -1,0 +1,5 @@
+CREATE TABLE dbFavorite (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    stops TEXT NOT NULL DEFAULT ""
+);

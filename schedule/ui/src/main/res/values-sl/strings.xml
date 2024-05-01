@@ -8,4 +8,5 @@
     <string name="on_time">Točen</string>
     <string name="line_filter">Filter linij</string>
     <string name="select_time">Izberi čas</string>
+    <string name="add_to_favorites">Dodaj med priljubljene</string>
 </resources>

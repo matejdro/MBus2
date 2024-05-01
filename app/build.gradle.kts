@@ -175,6 +175,8 @@ dependencies {
    implementation(projects.commonNavigation)
    implementation(projects.commonRetrofit.android)
    implementation(projects.commonCompose)
+   implementation(projects.favorites.data)
+   implementation(projects.favorites.ui)
    implementation(projects.home.ui)
    implementation(projects.sharedDb)
    implementation(projects.schedule.data)
