@@ -1,12 +1,11 @@
 plugins {
    androidLibraryModule
    compose
-   navigation
    showkase
 }
 
 android {
-   namespace = "com.matejdro.mbus.schedule"
+   namespace = "com.matejdro.mbus.schedule.shared"
 
    buildFeatures {
       androidResources = true
@@ -14,14 +13,10 @@ android {
 }
 
 dependencies {
+   implementation(projects.schedule.api)
+
    implementation(projects.common)
    implementation(projects.commonCompose)
-   implementation(projects.schedule.api)
-   implementation(projects.stops.api)
-   implementation(projects.sharedSchedule)
    implementation(libs.coil)
    implementation(libs.kotlinova.core)
-
-   testImplementation(projects.schedule.test)
-   testImplementation(projects.stops.test)
 }

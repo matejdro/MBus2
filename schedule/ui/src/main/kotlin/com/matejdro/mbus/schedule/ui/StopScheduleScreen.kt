@@ -2,23 +2,10 @@
 
 package com.matejdro.mbus.schedule.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,33 +20,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.mbus.navigation.keys.AddToFavouritesDialogScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
+import com.matejdro.mbus.schedule.shared.FilterDialog
+import com.matejdro.mbus.schedule.shared.StopList
+import com.matejdro.mbus.schedule.shared.TimePickerDialog
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
 import com.matejdro.mbus.ui.errors.commonUserFriendlyMessage
-import com.matejdro.mbus.ui.lists.DetectScrolledToBottom
-import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.compose.result.registerResultReceiver
-import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
@@ -70,9 +48,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.FormatStyle
-import java.time.format.TextStyle
-import java.util.Locale
+
+import com.matejdro.mbus.schedule.shared.R as scheduleScharedR
 
 class StopScheduleScreen(
    private val viewModel: StopScheduleViewModel,
@@ -147,8 +124,8 @@ private fun ScheduleScreenContent(
          title = { data.data?.stopName?.let { Text(it) } },
          actions = {
             Icon(
-               painterResource(R.drawable.ic_select_time),
-               stringResource(R.string.select_time),
+               painterResource(scheduleScharedR.drawable.ic_select_time),
+               stringResource(scheduleScharedR.string.select_time),
                tint = if (data.data?.customTimeSet != true) {
                   LocalContentColor.current
                } else {
@@ -160,8 +137,8 @@ private fun ScheduleScreenContent(
             )
 
             Icon(
-               painterResource(R.drawable.ic_filter),
-               stringResource(R.string.filter_lines),
+               painterResource(scheduleScharedR.drawable.ic_filter),
+               stringResource(scheduleScharedR.string.filter_lines),
                tint = if (data.data?.whitelistedLines.isNullOrEmpty()) {
                   LocalContentColor.current
                } else {
@@ -174,7 +151,7 @@ private fun ScheduleScreenContent(
 
             Icon(
                painterResource(R.drawable.ic_favorite),
-               stringResource(R.string.add_to_favorites),
+               stringResource(scheduleScharedR.string.add_to_favorites),
                modifier = Modifier
                   .clickable(onClick = showAddFavoritePicker)
                   .padding(8.dp)
@@ -188,19 +165,15 @@ private fun ScheduleScreenContent(
       val stopSchedule = data.data
 
       if (stopSchedule != null) {
-         val state = rememberLazyListState()
-
-         state.DetectScrolledToBottom(loadNextPage)
-
-         LazyColumn(Modifier.weight(1f), state) {
-            stopImageItem(stopSchedule)
-
-            itemsWithDivider(stopSchedule.arrivals) {
-               ScheduleItem(it, timeProvider)
-            }
-
-            bottomLoading(stopSchedule, data)
-         }
+         StopList(
+            stopSchedule.arrivals,
+            stopSchedule.stopImage,
+            timeProvider,
+            stopSchedule.hasAnyDataLeft,
+            data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA,
+            loadNextPage,
+            Modifier.weight(1f)
+         )
       }
    }
 }
@@ -230,158 +203,6 @@ private fun ColumnScope.TopLoading(data: Outcome<ScheduleUiState>) {
       )
    }
 }
-
-private fun LazyListScope.stopImageItem(stopSchedule: ScheduleUiState) {
-   stopSchedule.stopImage?.let {
-      item {
-         AsyncImage(
-            model = it,
-            modifier = Modifier
-               .fillMaxWidth()
-               .height(200.dp),
-            contentScale = ContentScale.Crop,
-            contentDescription = null
-         )
-      }
-   }
-}
-
-@Composable
-private fun ScheduleItem(it: Arrival, timeProvider: TimeProvider) {
-   val delayMin = it.liveDelayMin
-
-   Row(
-      Modifier.padding(16.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(16.dp)
-   ) {
-      LineLabel(it.line)
-
-      Column(Modifier.weight(1f)) {
-         Row {
-            if (delayMin != null && delayMin != 0) {
-               Text(
-                  fontSize = 20.sp,
-                  text = it.timeText(timeProvider.currentLocalDate(), plusMinutes = -delayMin),
-                  textDecoration = TextDecoration.LineThrough,
-                  modifier = Modifier.padding(end = 4.dp)
-               )
-            }
-            Text(
-               fontSize = 20.sp,
-               text = it.timeText(timeProvider.currentLocalDate())
-            )
-         }
-
-         delayMin?.let { DelayBadge(it) }
-
-         Text(
-            fontSize = 14.sp,
-            text = it.direction
-         )
-      }
-
-      if (delayMin != null) {
-         Icon(painterResource(R.drawable.ic_gps), stringResource(R.string.live_arrival))
-      }
-   }
-}
-
-@Composable
-private fun DelayBadge(delayMin: Int) {
-   val delayText = if (delayMin == 0) {
-      stringResource(R.string.on_time)
-   } else if (delayMin >= 0) {
-      stringResource(R.string.late, delayMin)
-   } else {
-      stringResource(R.string.early, -delayMin)
-   }
-
-   Text(
-      fontSize = 14.sp,
-      text = delayText,
-      color = MaterialTheme.colorScheme.onTertiary,
-      modifier = Modifier
-         .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
-         .background(MaterialTheme.colorScheme.tertiary, shape = MaterialTheme.shapes.small)
-         .padding(4.dp)
-   )
-}
-
-private fun LazyListScope.bottomLoading(
-   stopSchedule: ScheduleUiState,
-   data: Outcome<ScheduleUiState>,
-) {
-   if (stopSchedule.hasAnyDataLeft == true) {
-      item {
-         Box(
-            Modifier
-               .fillMaxWidth()
-               .height(32.dp),
-            Alignment.Center
-         ) {
-            if (data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA) {
-               CircularProgressIndicator(Modifier.size(32.dp))
-            }
-         }
-      }
-   }
-}
-
-@Composable
-internal fun LineLabel(line: Line) {
-   val lineColor = Color(line.color)
-   val textColor: Color = if (lineColor.luminance() > LUMINANCE_HALF_BRIGHT) {
-      Color.Black
-   } else {
-      Color.White
-   }
-
-   Box(Modifier.widthIn(min = 48.dp), contentAlignment = Alignment.Center) {
-      val shape = RoundedCornerShape(8.dp)
-      Text(
-         modifier = Modifier
-            .background(lineColor, shape = shape)
-            .border(Dp.Hairline, textColor, shape)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-         text = line.label,
-         textAlign = TextAlign.Center,
-         fontWeight = FontWeight.ExtraBold,
-         fontSize = 20.sp,
-         color = textColor
-      )
-   }
-}
-
-@Composable
-private fun Arrival.timeText(today: LocalDate, plusMinutes: Int = 0): String {
-   val dateFormatter = LocalDateFormatter.current
-
-   val timeText = dateFormatter.ofLocalizedTime().format(arrival.plusMinutes(plusMinutes.toLong()))
-   val arrivalDate = arrival.toLocalDate()
-
-   val dateText = when {
-      arrivalDate == today -> ""
-      arrivalDate == today.plusDays(1) -> stringResource(R.string.tomorrow)
-      arrivalDate < today.plusDays(DAYS_IN_A_WEEK_MINUS_ONE) -> {
-         arrivalDate.dayOfWeek.getDisplayName(
-            TextStyle.FULL,
-            Locale.getDefault()
-         )
-      }
-
-      else -> dateFormatter.ofLocalizedDate(FormatStyle.SHORT).format(arrivalDate)
-   }
-
-   return if (dateText.isEmpty()) {
-      timeText
-   } else {
-      "$dateText, $timeText"
-   }
-}
-
-private const val LUMINANCE_HALF_BRIGHT = 0.5
-private const val DAYS_IN_A_WEEK_MINUS_ONE = 6L
 
 @FullScreenPreviews
 @Composable

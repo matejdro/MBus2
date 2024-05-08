@@ -1,4 +1,4 @@
-package com.matejdro.mbus.schedule.ui
+package com.matejdro.mbus.schedule.shared
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
-import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.ui.components.AlertDialogWithContent
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
@@ -28,11 +27,12 @@ import com.matejdro.mbus.ui.debugging.PreviewTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FilterDialog(
+fun FilterDialog(
    allLines: List<Line>,
    selectedLines: Set<Int>,
    onCancel: () -> Unit,
    onSubmit: (Set<Int>) -> Unit,
+   modifier: Modifier = Modifier,
 ) {
    val selectedLinesInDialog = remember {
       val initialSelection = if (selectedLines.isEmpty()) allLines.map { it.id }.toTypedArray() else selectedLines.toTypedArray()
@@ -51,7 +51,8 @@ internal fun FilterDialog(
          TextButton(onClick = onCancel) {
             Text(stringResource(android.R.string.cancel))
          }
-      }
+      },
+      modifier = modifier
    ) {
       Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
          for (line in allLines) {
@@ -102,3 +103,7 @@ internal fun ScheduleScreenFilterDialogPreview() {
       )
    }
 }
+
+private val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
+private val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
+private val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())

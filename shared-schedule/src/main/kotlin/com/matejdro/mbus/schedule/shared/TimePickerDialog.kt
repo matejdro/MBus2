@@ -1,4 +1,4 @@
-package com.matejdro.mbus.schedule.ui
+package com.matejdro.mbus.schedule.shared
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
-import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.ui.components.AlertDialogWithContent
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
@@ -26,10 +25,11 @@ import java.time.ZonedDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TimePickerDialog(
+fun TimePickerDialog(
    selectedTime: ZonedDateTime,
    onCancel: () -> Unit,
    onSubmit: (ZonedDateTime) -> Unit,
+   modifier: Modifier = Modifier,
 ) {
    val timePickerState =
       rememberTimePickerState(initialHour = selectedTime.hour, initialMinute = selectedTime.minute, is24Hour = true)
@@ -59,7 +59,8 @@ internal fun TimePickerDialog(
          TextButton(onClick = onCancel) {
             Text(stringResource(android.R.string.cancel))
          }
-      }
+      },
+      modifier = modifier
    ) {
       Column(modifier = Modifier.verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
          TimeInput(
