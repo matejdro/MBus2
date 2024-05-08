@@ -165,17 +165,17 @@ class FavoritesRepositoryImplTest {
                Arrival(
                   TEST_EXPECTED_LINE_2,
                   LocalDateTime.of(2024, 3, 30, 9, 0),
-                  "MB -> Mesto"
+                  "Forest 88\nMB -> Mesto"
                ),
                Arrival(
                   TEST_EXPECTED_LINE_2,
                   LocalDateTime.of(2024, 3, 30, 10, 0),
-                  "MB -> Mesto"
+                  "Forest 77\nMB -> Mesto"
                ),
                Arrival(
                   TEST_EXPECTED_LINE_6,
                   LocalDateTime.of(2024, 3, 30, 12, 0),
-                  "MB -> Mesto"
+                  "Forest 88\nMB -> Mesto"
                ),
             ),
             listOf(
@@ -255,7 +255,7 @@ class FavoritesRepositoryImplTest {
                Arrival(
                   TEST_EXPECTED_LINE_6,
                   LocalDateTime.of(2024, 3, 30, 12, 0),
-                  "MB -> Mesto"
+                  "Forest 88\nMB -> Mesto"
                ),
             ),
             listOf(

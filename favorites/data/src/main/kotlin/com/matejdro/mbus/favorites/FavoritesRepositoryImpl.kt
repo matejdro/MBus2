@@ -109,11 +109,16 @@ class FavoritesRepositoryImpl @Inject constructor(
                                  stopSchedule.stopImage
                               )
                            },
-                           arrivals = stops.map { it.arrivals }
-                              .flatten()
-                              .filter {
-                                 whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id)
-                              }.sortedBy { it.arrival },
+                           arrivals = stops.map { stop ->
+                              stop.arrivals
+                                 .filter {
+                                    whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id)
+                                 }.map {
+                                    it.copy(
+                                       direction = "${stop.stopName}\n${it.direction}"
+                                    )
+                                 }
+                           }.flatten().sortedBy { it.arrival },
                            allLines = stops.map { it.allLines }.flatten().distinctBy { it.id },
                            hasAnyDataLeft = stops.any { it.hasAnyDataLeft },
                            whitelistedLines = emptySet()
