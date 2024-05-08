@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.mbus.navigation.keys.AddToFavouritesDialogScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
-import com.matejdro.mbus.schedule.R
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.shared.FilterDialog
@@ -48,7 +47,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-
 import com.matejdro.mbus.schedule.shared.R as scheduleScharedR
 
 class StopScheduleScreen(
@@ -150,7 +148,7 @@ private fun ScheduleScreenContent(
             )
 
             Icon(
-               painterResource(R.drawable.ic_favorite),
+               painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
                stringResource(scheduleScharedR.string.add_to_favorites),
                modifier = Modifier
                   .clickable(onClick = showAddFavoritePicker)

@@ -15,6 +15,7 @@ android {
 dependencies {
    implementation(projects.commonAndroid)
    implementation(projects.commonCompose)
+   implementation(projects.sharedResources)
    implementation(projects.stops.api)
 
    implementation(libs.accompanist.permissions)

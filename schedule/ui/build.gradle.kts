@@ -19,6 +19,7 @@ dependencies {
    implementation(projects.schedule.api)
    implementation(projects.stops.api)
    implementation(projects.sharedSchedule)
+   implementation(projects.sharedResources)
    implementation(libs.coil)
    implementation(libs.kotlinova.core)
 

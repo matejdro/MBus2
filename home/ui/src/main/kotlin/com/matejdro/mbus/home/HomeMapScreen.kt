@@ -1,8 +1,15 @@
 package com.matejdro.mbus.home
 
 import android.Manifest
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,6 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.GoogleMapOptions
@@ -27,6 +37,7 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
@@ -39,7 +50,9 @@ class HomeMapScreen(
    private val viewModel: HomeMapViewModel,
    private val navigator: Navigator,
 ) : Screen<HomeMapScreenKey>() {
+
    @Composable
+   @Suppress("LongMethod") // TODO
    override fun Content(key: HomeMapScreenKey) {
       val isLocationGranted = requestLocationPermission()
       val data = viewModel.stops.collectAsStateWithLifecycleAndBlinkingPrevention().value
@@ -59,32 +72,54 @@ class HomeMapScreen(
          }
       }
 
-      val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
+      Box {
+         val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
 
-      GoogleMap(
-         cameraPositionState = camera,
-         modifier = Modifier.fillMaxSize(),
-         properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
-         googleMapOptionsFactory = {
-            GoogleMapOptions().backgroundColor(backgroundColor)
-         }
-      ) {
-         UpdateModelOnCameraChange(camera, viewModel::loadStops)
+         GoogleMap(
+            cameraPositionState = camera,
+            modifier = Modifier.fillMaxSize(),
+            properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
+            googleMapOptionsFactory = {
+               GoogleMapOptions().backgroundColor(backgroundColor)
+            }
+         ) {
+            UpdateModelOnCameraChange(camera, viewModel::loadStops)
 
-         val stops = data?.data.orEmpty()
-         key(stops) {
-            for (stop in stops) {
-               key(stop.id) {
-                  Marker(
-                     state = MarkerState(LatLng(stop.lat, stop.lon)),
-                     title = stop.name,
-                     onClick = {
-                        navigator.navigateTo(StopScheduleScreenKey(stop.id))
-                        true
-                     }
-                  )
+            val stops = data?.data.orEmpty()
+            key(stops) {
+               for (stop in stops) {
+                  key(stop.id) {
+                     Marker(
+                        state = MarkerState(LatLng(stop.lat, stop.lon)),
+                        title = stop.name,
+                        onClick = {
+                           navigator.navigateTo(StopScheduleScreenKey(stop.id))
+                           true
+                        }
+                     )
+                  }
                }
             }
+         }
+
+         ElevatedButton(
+            onClick = {
+               navigator.navigateTo(FavoriteListScreenKey)
+            },
+            Modifier
+               .padding(16.dp)
+               .size(40.dp),
+            shape = MaterialTheme.shapes.extraSmall,
+            contentPadding = PaddingValues(4.dp),
+            elevation = ButtonDefaults.elevatedButtonElevation(),
+            colors = ButtonDefaults.buttonColors(
+               containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+            )
+         ) {
+            Icon(
+               painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
+               contentDescription = stringResource(com.matejdro.mbus.shared_resources.R.string.favorites)
+            )
          }
       }
    }

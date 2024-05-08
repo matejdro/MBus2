@@ -17,6 +17,7 @@ dependencies {
    implementation(projects.favorites.api)
 
    implementation(projects.commonCompose)
+   implementation(projects.sharedResources)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
 
