@@ -12,7 +12,11 @@ class FakeScheduleRepository : ScheduleRepository {
 
    var lastRequestedDate: LocalDateTime? = null
 
-   override fun getScheduleForStop(stopId: Int, from: LocalDateTime): PaginatedDataStream<StopSchedule> {
+   override fun getScheduleForStop(
+      stopId: Int,
+      from: LocalDateTime,
+      ignoreLineWhitelist: Boolean,
+   ): PaginatedDataStream<StopSchedule> {
       lastRequestedDate = from
 
       val schedulePages = providedSchedules.get(stopId) ?: error("Schedule for stop $stopId not provided")

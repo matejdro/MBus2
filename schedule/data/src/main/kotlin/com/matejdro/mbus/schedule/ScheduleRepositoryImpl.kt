@@ -51,7 +51,11 @@ class ScheduleRepositoryImpl @Inject constructor(
    private val dbArrivalQueries: DbArrivalQueries,
    private val liveArrivalsRepository: LiveArrivalRepository,
 ) : ScheduleRepository {
-   override fun getScheduleForStop(stopId: Int, from: LocalDateTime): PaginatedDataStream<StopSchedule> {
+   override fun getScheduleForStop(
+      stopId: Int,
+      from: LocalDateTime,
+      ignoreLineWhitelist: Boolean,
+   ): PaginatedDataStream<StopSchedule> {
       return object : PaginatedDataStream<StopSchedule> {
          val nextPageChannel = Channel<Unit>(1)
          val maxTime = MutableStateFlow<LocalDateTime>(LocalDateTime.MIN)
@@ -93,7 +97,7 @@ class ScheduleRepositoryImpl @Inject constructor(
          override val data: Flow<Outcome<StopSchedule>>
             get() = combine(statusFlow, dbFlow) { status, data ->
                status.mapData { scheduleMetadata ->
-                  val filteredData = if (scheduleMetadata.whitelistedLines.isEmpty()) {
+                  val filteredData = if (ignoreLineWhitelist || scheduleMetadata.whitelistedLines.isEmpty()) {
                      data
                   } else {
                      data.filter {

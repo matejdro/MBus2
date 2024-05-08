@@ -19,7 +19,7 @@ class AddToFavoritesDialogViewModelTest {
 
    @Test
    fun `Load data`() = scope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(1, "A", listOf(2, 3)),
             Favorite(2, "B", listOf(4, 5)),
@@ -40,7 +40,7 @@ class AddToFavoritesDialogViewModelTest {
 
    @Test
    fun `Do not show favorites that already contain this stop`() = scope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(1, "A", listOf(2, 3)),
             Favorite(2, "B", listOf(5, 6)),
@@ -60,7 +60,7 @@ class AddToFavoritesDialogViewModelTest {
 
    @Test
    fun `Selecting favorite should add it to the favorite's stop list`() = scope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(1, "A", listOf(2, 3)),
             Favorite(2, "B", listOf(5, 6)),
@@ -80,7 +80,7 @@ class AddToFavoritesDialogViewModelTest {
 
    @Test
    fun `Selecting favorite should emit canClose=true`() = scope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(1, "A", listOf(2, 3)),
             Favorite(2, "B", listOf(5, 6)),
@@ -97,7 +97,7 @@ class AddToFavoritesDialogViewModelTest {
 
    @Test
    fun `Creating new favorite should create it add it to the new favorite's stop list`() = scope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(0, "A", listOf(2, 3)),
             Favorite(1, "B", listOf(5, 6)),
@@ -117,7 +117,7 @@ class AddToFavoritesDialogViewModelTest {
 
    @Test
    fun `Creating new favorite should emit canClose=true`() = scope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(0, "A", listOf(2, 3)),
             Favorite(1, "B", listOf(5, 6)),

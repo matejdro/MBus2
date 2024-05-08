@@ -1,0 +1,1 @@
+ALTER TABLE dbFavorite ADD COLUMN lineWhitelist TEXT NOT NULL DEFAULT "";

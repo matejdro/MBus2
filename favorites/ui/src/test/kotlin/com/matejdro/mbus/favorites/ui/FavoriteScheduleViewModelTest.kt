@@ -1,20 +1,18 @@
-package com.matejdro.mbus.schedule.ui
+package com.matejdro.mbus.favorites.ui
 
 import app.cash.turbine.test
-import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
-import com.matejdro.mbus.schedule.FakeScheduleRepository
+import com.matejdro.mbus.favorites.FakeFavoritesRepository
+import com.matejdro.mbus.favorites.model.Favorite
+import com.matejdro.mbus.favorites.model.StopInfo
+import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
-import com.matejdro.mbus.stops.FakeStopsRepository
-import com.matejdro.mbus.stops.model.Stop
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
 import si.inova.kotlinova.core.test.outcomes.testCoroutineResourceManager
 import si.inova.kotlinova.core.test.time.virtualTimeProvider
@@ -24,16 +22,15 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class StopScheduleViewModelTest {
+class FavoriteScheduleViewModelTest {
    private val scope = TestScope()
-   private val repo = FakeScheduleRepository()
-   private val stopRepo = FakeStopsRepository()
+   private val repo = FakeFavoritesRepository()
    private val timeProvider = scope.virtualTimeProvider(
       currentLocalDate = { LocalDate.of(2024, 3, 30) },
       currentLocalTime = { LocalTime.of(9, 30) }
    )
 
-   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo, stopRepo, timeProvider)
+   private val vm = FavoriteScheduleViewModel(scope.testCoroutineResourceManager(), repo, timeProvider)
 
    @Test
    fun `Provide data`() = scope.runTest {
@@ -67,11 +64,9 @@ class StopScheduleViewModelTest {
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
       )
 
-      val expectedData = StopScheduleUiState(
+      val expectedData = FavoriteScheduleUiState(
+         TEST_FAVORITE_1,
          arrivals.arrivals,
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
          false,
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
          emptySet(),
@@ -80,14 +75,12 @@ class StopScheduleViewModelTest {
       )
 
       repo.provideSchedule(
-         12,
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
+         TEST_FAVORITE_1,
+         listOf(TEST_STOP_7, TEST_STOP_8),
          arrivals.arrivals,
       )
 
-      vm.key = StopScheduleScreenKey(12)
+      vm.key = FavoriteScheduleScreenKey(1)
 
       vm.onServiceRegistered()
       runCurrent()
@@ -98,7 +91,8 @@ class StopScheduleViewModelTest {
    @Test
    @Suppress("LongMethod") // Lots of data to define
    fun `Provide Paginated data`() = scope.runTest {
-      val expectedFirstPage = StopScheduleUiState(
+      val expectedFirstPage = FavoriteScheduleUiState(
+         TEST_FAVORITE_1,
          listOf(
             Arrival(
                TEST_EXPECTED_LINE_2,
@@ -111,17 +105,15 @@ class StopScheduleViewModelTest {
                "Mesto -> MB"
             ),
          ),
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
          true,
-         listOf(TEST_EXPECTED_LINE_2),
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
          false
       )
 
-      val expectedSecondPage = StopScheduleUiState(
+      val expectedSecondPage = FavoriteScheduleUiState(
+         TEST_FAVORITE_1,
          listOf(
             Arrival(
                TEST_EXPECTED_LINE_2,
@@ -144,9 +136,6 @@ class StopScheduleViewModelTest {
                "MB -> Mesto"
             ),
          ),
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
          false,
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
          emptySet(),
@@ -181,15 +170,13 @@ class StopScheduleViewModelTest {
       )
 
       repo.provideSchedule(
-         12,
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
+         TEST_FAVORITE_1,
+         listOf(TEST_STOP_7, TEST_STOP_8),
          firstPage,
          secondPage
       )
 
-      vm.key = StopScheduleScreenKey(12)
+      vm.key = FavoriteScheduleScreenKey(1)
 
       vm.onServiceRegistered()
 
@@ -205,29 +192,12 @@ class StopScheduleViewModelTest {
 
    @Test
    fun `Save line filter`() = scope.runTest {
-      vm.key = StopScheduleScreenKey(12)
+      vm.key = FavoriteScheduleScreenKey(1)
 
       repo.provideSchedule(
-         12,
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
+         TEST_FAVORITE_1,
+         listOf(TEST_STOP_7, TEST_STOP_8),
          emptyList(),
-      )
-
-      stopRepo.provideStops(
-         Outcome.Success(
-            listOf(
-               Stop(
-                  12,
-                  "Forest 77",
-                  0.0,
-                  0.0,
-                  "http://stopimage.com",
-                  "A stop in the forest",
-               )
-            )
-         )
       )
 
       vm.onServiceRegistered()
@@ -236,15 +206,7 @@ class StopScheduleViewModelTest {
       vm.setFilter(setOf(6))
       runCurrent()
 
-      stopRepo.getStop(12).first() shouldBe Stop(
-         12,
-         "Forest 77",
-         0.0,
-         0.0,
-         "http://stopimage.com",
-         "A stop in the forest",
-         whitelistedLines = setOf(6)
-      )
+      repo.whitelistedLines shouldBe setOf(6)
    }
 
    @Test
@@ -258,11 +220,9 @@ class StopScheduleViewModelTest {
          emptyList(),
       )
 
-      val expectedData = StopScheduleUiState(
+      val expectedData = FavoriteScheduleUiState(
+         TEST_FAVORITE_1,
          arrivals.arrivals,
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
          false,
          emptyList(),
          emptySet(),
@@ -271,14 +231,12 @@ class StopScheduleViewModelTest {
       )
 
       repo.provideSchedule(
-         12,
-         "Forest 77",
-         "http://stopimage.com",
-         "A stop in the forest",
+         TEST_FAVORITE_1,
+         listOf(TEST_STOP_7, TEST_STOP_8),
          arrivals.arrivals,
       )
 
-      vm.key = StopScheduleScreenKey(12)
+      vm.key = FavoriteScheduleScreenKey(1)
 
       vm.onServiceRegistered()
       runCurrent()
@@ -290,6 +248,25 @@ class StopScheduleViewModelTest {
       vm.schedule.value shouldBeSuccessWithData expectedData
    }
 }
+
+private val TEST_FAVORITE_1 = Favorite(
+   1,
+   "Favorite A",
+   listOf(7, 8)
+)
+
+private val TEST_STOP_7 = StopInfo(
+   7,
+   "Forest 77",
+   "A stop in the forest",
+   "http://stopimage.com",
+)
+
+private val TEST_STOP_8 = StopInfo(
+   8,
+   "Forest 88",
+   "A second stop in the forest",
+)
 
 private val TEST_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
 private val TEST_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())

@@ -5,5 +5,9 @@ import com.matejdro.mbus.schedule.model.StopSchedule
 import java.time.LocalDateTime
 
 interface ScheduleRepository {
-   fun getScheduleForStop(stopId: Int, from: LocalDateTime): PaginatedDataStream<StopSchedule>
+   fun getScheduleForStop(
+      stopId: Int,
+      from: LocalDateTime,
+      ignoreLineWhitelist: Boolean = false,
+   ): PaginatedDataStream<StopSchedule>
 }

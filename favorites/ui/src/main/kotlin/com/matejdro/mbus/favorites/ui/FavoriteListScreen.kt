@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
+import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
@@ -23,16 +24,21 @@ import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.navigation.instructions.replaceTopWith
+import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.Screen
 
 class FavoriteListScreen(
    private val viewModel: FavoriteListViewModel,
+   private val navigator: Navigator,
 ) : Screen<FavoriteListScreenKey>() {
    @Composable
    override fun Content(key: FavoriteListScreenKey) {
       val state = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention()
 
-      FavoriteListScreenContent(state.value) {}
+      FavoriteListScreenContent(state.value) {
+         navigator.replaceTopWith(FavoriteScheduleScreenKey(it))
+      }
    }
 }
 

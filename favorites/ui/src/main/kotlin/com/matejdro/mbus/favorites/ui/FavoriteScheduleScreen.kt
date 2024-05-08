@@ -1,6 +1,6 @@
 @file:Suppress("TooManyFunctions") // Previews. Waiting for https://github.com/detekt/detekt/issues/6516 to get merged
 
-package com.matejdro.mbus.schedule.ui
+package com.matejdro.mbus.favorites.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,8 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
-import com.matejdro.mbus.navigation.keys.AddToFavouritesDialogScreenKey
-import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
+import com.matejdro.mbus.favorites.model.Favorite
+import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.shared.FilterDialog
@@ -36,7 +36,6 @@ import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
 import com.matejdro.mbus.ui.errors.commonUserFriendlyMessage
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
-import si.inova.kotlinova.compose.result.registerResultReceiver
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
@@ -49,13 +48,12 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import com.matejdro.mbus.schedule.shared.R as scheduleScharedR
 
-class StopScheduleScreen(
-   private val viewModel: StopScheduleViewModel,
+class FavoriteScheduleScreen(
+   private val viewModel: FavoriteScheduleViewModel,
    private val timeProvider: TimeProvider,
-   private val addToFavouritesDialogScreen: Screen<AddToFavouritesDialogScreenKey>,
-) : Screen<StopScheduleScreenKey>() {
+) : Screen<FavoriteScheduleScreenKey>() {
    @Composable
-   override fun Content(key: StopScheduleScreenKey) {
+   override fun Content(key: FavoriteScheduleScreenKey) {
       val state = viewModel.schedule.collectAsStateWithLifecycleAndBlinkingPrevention().value
       if (state != null) {
          val data = state.data
@@ -84,24 +82,12 @@ class StopScheduleScreen(
             )
          }
 
-         var favoriteDialogShown by remember { mutableStateOf(false) }
-         if (favoriteDialogShown && data != null) {
-            val closeDialogReceiver = registerResultReceiver<Unit> {
-               favoriteDialogShown = false
-            }
-
-            addToFavouritesDialogScreen.Content(
-               AddToFavouritesDialogScreenKey(key.stopId, data.stopName, closeDialogReceiver)
-            )
-         }
-
          ScheduleScreenContent(
             state,
             timeProvider,
             viewModel::loadNextPage,
             { filterDialogShown = true },
             { timeDialogShown = true },
-            { favoriteDialogShown = true }
          )
       }
    }
@@ -110,16 +96,15 @@ class StopScheduleScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleScreenContent(
-   data: Outcome<StopScheduleUiState>,
+   data: Outcome<FavoriteScheduleUiState>,
    timeProvider: TimeProvider,
    loadNextPage: () -> Unit,
    showFilter: () -> Unit,
    showTimePicker: () -> Unit,
-   showAddFavoritePicker: () -> Unit,
 ) {
    Column {
       TopAppBar(
-         title = { data.data?.stopName?.let { Text(it) } },
+         title = { data.data?.favorite?.name?.let { Text(it) } },
          actions = {
             Icon(
                painterResource(scheduleScharedR.drawable.ic_select_time),
@@ -146,14 +131,6 @@ private fun ScheduleScreenContent(
                   .clickable(onClick = showFilter)
                   .padding(8.dp)
             )
-
-            Icon(
-               painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
-               stringResource(scheduleScharedR.string.add_to_favorites),
-               modifier = Modifier
-                  .clickable(onClick = showAddFavoritePicker)
-                  .padding(8.dp)
-            )
          }
       )
 
@@ -165,7 +142,7 @@ private fun ScheduleScreenContent(
       if (stopSchedule != null) {
          StopList(
             stopSchedule.arrivals,
-            stopSchedule.stopImage,
+            null,
             timeProvider,
             stopSchedule.hasAnyDataLeft,
             data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA,
@@ -177,7 +154,7 @@ private fun ScheduleScreenContent(
 }
 
 @Composable
-private fun ColumnScope.TopError(data: Outcome<StopScheduleUiState>) {
+private fun ColumnScope.TopError(data: Outcome<FavoriteScheduleUiState>) {
    if (data is Outcome.Error) {
       Text(
          text = data.exception.commonUserFriendlyMessage(
@@ -192,7 +169,7 @@ private fun ColumnScope.TopError(data: Outcome<StopScheduleUiState>) {
 }
 
 @Composable
-private fun ColumnScope.TopLoading(data: Outcome<StopScheduleUiState>) {
+private fun ColumnScope.TopLoading(data: Outcome<FavoriteScheduleUiState>) {
    if (data is Outcome.Progress && data.style != LoadingStyle.ADDITIONAL_DATA) {
       CircularProgressIndicator(
          Modifier.Companion
@@ -213,12 +190,11 @@ internal fun ScheduleScreenSuccessPreview() {
          {},
          {},
          {},
-         {},
       )
    }
 }
 
-@FullScreenPreviews
+@Preview
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun ScheduleScreenLoadingPreview() {
@@ -229,12 +205,11 @@ internal fun ScheduleScreenLoadingPreview() {
          {},
          {},
          {},
-         {},
       )
    }
 }
 
-@FullScreenPreviews
+@Preview
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun ScheduleScreenRefreshLoadingPreview() {
@@ -245,12 +220,11 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
          {},
          {},
          {},
-         {},
       )
    }
 }
 
-@FullScreenPreviews
+@Preview
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun ScheduleScreenErrorPreview() {
@@ -261,12 +235,11 @@ internal fun ScheduleScreenErrorPreview() {
          {},
          {},
          {},
-         {},
       )
    }
 }
 
-@FullScreenPreviews
+@Preview
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun ScheduleScreenRefreshErrorPreview() {
@@ -277,12 +250,11 @@ internal fun ScheduleScreenRefreshErrorPreview() {
          {},
          {},
          {},
-         {},
       )
    }
 }
 
-@FullScreenPreviews
+@Preview
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun ScheduleScreenRefreshLoadingMorePreview() {
@@ -296,7 +268,6 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
             style = LoadingStyle.ADDITIONAL_DATA
          ),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
-         {},
          {},
          {},
          {},
@@ -315,7 +286,6 @@ internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
          {},
          {},
          {},
-         {},
       )
    }
 }
@@ -331,7 +301,6 @@ internal fun ScheduleScreenSuccessWithTimeSetApplied() {
          {},
          {},
          {},
-         {},
       )
    }
 }
@@ -340,7 +309,12 @@ internal val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
 internal val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
 internal val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
 
-val PREVIEW_FAKE_LIST = StopScheduleUiState(
+val PREVIEW_FAKE_LIST = FavoriteScheduleUiState(
+   favorite = Favorite(
+      1,
+      "Favorite A",
+      listOf(7, 8)
+   ),
    arrivals = listOf(
       Arrival(
          PREVIEW_EXPECTED_LINE_2,
@@ -366,9 +340,6 @@ val PREVIEW_FAKE_LIST = StopScheduleUiState(
          0
       ),
    ),
-   stopName = "Forest 77",
-   stopImage = "http://stopimage.com",
-   stopDescription = "A stop in the forest",
    hasAnyDataLeft = false,
    allLines = listOf(PREVIEW_EXPECTED_LINE_2, PREVIEW_EXPECTED_LINE_6, PREVIEW_EXPECTED_LINE_18),
    whitelistedLines = emptySet(),

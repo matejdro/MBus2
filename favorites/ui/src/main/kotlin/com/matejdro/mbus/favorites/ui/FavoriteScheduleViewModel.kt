@@ -1,13 +1,13 @@
-package com.matejdro.mbus.schedule.ui
+package com.matejdro.mbus.favorites.ui
 
 import androidx.compose.runtime.Stable
 import com.matejdro.mbus.common.data.PaginatedDataStream
-import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
-import com.matejdro.mbus.schedule.ScheduleRepository
+import com.matejdro.mbus.favorites.FavoritesRepository
+import com.matejdro.mbus.favorites.model.Favorite
+import com.matejdro.mbus.favorites.model.FavoriteSchedule
+import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
-import com.matejdro.mbus.schedule.model.StopSchedule
-import com.matejdro.mbus.stops.StopsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -22,16 +22,15 @@ import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @Stable
-class StopScheduleViewModel @Inject constructor(
+class FavoriteScheduleViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
-   private val scheduleRepository: ScheduleRepository,
-   private val stopRepo: StopsRepository,
+   private val favoritesRepository: FavoritesRepository,
    private val timeProvider: TimeProvider,
-) : SingleScreenViewModel<StopScheduleScreenKey>(resources.scope) {
-   private val _schedule = MutableStateFlow<Outcome<StopScheduleUiState>>(Outcome.Progress())
-   val schedule: StateFlow<Outcome<StopScheduleUiState>> = _schedule
+) : SingleScreenViewModel<FavoriteScheduleScreenKey>(resources.scope) {
+   private val _schedule = MutableStateFlow<Outcome<FavoriteScheduleUiState>>(Outcome.Progress())
+   val schedule: StateFlow<Outcome<FavoriteScheduleUiState>> = _schedule
 
-   private var lastPaginator: PaginatedDataStream<StopSchedule>? = null
+   private var lastPaginator: PaginatedDataStream<FavoriteSchedule>? = null
 
    override fun onServiceRegistered() {
       load(timeProvider.currentLocalDateTime(), false)
@@ -45,7 +44,7 @@ class StopScheduleViewModel @Inject constructor(
    }
 
    fun setFilter(filter: Set<Int>) = coroutineScope.launch {
-      stopRepo.setWhitelistedLines(key.stopId, filter)
+      favoritesRepository.setWhitelistedLines(key.favoriteId, filter)
    }
 
    fun changeDate(newDateTime: LocalDateTime) {
@@ -53,23 +52,21 @@ class StopScheduleViewModel @Inject constructor(
    }
 
    private fun load(date: LocalDateTime, customTimeSet: Boolean) = resources.launchResourceControlTask(_schedule) {
-      val paginator = scheduleRepository.getScheduleForStop(key.stopId, date)
+      val paginator = favoritesRepository.getScheduleForFavorite(key.favoriteId, date)
       lastPaginator = paginator
 
       emitAll(
          paginator.data.map { outcome ->
             outcome.mapData {
                with(it) {
-                  StopScheduleUiState(
+                  FavoriteScheduleUiState(
+                     favorite = favorite,
                      arrivals = arrivals,
-                     stopName = stopName,
-                     stopImage = stopImage,
-                     stopDescription = stopDescription,
                      hasAnyDataLeft = hasAnyDataLeft,
                      allLines = allLines,
                      whitelistedLines = whitelistedLines,
                      selectedTime = date.atZone(timeProvider.systemDefaultZoneId()),
-                     customTimeSet = customTimeSet
+                     customTimeSet = customTimeSet,
                   )
                }
             }
@@ -78,11 +75,9 @@ class StopScheduleViewModel @Inject constructor(
    }
 }
 
-data class StopScheduleUiState(
+data class FavoriteScheduleUiState(
+   val favorite: Favorite,
    val arrivals: List<Arrival>,
-   val stopName: String,
-   val stopImage: String?,
-   val stopDescription: String,
    val hasAnyDataLeft: Boolean,
    val allLines: List<Line>,
    val whitelistedLines: Set<Int>,

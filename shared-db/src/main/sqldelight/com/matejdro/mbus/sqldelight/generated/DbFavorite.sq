@@ -1,7 +1,8 @@
 CREATE TABLE dbFavorite (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
-    stops TEXT NOT NULL DEFAULT ""
+    stops TEXT NOT NULL DEFAULT "",
+    lineWhitelist TEXT NOT NULL DEFAULT ""
 );
 
 selectAll:
@@ -15,6 +16,9 @@ INSERT INTO dbFavorite (name, stops) VALUES ?;
 
 updateStops:
 UPDATE dbFavorite SET stops = :stops WHERE id = :stopId;
+
+updateWhitelist:
+UPDATE dbFavorite SET lineWhitelist = :lineWhitelist WHERE id = :id;
 
 lastInsertRowId:
 SELECT last_insert_rowid();

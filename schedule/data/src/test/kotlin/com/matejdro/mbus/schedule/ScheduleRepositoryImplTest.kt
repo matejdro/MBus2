@@ -692,6 +692,49 @@ class ScheduleRepositoryImplTest {
    }
 
    @Test
+   fun `Do not filter lines when ignore line whitelist flag is set`() = scope.runTest {
+      val stream = repo.getScheduleForStop(42, today, ignoreLineWhitelist = true)
+
+      stream.data.test {
+         runCurrent()
+
+         stopsRepository.setWhitelistedLines(42, setOf(2))
+         runCurrent()
+
+         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
+            listOf(
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 10, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 10, 20),
+                  "Mesto -> MB"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_6,
+                  LocalDateTime.of(2024, 3, 30, 11, 0),
+                  "MB -> Mesto"
+               ),
+               Arrival(
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 11, 20),
+                  "MB -> Mesto"
+               ),
+            ),
+            "Forest 77",
+            "http://stopimage.com",
+            "A stop in the forest",
+            true,
+            TEST_EXPECTED_ALL_LINES,
+            setOf(2)
+         )
+      }
+   }
+
+   @Test
    fun `Map data through live repository`() = scope.runTest {
       val stream = repo.getScheduleForStop(42, today)
 

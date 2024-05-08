@@ -17,7 +17,7 @@ class FavoriteListViewModelTest {
 
    @Test
    fun `Load data`() = testScope.runTest {
-      favoritesRepository.setData(
+      favoritesRepository.setFavorites(
          listOf(
             Favorite(
                3,
