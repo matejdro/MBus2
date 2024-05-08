@@ -40,7 +40,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
+import com.matejdro.mbus.stops.model.Stop
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.Screen
@@ -52,7 +54,6 @@ class HomeMapScreen(
 ) : Screen<HomeMapScreenKey>() {
 
    @Composable
-   @Suppress("LongMethod") // TODO
    override fun Content(key: HomeMapScreenKey) {
       val isLocationGranted = requestLocationPermission()
       val data = viewModel.stops.collectAsStateWithLifecycleAndBlinkingPrevention().value
@@ -75,51 +76,66 @@ class HomeMapScreen(
       Box {
          val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
 
-         GoogleMap(
-            cameraPositionState = camera,
-            modifier = Modifier.fillMaxSize(),
-            properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
-            googleMapOptionsFactory = {
-               GoogleMapOptions().backgroundColor(backgroundColor)
-            }
-         ) {
-            UpdateModelOnCameraChange(camera, viewModel::loadStops)
+         Map(camera, isLocationGranted, mapStyle, backgroundColor, data)
+         FavoritesButton()
+      }
+   }
 
-            val stops = data?.data.orEmpty()
-            key(stops) {
-               for (stop in stops) {
-                  key(stop.id) {
-                     Marker(
-                        state = MarkerState(LatLng(stop.lat, stop.lon)),
-                        title = stop.name,
-                        onClick = {
-                           navigator.navigateTo(StopScheduleScreenKey(stop.id))
-                           true
-                        }
-                     )
-                  }
+   @Composable
+   private fun FavoritesButton() {
+      ElevatedButton(
+         onClick = {
+            navigator.navigateTo(FavoriteListScreenKey)
+         },
+         Modifier
+            .padding(16.dp)
+            .size(40.dp),
+         shape = MaterialTheme.shapes.extraSmall,
+         contentPadding = PaddingValues(4.dp),
+         elevation = ButtonDefaults.elevatedButtonElevation(),
+         colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+         )
+      ) {
+         Icon(
+            painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
+            contentDescription = stringResource(com.matejdro.mbus.shared_resources.R.string.favorites)
+         )
+      }
+   }
+
+   @Composable
+   private fun Map(
+      camera: CameraPositionState,
+      isLocationGranted: Boolean,
+      mapStyle: MapStyleOptions?,
+      backgroundColor: Int,
+      data: Outcome<List<Stop>>?,
+   ) {
+      GoogleMap(
+         cameraPositionState = camera,
+         modifier = Modifier.fillMaxSize(),
+         properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
+         googleMapOptionsFactory = {
+            GoogleMapOptions().backgroundColor(backgroundColor)
+         }
+      ) {
+         UpdateModelOnCameraChange(camera, viewModel::loadStops)
+
+         val stops = data?.data.orEmpty()
+         key(stops) {
+            for (stop in stops) {
+               key(stop.id) {
+                  Marker(
+                     state = MarkerState(LatLng(stop.lat, stop.lon)),
+                     title = stop.name,
+                     onClick = {
+                        navigator.navigateTo(StopScheduleScreenKey(stop.id))
+                        true
+                     }
+                  )
                }
             }
-         }
-
-         ElevatedButton(
-            onClick = {
-               navigator.navigateTo(FavoriteListScreenKey)
-            },
-            Modifier
-               .padding(16.dp)
-               .size(40.dp),
-            shape = MaterialTheme.shapes.extraSmall,
-            contentPadding = PaddingValues(4.dp),
-            elevation = ButtonDefaults.elevatedButtonElevation(),
-            colors = ButtonDefaults.buttonColors(
-               containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-            )
-         ) {
-            Icon(
-               painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
-               contentDescription = stringResource(com.matejdro.mbus.shared_resources.R.string.favorites)
-            )
          }
       }
    }
