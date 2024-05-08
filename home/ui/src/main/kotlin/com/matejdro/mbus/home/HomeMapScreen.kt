@@ -10,9 +10,11 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -57,10 +59,15 @@ class HomeMapScreen(
          }
       }
 
+      val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
+
       GoogleMap(
          cameraPositionState = camera,
          modifier = Modifier.fillMaxSize(),
-         properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle)
+         properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
+         googleMapOptionsFactory = {
+            GoogleMapOptions().backgroundColor(backgroundColor)
+         }
       ) {
          UpdateModelOnCameraChange(camera, viewModel::loadStops)
 
