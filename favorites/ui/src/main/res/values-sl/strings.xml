@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="add_new_favorite">Add new favorite</string>
+    <string name="add_new_favorite">Dodaj priljubljeno</string>
+    <string name="edit_favorite">Uredi priljubljeno</string>
+    <string name="delete">Izbriši</string>
+    <string name="delete_all">Izbriši vse</string>
 </resources>

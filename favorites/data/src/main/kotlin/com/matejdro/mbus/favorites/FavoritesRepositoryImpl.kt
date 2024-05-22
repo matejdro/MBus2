@@ -48,6 +48,12 @@ class FavoritesRepositoryImpl @Inject constructor(
       }
    }
 
+   override suspend fun deleteFavourite(favouriteId: Long) {
+      return withDefault {
+         db.delete(favouriteId)
+      }
+   }
+
    override suspend fun addStopToFavourite(favouriteId: Long, stopId: Int) {
       withDefault {
          db.transaction {

@@ -6,13 +6,17 @@ import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.favorites.FavoritesRepository
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
+import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import si.inova.kotlinova.core.exceptions.UnknownCauseException
+import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
@@ -57,6 +61,28 @@ class FavoriteScheduleViewModel @Inject constructor(
       load(newDateTime, true)
    }
 
+   fun removeStops(stops: List<StopInfo>) = coroutineScope.launch {
+      actionLogger.logAction { "FavoriteScheduleViewModel.removeStops(stops = $stops)" }
+
+      try {
+         for (stop in stops) {
+            favoritesRepository.removeStopToFavourite(key.favoriteId, stop.id)
+         }
+      } catch (e: Exception) {
+         _schedule.update { Outcome.Error(if (e is CauseException) e else UnknownCauseException(cause = e), it.data) }
+      }
+   }
+
+   fun deleteFavorite() = resources.launchResourceControlTask(_schedule) {
+      actionLogger.logAction { "FavoriteScheduleViewModel.deleteFavorite()" }
+
+      favoritesRepository.deleteFavourite(key.favoriteId)
+
+      update {
+         Outcome.Success(requireNotNull(it.data).copy(closeScreenAfterDeletion = true))
+      }
+   }
+
    private fun load(date: LocalDateTime, customTimeSet: Boolean) = resources.launchResourceControlTask(_schedule) {
       val paginator = favoritesRepository.getScheduleForFavorite(key.favoriteId, date)
       lastPaginator = paginator
@@ -73,6 +99,7 @@ class FavoriteScheduleViewModel @Inject constructor(
                      whitelistedLines = whitelistedLines,
                      selectedTime = date.atZone(timeProvider.systemDefaultZoneId()),
                      customTimeSet = customTimeSet,
+                     allStops = includedStops
                   )
                }
             }
@@ -86,7 +113,9 @@ data class FavoriteScheduleUiState(
    val arrivals: List<Arrival>,
    val hasAnyDataLeft: Boolean,
    val allLines: List<Line>,
+   val allStops: List<StopInfo>,
    val whitelistedLines: Set<Int>,
    val selectedTime: ZonedDateTime,
    val customTimeSet: Boolean,
+   val closeScreenAfterDeletion: Boolean = false,
 )

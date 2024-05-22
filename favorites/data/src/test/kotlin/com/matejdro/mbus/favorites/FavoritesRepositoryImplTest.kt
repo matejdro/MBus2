@@ -57,6 +57,22 @@ class FavoritesRepositoryImplTest {
    }
 
    @Test
+   fun `Delete favorite`() = scope.runTest {
+      favoritesRepository.createFavourite("C")
+      favoritesRepository.createFavourite("A")
+      runCurrent()
+
+      favoritesRepository.deleteFavourite(1)
+
+      favoritesRepository.getListOfFavorites().test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Favorite(2, "A", emptyList()),
+         )
+      }
+   }
+
+   @Test
    fun `Add stations to the favorite`() = scope.runTest {
       favoritesRepository.createFavourite("Test")
 

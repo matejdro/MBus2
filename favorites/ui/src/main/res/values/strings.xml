@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_new_favorite">Add new favorite</string>
+    <string name="edit_favorite">Edit favorite</string>
+    <string name="delete">Delete</string>
+    <string name="delete_all">Delete all</string>
 </resources>

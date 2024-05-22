@@ -14,6 +14,9 @@ SELECT * FROM dbFavorite WHERE id = ?;
 insert:
 INSERT INTO dbFavorite (name, stops) VALUES ?;
 
+delete:
+DELETE FROM dbFavorite WHERE id = :favoriteId;
+
 updateStops:
 UPDATE dbFavorite SET stops = :stops WHERE id = :stopId;
 

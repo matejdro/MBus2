@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,8 @@ import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.time.FakeAndroidTimeProvider
 import si.inova.kotlinova.core.time.TimeProvider
+import si.inova.kotlinova.navigation.instructions.goBack
+import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.Screen
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -51,6 +54,7 @@ import com.matejdro.mbus.schedule.shared.R as scheduleScharedR
 class FavoriteScheduleScreen(
    private val viewModel: FavoriteScheduleViewModel,
    private val timeProvider: TimeProvider,
+   private val navigator: Navigator,
 ) : Screen<FavoriteScheduleScreenKey>() {
    @Composable
    override fun Content(key: FavoriteScheduleScreenKey) {
@@ -82,13 +86,33 @@ class FavoriteScheduleScreen(
             )
          }
 
+         var editDialogShown by remember { mutableStateOf(false) }
+         if (editDialogShown && data != null) {
+            EditFavoriteDialog(
+               data.allStops,
+               { editDialogShown = false },
+               {
+                  editDialogShown = false
+                  viewModel.removeStops(it)
+               },
+               viewModel::deleteFavorite
+            )
+         }
+
          ScheduleScreenContent(
             state,
             timeProvider,
             viewModel::loadNextPage,
             { filterDialogShown = true },
             { timeDialogShown = true },
+            { editDialogShown = true }
          )
+
+         LaunchedEffect(state.data?.closeScreenAfterDeletion) {
+            if (state.data?.closeScreenAfterDeletion == true) {
+               navigator.goBack()
+            }
+         }
       }
    }
 }
@@ -101,6 +125,7 @@ private fun ScheduleScreenContent(
    loadNextPage: () -> Unit,
    showFilter: () -> Unit,
    showTimePicker: () -> Unit,
+   showEditFavorite: () -> Unit,
 ) {
    Column {
       TopAppBar(
@@ -129,6 +154,14 @@ private fun ScheduleScreenContent(
                },
                modifier = Modifier
                   .clickable(onClick = showFilter)
+                  .padding(8.dp)
+            )
+
+            Icon(
+               painterResource(R.drawable.ic_edit),
+               stringResource(R.string.edit_favorite),
+               modifier = Modifier
+                  .clickable(onClick = showEditFavorite)
                   .padding(8.dp)
             )
          }
@@ -190,6 +223,7 @@ internal fun ScheduleScreenSuccessPreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -205,6 +239,7 @@ internal fun ScheduleScreenLoadingPreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -220,6 +255,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -235,6 +271,7 @@ internal fun ScheduleScreenErrorPreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -250,6 +287,7 @@ internal fun ScheduleScreenRefreshErrorPreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -271,6 +309,7 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -286,6 +325,7 @@ internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -301,6 +341,7 @@ internal fun ScheduleScreenSuccessWithTimeSetApplied() {
          {},
          {},
          {},
+         {}
       )
    }
 }
@@ -342,7 +383,8 @@ val PREVIEW_FAKE_LIST = FavoriteScheduleUiState(
    ),
    hasAnyDataLeft = false,
    allLines = listOf(PREVIEW_EXPECTED_LINE_2, PREVIEW_EXPECTED_LINE_6, PREVIEW_EXPECTED_LINE_18),
+   allStops = emptyList(),
    whitelistedLines = emptySet(),
    selectedTime = ZonedDateTime.of(2024, 4, 20, 11, 20, 0, 0, ZoneId.of("UTC")),
-   customTimeSet = false
+   customTimeSet = false,
 )

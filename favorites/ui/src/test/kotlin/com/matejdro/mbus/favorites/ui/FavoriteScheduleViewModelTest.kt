@@ -69,11 +69,13 @@ class FavoriteScheduleViewModelTest {
          arrivals.arrivals,
          false,
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
          false
       )
 
+      repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
          listOf(TEST_STOP_7, TEST_STOP_8),
@@ -107,6 +109,7 @@ class FavoriteScheduleViewModelTest {
          ),
          true,
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
          false
@@ -138,6 +141,7 @@ class FavoriteScheduleViewModelTest {
          ),
          false,
          listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
          false
@@ -169,6 +173,7 @@ class FavoriteScheduleViewModelTest {
          ),
       )
 
+      repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
          listOf(TEST_STOP_7, TEST_STOP_8),
@@ -194,6 +199,7 @@ class FavoriteScheduleViewModelTest {
    fun `Save line filter`() = scope.runTest {
       vm.key = FavoriteScheduleScreenKey(1)
 
+      repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
          listOf(TEST_STOP_7, TEST_STOP_8),
@@ -225,11 +231,13 @@ class FavoriteScheduleViewModelTest {
          arrivals.arrivals,
          false,
          emptyList(),
+         listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 20, 8, 25, 0, 0, ZoneId.of("UTC")),
          true
       )
 
+      repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
          listOf(TEST_STOP_7, TEST_STOP_8),
@@ -247,11 +255,83 @@ class FavoriteScheduleViewModelTest {
       repo.lastRequestedDate shouldBe LocalDateTime.of(2024, 3, 20, 8, 25)
       vm.schedule.value shouldBeSuccessWithData expectedData
    }
+
+   @Test
+   fun `Delete stops`() = scope.runTest {
+      val arrivals = StopSchedule(
+         emptyList(),
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+      )
+
+      repo.setFavorites(listOf(TEST_FAVORITE_1))
+      repo.provideSchedule(
+         TEST_FAVORITE_1,
+         listOf(TEST_STOP_7, TEST_STOP_8),
+         arrivals.arrivals,
+      )
+
+      vm.key = FavoriteScheduleScreenKey(1)
+
+      vm.onServiceRegistered()
+      runCurrent()
+
+      vm.removeStops(listOf(TEST_STOP_7))
+      runCurrent()
+
+      repo.getScheduleForFavorite(TEST_FAVORITE_1.id, timeProvider.currentLocalDateTime()).data.test {
+         runCurrent()
+         expectMostRecentItem().data?.includedStops shouldBe listOf(TEST_STOP_8)
+      }
+   }
+
+   @Test
+   fun `Delete favorite`() = scope.runTest {
+      val arrivals = StopSchedule(
+         emptyList(),
+         "Forest 77",
+         "http://stopimage.com",
+         "A stop in the forest",
+         false,
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+      )
+
+      repo.setFavorites(listOf(TEST_FAVORITE_1, TEST_FAVORITE_2))
+      repo.provideSchedule(
+         TEST_FAVORITE_1,
+         listOf(TEST_STOP_7, TEST_STOP_8),
+         arrivals.arrivals,
+      )
+
+      vm.key = FavoriteScheduleScreenKey(1)
+
+      vm.onServiceRegistered()
+      runCurrent()
+
+      vm.deleteFavorite()
+      runCurrent()
+
+      repo.getListOfFavorites().test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(TEST_FAVORITE_2)
+      }
+
+      vm.schedule.value.data?.closeScreenAfterDeletion shouldBe true
+   }
 }
 
 private val TEST_FAVORITE_1 = Favorite(
    1,
    "Favorite A",
+   listOf(7, 8)
+)
+
+private val TEST_FAVORITE_2 = Favorite(
+   2,
+   "Favorite B",
    listOf(7, 8)
 )
 

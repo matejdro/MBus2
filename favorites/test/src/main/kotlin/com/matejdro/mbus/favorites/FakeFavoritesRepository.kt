@@ -35,6 +35,12 @@ class FakeFavoritesRepository : FavoritesRepository {
       return newId
    }
 
+   override suspend fun deleteFavourite(favouriteId: Long) {
+      favorites.update { list ->
+         list.filter { it.id != favouriteId }
+      }
+   }
+
    override suspend fun addStopToFavourite(favouriteId: Long, stopId: Int) {
       favorites.update { list ->
          list.map {
@@ -71,13 +77,14 @@ class FakeFavoritesRepository : FavoritesRepository {
 
    override fun getScheduleForFavorite(favoriteId: Long, from: LocalDateTime): PaginatedDataStream<FavoriteSchedule> {
       lastRequestedDate = from
+      val favorite = favorites.value.first { it.id == favoriteId }
 
       val schedulePages = providedSchedules.get(favoriteId) ?: error("Schedule for favorite $favoriteId not provided")
       return ListPaginatedDataStream(schedulePages.arrivals) { list, hasAnyDataLeft ->
          Outcome.Success(
             FavoriteSchedule(
                schedulePages.favorite,
-               schedulePages.includedStops,
+               schedulePages.includedStops.filter { favorite.stopsIds.contains(it.id) },
                list.filter { whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id) },
                schedulePages.allLines,
                hasAnyDataLeft,

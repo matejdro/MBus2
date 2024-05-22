@@ -10,6 +10,7 @@ interface FavoritesRepository {
    fun getListOfFavorites(): Flow<List<Favorite>>
 
    suspend fun createFavourite(name: String): Long
+   suspend fun deleteFavourite(favouriteId: Long)
    suspend fun addStopToFavourite(favouriteId: Long, stopId: Int)
    suspend fun removeStopToFavourite(favouriteId: Long, stopId: Int)
 

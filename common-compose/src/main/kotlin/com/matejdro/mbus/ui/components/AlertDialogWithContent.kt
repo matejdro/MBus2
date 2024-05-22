@@ -37,6 +37,7 @@ fun AlertDialogWithContent(
    confirmButton: @Composable () -> Unit,
    modifier: Modifier = Modifier,
    dismissButton: @Composable (() -> Unit) = { },
+   neutralButton: @Composable (() -> Unit) = { },
    title: @Composable (() -> Unit)? = null,
    content: @Composable () -> Unit,
 ) {
@@ -70,6 +71,7 @@ fun AlertDialogWithContent(
 
                   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                      dismissButton()
+                     neutralButton()
                      confirmButton()
                   }
                }
