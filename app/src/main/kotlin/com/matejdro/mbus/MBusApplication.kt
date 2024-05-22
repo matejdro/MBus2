@@ -6,9 +6,13 @@ import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.os.strictmode.Violation
 import androidx.core.content.ContextCompat
+import coil.Coil
+import coil.ImageLoader
 import com.matejdro.mbus.di.ApplicationComponent
 import com.matejdro.mbus.di.DaggerMainApplicationComponent
+import dispatch.core.DefaultCoroutineScope
 import dispatch.core.DefaultDispatcherProvider
+import dispatch.core.defaultDispatcher
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
 import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
@@ -19,6 +23,9 @@ import javax.inject.Provider
 open class MBusApplication : Application() {
    @Inject
    lateinit var errorReporter: Provider<ErrorReporter>
+
+   @Inject
+   lateinit var defaultScope: DefaultCoroutineScope
 
    init {
       if (BuildConfig.DEBUG) {
@@ -31,6 +38,7 @@ open class MBusApplication : Application() {
 
    override fun onCreate() {
       super.onCreate()
+      applicationComponent.inject(this)
 
       AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
 
@@ -43,6 +51,14 @@ open class MBusApplication : Application() {
             }
          }
       )
+
+      Coil.setImageLoader {
+         ImageLoader.Builder(this)
+            // Load Coil cache on the background thread
+            // See https://github.com/coil-kt/coil/issues/1878
+            .interceptorDispatcher(defaultScope.defaultDispatcher)
+            .build()
+      }
    }
 
    private fun enableStrictMode() {
@@ -131,6 +147,5 @@ open class MBusApplication : Application() {
 private val STRICT_MODE_EXCLUSIONS = listOf(
    "UnixSecureDirectoryStream", // https://issuetracker.google.com/issues/270704908
    "UnixDirectoryStream", // https://issuetracker.google.com/issues/270704908,
-   "coil.RealImageLoader", // https://github.com/coil-kt/coil/issues/1878
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
 )

@@ -190,6 +190,7 @@ dependencies {
    implementation(libs.androidx.lifecycle.viewModel)
    implementation(libs.androidx.lifecycle.viewModel.compose)
    implementation(libs.certificateTransparency)
+   implementation(libs.coil)
    implementation(libs.firebase.crashlytics)
    implementation(libs.dispatch)
    implementation(libs.kotlin.immutableCollections)

@@ -1,6 +1,7 @@
 package com.matejdro.mbus.di
 
 import android.app.Application
+import com.matejdro.mbus.MBusApplication
 import com.matejdro.mbus.MainActivity
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.squareup.anvil.annotations.MergeComponent
@@ -24,4 +25,5 @@ interface MainApplicationComponent : ApplicationComponent {
 
 interface ApplicationComponent {
    fun inject(mainActivity: MainActivity)
+   fun inject(mBusApplication: MBusApplication)
 }
