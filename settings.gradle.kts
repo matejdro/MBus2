@@ -30,6 +30,7 @@ rootProject.name = "MBus2"
 include(":app")
 include(":app-screenshot-tests")
 include(":common")
+include(":detekt")
 include(":common:test")
 include(":common-android")
 include(":common-android:test")

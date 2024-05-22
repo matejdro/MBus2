@@ -69,8 +69,13 @@ kotlin {
    jvmToolchain(17)
 }
 
+detekt {
+   config.from("$rootDir/config/detekt-android.yml")
+}
+
 dependencies {
    add("coreLibraryDesugaring", libs.desugarJdkLibs)
+   add("detektPlugins", project(":detekt"))
 
    if (configurations.findByName("androidTestImplementation") != null) {
       add("androidTestImplementation", libs.kotest.assertions)
