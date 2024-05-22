@@ -30,8 +30,13 @@ moduleGraphAssert {
    maxHeight = 6
    restricted = arrayOf(
       ":common-navigation -X> .*",
+
+      // Prevent all modules but this app module from depending on :data and :ui modules
       ":(?!$name).* -X> .*:data",
       ":(?!$name).* -X> .*:ui",
+
+      // Only allow common modules to depend on other common modules and shared resources
+      ":common-.* -X> :(?!common).*",
    )
 }
 
