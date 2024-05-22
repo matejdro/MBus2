@@ -263,6 +263,7 @@ class FavoritesRepositoryImplTest {
                TEST_EXPECTED_LINE_6
             ),
             false,
+            setOf(6)
          )
       }
 

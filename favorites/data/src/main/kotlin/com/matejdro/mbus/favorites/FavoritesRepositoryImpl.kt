@@ -121,7 +121,7 @@ class FavoritesRepositoryImpl @Inject constructor(
                            }.flatten().sortedBy { it.arrival },
                            allLines = stops.map { it.allLines }.flatten().distinctBy { it.id },
                            hasAnyDataLeft = stops.any { it.hasAnyDataLeft },
-                           whitelistedLines = emptySet()
+                           whitelistedLines = whitelistedLines
                         )
                      }
                   }
