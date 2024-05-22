@@ -105,6 +105,7 @@ class AddToFavoritesDialogViewModelTest {
       )
 
       viewModel.load(4)
+      runCurrent()
       viewModel.addAndSelect("C")
       runCurrent()
 
@@ -125,6 +126,7 @@ class AddToFavoritesDialogViewModelTest {
       )
 
       viewModel.load(4)
+      runCurrent()
       viewModel.addAndSelect("C")
       runCurrent()
 
