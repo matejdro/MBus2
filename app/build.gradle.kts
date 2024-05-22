@@ -201,6 +201,8 @@ dependencies {
    implementation(libs.androidx.datastore)
    implementation(libs.androidx.datastore.preferences)
 
+   debugImplementation(libs.whatTheStack)
+
    testImplementation(projects.commonAndroid.test)
    androidTestImplementation(projects.commonAndroid.test)
    androidTestImplementation(projects.commonRetrofit.test)

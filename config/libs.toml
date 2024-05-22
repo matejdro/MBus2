@@ -56,6 +56,7 @@ sqldelight = "2.0.1"
 tomlj = "1.1.0"
 turbine = "1.0.0"
 versionsChecker = "0.51.0"
+whatTheStack = "f508cf4ef5"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
@@ -156,6 +157,7 @@ sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", 
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
 tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+whatTheStack = { module = "com.github.matejdro:WhatTheStack", version.ref = "whatTheStack" }
 
 
 [plugins]
