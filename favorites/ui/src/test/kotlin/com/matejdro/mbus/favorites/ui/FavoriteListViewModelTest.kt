@@ -13,7 +13,7 @@ class FavoriteListViewModelTest {
    private val testScope = TestScope()
    private val favoritesRepository = FakeFavoritesRepository()
 
-   private val viewModel = FavoriteListViewModel(testScope.testCoroutineResourceManager(), favoritesRepository)
+   private val viewModel = FavoriteListViewModel(testScope.testCoroutineResourceManager(), favoritesRepository, {})
 
    @Test
    fun `Load data`() = testScope.runTest {

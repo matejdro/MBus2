@@ -33,7 +33,7 @@ class StopScheduleViewModelTest {
       currentLocalTime = { LocalTime.of(9, 30) }
    )
 
-   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo, stopRepo, timeProvider)
+   private val vm = StopScheduleViewModel(scope.testCoroutineResourceManager(), repo, stopRepo, timeProvider, {})
 
    @Test
    fun `Provide data`() = scope.runTest {

@@ -2,6 +2,7 @@ package com.matejdro.mbus.schedule.ui
 
 import androidx.compose.runtime.Stable
 import com.matejdro.mbus.common.data.PaginatedDataStream
+import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.ScheduleRepository
 import com.matejdro.mbus.schedule.model.Arrival
@@ -27,6 +28,7 @@ class StopScheduleViewModel @Inject constructor(
    private val scheduleRepository: ScheduleRepository,
    private val stopRepo: StopsRepository,
    private val timeProvider: TimeProvider,
+   private val actionLogger: ActionLogger,
 ) : SingleScreenViewModel<StopScheduleScreenKey>(resources.scope) {
    private val _schedule = MutableStateFlow<Outcome<StopScheduleUiState>>(Outcome.Progress())
    val schedule: StateFlow<Outcome<StopScheduleUiState>> = _schedule
@@ -34,10 +36,13 @@ class StopScheduleViewModel @Inject constructor(
    private var lastPaginator: PaginatedDataStream<StopSchedule>? = null
 
    override fun onServiceRegistered() {
+      actionLogger.logAction { "StopScheduleViewModel.onServiceRegistered()" }
       load(timeProvider.currentLocalDateTime(), false)
    }
 
    fun loadNextPage() {
+      actionLogger.logAction { "StopScheduleViewModel.loadNextPage()" }
+
       val existingData = _schedule.value.data
       if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
          lastPaginator?.nextPage()
@@ -45,10 +50,14 @@ class StopScheduleViewModel @Inject constructor(
    }
 
    fun setFilter(filter: Set<Int>) = coroutineScope.launch {
+      actionLogger.logAction { "StopScheduleViewModel.setFilter(filter = $filter)" }
+
       stopRepo.setWhitelistedLines(key.stopId, filter)
    }
 
    fun changeDate(newDateTime: LocalDateTime) {
+      actionLogger.logAction { "StopScheduleViewModel.changeDate(newDateTime = $newDateTime)" }
+
       load(newDateTime, true)
    }
 

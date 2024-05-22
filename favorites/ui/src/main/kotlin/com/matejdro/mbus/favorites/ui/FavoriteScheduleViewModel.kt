@@ -2,6 +2,7 @@ package com.matejdro.mbus.favorites.ui
 
 import androidx.compose.runtime.Stable
 import com.matejdro.mbus.common.data.PaginatedDataStream
+import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.favorites.FavoritesRepository
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
@@ -26,6 +27,7 @@ class FavoriteScheduleViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val favoritesRepository: FavoritesRepository,
    private val timeProvider: TimeProvider,
+   private val actionLogger: ActionLogger,
 ) : SingleScreenViewModel<FavoriteScheduleScreenKey>(resources.scope) {
    private val _schedule = MutableStateFlow<Outcome<FavoriteScheduleUiState>>(Outcome.Progress())
    val schedule: StateFlow<Outcome<FavoriteScheduleUiState>> = _schedule
@@ -33,10 +35,12 @@ class FavoriteScheduleViewModel @Inject constructor(
    private var lastPaginator: PaginatedDataStream<FavoriteSchedule>? = null
 
    override fun onServiceRegistered() {
+      actionLogger.logAction { "FavoriteScheduleViewModel.onServiceRegistered()" }
       load(timeProvider.currentLocalDateTime(), false)
    }
 
    fun loadNextPage() {
+      actionLogger.logAction { "FavoriteScheduleViewModel.loadNextPage()" }
       val existingData = _schedule.value.data
       if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
          lastPaginator?.nextPage()
@@ -44,10 +48,12 @@ class FavoriteScheduleViewModel @Inject constructor(
    }
 
    fun setFilter(filter: Set<Int>) = coroutineScope.launch {
+      actionLogger.logAction { "FavoriteScheduleViewModel.setFilter(filter = $filter)" }
       favoritesRepository.setWhitelistedLines(key.favoriteId, filter)
    }
 
    fun changeDate(newDateTime: LocalDateTime) {
+      actionLogger.logAction { "FavoriteScheduleViewModel.changeDate(newDateTime = $newDateTime)" }
       load(newDateTime, true)
    }
 

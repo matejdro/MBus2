@@ -17,7 +17,7 @@ class HomeMapViewModelTest {
    private val testScope = TestScopeWithDispatcherProvider()
    private val stopsRepo = FakeStopsRepository()
 
-   private val viewModel = HomeMapViewModel(testScope.testCoroutineResourceManager(), stopsRepo)
+   private val viewModel = HomeMapViewModel(testScope.testCoroutineResourceManager(), stopsRepo, {})
 
    @Test
    fun `Provide stops when loading stops via map area`() = testScope.runTest {

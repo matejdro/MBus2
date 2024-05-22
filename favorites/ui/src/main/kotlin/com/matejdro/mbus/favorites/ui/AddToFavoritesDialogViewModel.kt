@@ -1,6 +1,7 @@
 package com.matejdro.mbus.favorites.ui
 
 import androidx.compose.runtime.Stable
+import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.favorites.FavoritesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class AddToFavoritesDialogViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val favoritesRepository: FavoritesRepository,
+   private val actionLogger: ActionLogger,
 ) : CoroutineScopedService(resources.scope) {
    private val _data = MutableStateFlow<Outcome<AddToFavoritesDialogData>>(Outcome.Progress())
    val data: StateFlow<Outcome<AddToFavoritesDialogData>> = _data
@@ -21,6 +23,7 @@ class AddToFavoritesDialogViewModel @Inject constructor(
    private var lastLoadedStop: Int? = null
 
    fun load(stopId: Int) = resources.launchResourceControlTask(_data) {
+      actionLogger.logAction { "AddToFavoritesDialogViewModel.load(stopId = $stopId)" }
       lastLoadedStop = stopId
 
       emitAll(
@@ -38,6 +41,7 @@ class AddToFavoritesDialogViewModel @Inject constructor(
    }
 
    fun select(favoriteId: Long) {
+      actionLogger.logAction { "AddToFavoritesDialogViewModel.select(favoriteId = $favoriteId)" }
       val stopId = lastLoadedStop ?: return
 
       resources.launchResourceControlTask(_data) {
@@ -47,6 +51,7 @@ class AddToFavoritesDialogViewModel @Inject constructor(
    }
 
    fun addAndSelect(name: String) {
+      actionLogger.logAction { "AddToFavoritesDialogViewModel.addAndSelect(name = $name)" }
       val stopId = lastLoadedStop ?: return
 
       resources.launchResourceControlTask(_data) {

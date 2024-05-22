@@ -30,7 +30,7 @@ class FavoriteScheduleViewModelTest {
       currentLocalTime = { LocalTime.of(9, 30) }
    )
 
-   private val vm = FavoriteScheduleViewModel(scope.testCoroutineResourceManager(), repo, timeProvider)
+   private val vm = FavoriteScheduleViewModel(scope.testCoroutineResourceManager(), repo, timeProvider, {})
 
    @Test
    fun `Provide data`() = scope.runTest {

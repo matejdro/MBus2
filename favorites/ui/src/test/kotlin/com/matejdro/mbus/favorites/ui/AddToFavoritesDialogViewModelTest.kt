@@ -15,7 +15,7 @@ class AddToFavoritesDialogViewModelTest {
    private val scope = TestScope()
    private val favoritesRepository = FakeFavoritesRepository()
 
-   private val viewModel = AddToFavoritesDialogViewModel(scope.testCoroutineResourceManager(), favoritesRepository)
+   private val viewModel = AddToFavoritesDialogViewModel(scope.testCoroutineResourceManager(), favoritesRepository, {})
 
    @Test
    fun `Load data`() = scope.runTest {

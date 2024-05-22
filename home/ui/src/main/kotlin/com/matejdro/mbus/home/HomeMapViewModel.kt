@@ -3,6 +3,7 @@ package com.matejdro.mbus.home
 import androidx.compose.runtime.Stable
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.stops.StopsRepository
 import com.matejdro.mbus.stops.model.Stop
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class HomeMapViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val stopsRepository: StopsRepository,
+   private val actionLogger: ActionLogger,
 ) : SingleScreenViewModel<HomeMapScreenKey>(resources.scope) {
    private val _stops = MutableStateFlow<Outcome<List<Stop>>>(Outcome.Progress())
    val stops: StateFlow<Outcome<List<Stop>>> = _stops
@@ -28,6 +30,7 @@ class HomeMapViewModel @Inject constructor(
    private val defaultDispatcher = resources.scope.coroutineContext.dispatcherProvider.default
 
    fun loadStops(newBounds: LatLngBounds) {
+      actionLogger.logAction { "HomeMapViewModel.loadStops(newBounds = $newBounds)" }
       val halfWidth = newBounds.northeast.longitude - newBounds.center.longitude
       if (halfWidth > MAX_HALF_WIDTH_TO_SHOW_POINTS) {
          resources.cancelResource(_stops)
