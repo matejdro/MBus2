@@ -131,6 +131,10 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
+    ignoreAnnotated:
+      # Sometimes we are forced to have long compose methods, when listing long screens etc. Complexity checks should catch
+      # Most eggregious
+      - Composable
   LongParameterList:
     active: true
     functionThreshold: 6
