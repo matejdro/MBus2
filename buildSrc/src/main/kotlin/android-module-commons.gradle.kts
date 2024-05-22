@@ -84,7 +84,10 @@ dependencies {
 
 // Even empty android test tasks take a while to execute. Disable all of them by default.
 tasks.configureEach {
-   if (!customConfig.enableEmulatorTests.getOrElse(false) && name.contains("AndroidTest", ignoreCase = true)) {
+   if (!customConfig.enableEmulatorTests.getOrElse(false) &&
+      name.contains("AndroidTest", ignoreCase = true) &&
+      !name.contains("Lint", ignoreCase = true) // Android lint does not like disabling their tasks) {
+   ) {
       enabled = false
    }
 }

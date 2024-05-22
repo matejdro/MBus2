@@ -30,9 +30,11 @@ android {
 
 // Even empty android test tasks take a while to execute. Disable all of them by default.
 tasks.configureEach {
-   if (name.contains("test", ignoreCase = true)) {
+   if (
+      name.contains("test", ignoreCase = true) &&
+      !name.contains("Lint", ignoreCase = true) // Android lint does not like disabling their tasks) {
+   )
       enabled = false
-   }
 }
 
 kotlinova {
