@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExportableFileTemplateSettings">
+    <default_templates>
+      <template name="Android Module (with resources).kts" file-name="${NAME}/build.gradle.kts" reformat="true" live-template-enabled="false">
+        <template name="Android Module (with resources).kts.child.0.xml" file-name="${NAME}/src/main/AndroidManifest.xml" reformat="true" live-template-enabled="false" />
+        <template name="Android Module (with resources).kts.child.1." file-name="${NAME}/.gitignore" reformat="true" live-template-enabled="false" />
+      </template>
+      <template name="Android Module (with resources).kts.child.0.xml" file-name="${NAME}/src/main/AndroidManifest.xml" reformat="true" live-template-enabled="false" />
+      <template name="Android Module (with resources).kts.child.1." file-name="${NAME}/.gitignore" reformat="true" live-template-enabled="false" />
+      <template name="Android Module (without resources).kts" file-name="${NAME}/build.gradle.kts" reformat="true" live-template-enabled="false">
+        <template name="Android Module (without resources).kts.child.1." file-name="${NAME}/.gitignore" reformat="true" live-template-enabled="false" />
+        <template name="Android Module (without resources).kts.child.0.xml" file-name="${NAME}/src/main/AndroidManifest.xml" reformat="true" live-template-enabled="false" />
+      </template>
+      <template name="Android Module (without resources).kts.child.0.xml" file-name="${NAME}/src/main/AndroidManifest.xml" reformat="true" live-template-enabled="false" />
+      <template name="Android Module (without resources).kts.child.1." file-name="${NAME}/.gitignore" reformat="true" live-template-enabled="false" />
+      <template name="New feature with 4 standard modules.kts" file-name="${NAME}/ui/build.gradle.kts" reformat="true" live-template-enabled="false">
+        <template name="New feature with 4 standard modules.kts.child.0.kts" file-name="${NAME}/test/build.gradle" reformat="true" live-template-enabled="false" />
+        <template name="New feature with 4 standard modules.kts.child.1.xml" file-name="${NAME}/ui/src/main/AndroidManifest.xml" reformat="true" live-template-enabled="false" />
+        <template name="New feature with 4 standard modules.kts.child.2.kts" file-name="${NAME}/data/build.gradle" reformat="true" live-template-enabled="false" />
+        <template name="New feature with 4 standard modules.kts.child.3." file-name="${NAME}/ui/.gitignore" reformat="true" live-template-enabled="false" />
+        <template name="New feature with 4 standard modules.kts.child.4.kts" file-name="${NAME}/api/build.gradle" reformat="true" live-template-enabled="false" />
+      </template>
+      <template name="New feature with 4 standard modules.kts.child.0.kts" file-name="${NAME}/test/build.gradle" reformat="true" live-template-enabled="false" />
+      <template name="New feature with 4 standard modules.kts.child.1.xml" file-name="${NAME}/ui/src/main/AndroidManifest.xml" reformat="true" live-template-enabled="false" />
+      <template name="New feature with 4 standard modules.kts.child.2.kts" file-name="${NAME}/data/build.gradle" reformat="true" live-template-enabled="false" />
+      <template name="New feature with 4 standard modules.kts.child.3." file-name="${NAME}/ui/.gitignore" reformat="true" live-template-enabled="false" />
+      <template name="New feature with 4 standard modules.kts.child.4.kts" file-name="${NAME}/api/build.gradle" reformat="true" live-template-enabled="false" />
+      <template name="Pure Kotlin Module.kts" file-name="${NAME}/build.gradle.kts" reformat="true" live-template-enabled="false">
+        <template name="Pure Kotlin Module.kts.child.0." file-name="${NAME}/.gitignore" reformat="true" live-template-enabled="false" />
+      </template>
+      <template name="Pure Kotlin Module.kts.child.0." file-name="${NAME}/.gitignore" reformat="true" live-template-enabled="false" />
+    </default_templates>
+  </component>
+</project>
