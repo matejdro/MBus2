@@ -8,6 +8,7 @@ dependencies {
 
    implementation(libs.certificateTransparency)
    implementation(libs.dispatch)
+   implementation(libs.okhttp)
    implementation(libs.retrofit.moshi)
    implementation(libs.kotlin.coroutines)
 
