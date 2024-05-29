@@ -41,14 +41,10 @@ class LiveArrivalRepositoryImpl @Inject constructor(
             val nextLiveArrivalForThisLine = liveArrivalForThisStop.firstOrNull { it.lineId == arrival.line.id }
             if (nextLiveArrivalForThisLine != null) {
                if (nextLiveArrivalForThisLine.arrivalTime == arrivalTime) {
-                  if (nextLiveArrivalForThisLine.delayMin != null) {
-                     arrival.copy(
-                        arrival = arrival.arrival.plusMinutes(nextLiveArrivalForThisLine.delayMin.toLong()),
-                        liveDelayMin = nextLiveArrivalForThisLine.delayMin
-                     )
-                  } else {
-                     arrival
-                  }
+                  arrival.copy(
+                     arrival = arrival.arrival.plusMinutes(nextLiveArrivalForThisLine.delayMin?.toLong() ?: 0L),
+                     liveDelayMin = nextLiveArrivalForThisLine.delayMin
+                  )
                } else if (nextLiveArrivalForThisLine.arrivalTime < arrivalTime) {
                   arrival
                } else {
@@ -62,8 +58,7 @@ class LiveArrivalRepositoryImpl @Inject constructor(
                   it.arrival >= defaultCutoffPoint
                }
             }
-         }
-            .sortedBy { it.arrival }
+         }.sortedBy { it.arrival }
       }.onStart { emit(originalArrivals.applyDefaultCutoff()) }
    }
 

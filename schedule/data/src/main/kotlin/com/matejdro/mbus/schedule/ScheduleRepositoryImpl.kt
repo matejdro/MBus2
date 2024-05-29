@@ -1,5 +1,6 @@
 package com.matejdro.mbus.schedule
 
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.data.PaginatedDataStream
@@ -12,6 +13,7 @@ import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.schedule.models.toArrival
 import com.matejdro.mbus.sqldelight.generated.DbArrival
 import com.matejdro.mbus.sqldelight.generated.DbArrivalQueries
+import com.matejdro.mbus.sqldelight.generated.SelectAllOnStop
 import com.matejdro.mbus.stops.StopsRepository
 import com.matejdro.mbus.stops.model.Stop
 import com.squareup.anvil.annotations.ContributesBinding
@@ -62,22 +64,7 @@ class ScheduleRepositoryImpl @Inject constructor(
          val maxTime = MutableStateFlow<LocalDateTime>(LocalDateTime.MIN)
 
          val dbFlow = maxTime.flatMapLatest { maxTime ->
-            val minTimeIsoString = from
-               .let {
-                  if (includeLive) {
-                     it.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
-                  } else {
-                     it
-                  }
-               }
-               .let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) }
-            val maxTimeString = maxTime.toIsoString()
-
-            dbArrivalQueries.selectAllOnStop(
-               stopId.toLong(),
-               minTimeIsoString,
-               maxTimeString
-            ).asFlow()
+            loadDataFromDb(from, includeLive, maxTime, stopId)
          }.map { query ->
             query.awaitAsList().map { it.toArrival() }
          }
@@ -136,6 +123,30 @@ class ScheduleRepositoryImpl @Inject constructor(
             nextPageChannel.trySend(Unit)
          }
       }
+   }
+
+   private fun loadDataFromDb(
+      from: LocalDateTime,
+      includeLive: Boolean,
+      maxTime: LocalDateTime,
+      stopId: Int,
+   ): Flow<Query<SelectAllOnStop>> {
+      val minTimeIsoString = from
+         .let {
+            if (includeLive) {
+               it.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
+            } else {
+               it
+            }
+         }
+         .let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) }
+      val maxTimeString = maxTime.toIsoString()
+
+      return dbArrivalQueries.selectAllOnStop(
+         stopId.toLong(),
+         minTimeIsoString,
+         maxTimeString
+      ).asFlow()
    }
 
    private fun loadDataForADay(
