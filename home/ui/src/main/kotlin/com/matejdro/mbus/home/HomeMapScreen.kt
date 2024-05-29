@@ -3,8 +3,12 @@ package com.matejdro.mbus.home
 import android.Manifest
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ColorScheme
@@ -77,17 +81,17 @@ class HomeMapScreen(
          val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
 
          Map(camera, isLocationGranted, mapStyle, backgroundColor, data)
-         FavoritesButton()
+         FavoritesButton(Modifier.safeDrawingPadding())
       }
    }
 
    @Composable
-   private fun FavoritesButton() {
+   private fun FavoritesButton(modifier: Modifier = Modifier) {
       ElevatedButton(
          onClick = {
             navigator.navigateTo(FavoriteListScreenKey)
          },
-         Modifier
+         modifier
             .padding(16.dp)
             .size(40.dp),
          shape = MaterialTheme.shapes.extraSmall,
@@ -118,7 +122,8 @@ class HomeMapScreen(
          properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
          googleMapOptionsFactory = {
             GoogleMapOptions().backgroundColor(backgroundColor)
-         }
+         },
+         contentPadding = WindowInsets.safeDrawing.asPaddingValues()
       ) {
          UpdateModelOnCameraChange(camera, viewModel::loadStops)
 

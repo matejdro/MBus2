@@ -6,21 +6,13 @@ import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
-import si.inova.kotlinova.core.activity.findActivity
 
 private val LightColors = lightColorScheme(
    primary = md_theme_light_primary,
@@ -102,18 +94,6 @@ fun MBusTheme(
       darkTheme -> DarkColors
       else -> LightColors
    }
-   val view = LocalView.current
-   if (!view.isInEditMode) {
-      SideEffect {
-         val window = (view.context.findActivity())?.window ?: return@SideEffect
-         window.statusBarColor = colorScheme.primary.toArgb()
-         val navigationBarColor = colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation)
-         window.navigationBarColor = navigationBarColor.toArgb()
-         val insetsController = WindowCompat.getInsetsController(window, view)
-         insetsController.isAppearanceLightStatusBars = darkTheme
-         insetsController.isAppearanceLightNavigationBars = navigationBarColor.luminance() > BRIGHT_THRESHOLD_LUMINANCE
-      }
-   }
 
    MaterialTheme(
       colorScheme = colorScheme,
@@ -146,5 +126,4 @@ private class TransparencyFixRippleTheme(private val defaultTheme: RippleTheme) 
    }
 }
 
-private const val BRIGHT_THRESHOLD_LUMINANCE = 0.5f
 private const val MIN_RIPPLE_ALPHA_ON_TIRAMISU = 0.5f

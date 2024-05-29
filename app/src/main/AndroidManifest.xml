@@ -30,7 +30,8 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|locale|layoutDirection|density"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.MBus.Splash">
+            android:theme="@style/Theme.MBus.Splash"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
