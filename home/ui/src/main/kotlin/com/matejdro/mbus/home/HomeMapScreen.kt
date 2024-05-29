@@ -20,6 +20,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -93,12 +95,14 @@ class HomeMapScreen(
          },
          modifier
             .padding(16.dp)
-            .size(40.dp),
+            .size(40.dp)
+            .alpha(MAP_BUTTON_ALPHA),
          shape = MaterialTheme.shapes.extraSmall,
          contentPadding = PaddingValues(4.dp),
-         elevation = ButtonDefaults.elevatedButtonElevation(),
+         elevation = ButtonDefaults.elevatedButtonElevation(2.dp),
          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+            containerColor = Color.White,
+            contentColor = Color.Black
          )
       ) {
          Icon(
@@ -178,4 +182,5 @@ class HomeMapScreen(
 
 private fun ColorScheme.isDarkMode() = background.luminance() > HALF_LUMINANCE
 private const val HALF_LUMINANCE = 0.5f
+private const val MAP_BUTTON_ALPHA = 0.8f
 private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425766468048), 16f, 0f, 0f)
