@@ -10,7 +10,7 @@ import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 
 class FakeStopsRepository : StopsRepository {
-   private var providedStops = MutableStateFlow<Outcome<List<Stop>>?>(null)
+   private val providedStops = MutableStateFlow<Outcome<List<Stop>>?>(null)
    var numLoads = 0
 
    fun provideStops(stops: Outcome<List<Stop>>) {

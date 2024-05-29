@@ -14,20 +14,24 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.test.flow.FakeUserPresenceProvider
+import si.inova.kotlinova.core.test.time.virtualTimeProvider
 import si.inova.kotlinova.retrofit.InterceptionStyle
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
 class LiveArrivalRepositoryImplTest {
    private val service = FakeSchedulesService()
 
-   val lievArrivalRepository = LiveArrivalRepositoryImpl(service)
-
    private val userPresenceProvider = FakeUserPresenceProvider().apply { isPresent = true }
-
    private val scope = TestScope(userPresenceProvider)
 
-   private val defaultBefore = LocalDateTime.of(2024, 3, 30, 9, 0)
+   private val timeProvider = scope.virtualTimeProvider(
+      currentLocalDate = { LocalDate.of(2024, 3, 30) },
+      currentLocalTime = { LocalTime.of(10, 15) }
+   )
+
+   val lievArrivalRepository = LiveArrivalRepositoryImpl(service, timeProvider)
 
    @Test
    fun `Swap time and add delay for arrivals with live info`() = scope.runTest {
@@ -36,7 +40,7 @@ class LiveArrivalRepositoryImplTest {
          LiveArrivalsDto(
             listOf(
                LiveArrivalsDto.LiveArrivalDto(
-                  LocalTime.of(10, 20),
+                  LocalTime.of(10, 0),
                   4,
                   2
                ),
@@ -49,19 +53,19 @@ class LiveArrivalRepositoryImplTest {
          )
       )
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
          expectMostRecentItem() shouldBe listOf(
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
+               LocalDateTime.of(2024, 3, 30, 10, 4),
+               "MB -> Mesto",
+               4
             ),
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 24),
+               LocalDateTime.of(2024, 3, 30, 10, 20),
                "Mesto -> MB",
-               4
             ),
             Arrival(
                FAKE_LINE_6,
@@ -82,7 +86,7 @@ class LiveArrivalRepositoryImplTest {
    fun `Update live info every minute`() = scope.runTest {
       service.provideArrivals(77, LiveArrivalsDto(emptyList()))
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
 
          service.provideArrivals(
@@ -90,7 +94,7 @@ class LiveArrivalRepositoryImplTest {
             LiveArrivalsDto(
                listOf(
                   LiveArrivalsDto.LiveArrivalDto(
-                     LocalTime.of(10, 20),
+                     LocalTime.of(10, 0),
                      4,
                      2
                   ),
@@ -108,14 +112,14 @@ class LiveArrivalRepositoryImplTest {
          expectMostRecentItem() shouldBe listOf(
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
+               LocalDateTime.of(2024, 3, 30, 10, 4),
+               "MB -> Mesto",
+               4
             ),
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 24),
+               LocalDateTime.of(2024, 3, 30, 10, 20),
                "Mesto -> MB",
-               4
             ),
             Arrival(
                FAKE_LINE_6,
@@ -138,7 +142,7 @@ class LiveArrivalRepositoryImplTest {
 
       userPresenceProvider.isPresent = false
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
          expectMostRecentItem()
 
@@ -147,7 +151,7 @@ class LiveArrivalRepositoryImplTest {
             LiveArrivalsDto(
                listOf(
                   LiveArrivalsDto.LiveArrivalDto(
-                     LocalTime.of(10, 20),
+                     LocalTime.of(10, 0),
                      4,
                      2
                   ),
@@ -167,12 +171,12 @@ class LiveArrivalRepositoryImplTest {
    }
 
    @Test
-   fun `Update live info immediately after user comes`() = scope.runTest {
+   fun `Update live info immediately after user comes back`() = scope.runTest {
       service.provideArrivals(77, LiveArrivalsDto(emptyList()))
 
       userPresenceProvider.isPresent = false
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
          expectMostRecentItem()
 
@@ -181,7 +185,7 @@ class LiveArrivalRepositoryImplTest {
             LiveArrivalsDto(
                listOf(
                   LiveArrivalsDto.LiveArrivalDto(
-                     LocalTime.of(10, 20),
+                     LocalTime.of(10, 0),
                      4,
                      2
                   ),
@@ -203,14 +207,14 @@ class LiveArrivalRepositoryImplTest {
          expectMostRecentItem() shouldBe listOf(
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
+               LocalDateTime.of(2024, 3, 30, 10, 4),
+               "MB -> Mesto",
+               4
             ),
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 24),
+               LocalDateTime.of(2024, 3, 30, 10, 20),
                "Mesto -> MB",
-               4
             ),
             Arrival(
                FAKE_LINE_6,
@@ -231,13 +235,8 @@ class LiveArrivalRepositoryImplTest {
    fun `Ignore live info when request takes too long`() = scope.runTest {
       service.interceptAllFutureCallsWith(InterceptionStyle.InfiniteLoad)
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          awaitItem() shouldBe listOf(
-            Arrival(
-               FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
-            ),
             Arrival(
                FAKE_LINE_2,
                LocalDateTime.of(2024, 3, 30, 10, 20),
@@ -261,13 +260,8 @@ class LiveArrivalRepositoryImplTest {
    fun `Ignore live info when request reports network error`() = scope.runTest {
       service.interceptAllFutureCallsWith(InterceptionStyle.Error(NoNetworkException()))
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          awaitItem() shouldBe listOf(
-            Arrival(
-               FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
-            ),
             Arrival(
                FAKE_LINE_2,
                LocalDateTime.of(2024, 3, 30, 10, 20),
@@ -293,7 +287,7 @@ class LiveArrivalRepositoryImplTest {
       service.interceptAllFutureCallsWith(InterceptionStyle.Error(IllegalStateException()))
 
       shouldThrow<IllegalStateException> {
-         lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+         lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
             expectMostRecentItem()
          }
       }
@@ -307,7 +301,7 @@ class LiveArrivalRepositoryImplTest {
          LiveArrivalsDto(
             listOf(
                LiveArrivalsDto.LiveArrivalDto(
-                  LocalTime.of(10, 20),
+                  LocalTime.of(10, 0),
                   4,
                   2
                ),
@@ -322,14 +316,9 @@ class LiveArrivalRepositoryImplTest {
 
       service.interceptAllFutureCallsWith(InterceptionStyle.InfiniteLoad)
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
          expectMostRecentItem() shouldBe listOf(
-            Arrival(
-               FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
-            ),
             Arrival(
                FAKE_LINE_2,
                LocalDateTime.of(2024, 3, 30, 10, 20),
@@ -352,14 +341,14 @@ class LiveArrivalRepositoryImplTest {
          expectMostRecentItem() shouldBe listOf(
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
+               LocalDateTime.of(2024, 3, 30, 10, 4),
+               "MB -> Mesto",
+               4
             ),
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 24),
+               LocalDateTime.of(2024, 3, 30, 10, 20),
                "Mesto -> MB",
-               4
             ),
             Arrival(
                FAKE_LINE_6,
@@ -396,14 +385,9 @@ class LiveArrivalRepositoryImplTest {
          )
       )
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, defaultBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
          expectMostRecentItem() shouldBe listOf(
-            Arrival(
-               FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 0),
-               "MB -> Mesto"
-            ),
             Arrival(
                FAKE_LINE_2,
                LocalDateTime.of(2024, 3, 30, 10, 20),
@@ -425,18 +409,44 @@ class LiveArrivalRepositoryImplTest {
    }
 
    @Test
-   fun `Clear out arrivals without live info before specific time`() = scope.runTest {
-      val clearBefore = LocalDateTime.of(2024, 3, 30, 10, 30)
-
+   fun `Clear out arrivals of the same line that came before the next live info`() = scope.runTest {
       service.provideArrivals(
          77,
          LiveArrivalsDto(
             listOf(
                LiveArrivalsDto.LiveArrivalDto(
-                  LocalTime.of(10, 20),
+                  LocalTime.of(11, 20),
                   4,
                   2
                ),
+            )
+         )
+      )
+
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Arrival(
+               FAKE_LINE_6,
+               LocalDateTime.of(2024, 3, 30, 11, 0),
+               "MB -> Mesto"
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 11, 24),
+               "MB -> Mesto",
+               4
+            ),
+         )
+      }
+   }
+
+   @Test
+   fun `Cut off lines arrivals without GPS info after 10 minutes`() = scope.runTest {
+      service.provideArrivals(
+         77,
+         LiveArrivalsDto(
+            listOf(
                LiveArrivalsDto.LiveArrivalDto(
                   LocalTime.of(11, 0),
                   -2,
@@ -446,20 +456,62 @@ class LiveArrivalRepositoryImplTest {
          )
       )
 
-      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS, clearBefore).test {
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
          runCurrent()
          expectMostRecentItem() shouldBe listOf(
             Arrival(
                FAKE_LINE_2,
-               LocalDateTime.of(2024, 3, 30, 10, 24),
+               LocalDateTime.of(2024, 3, 30, 10, 20),
                "Mesto -> MB",
-               4
             ),
             Arrival(
                FAKE_LINE_6,
                LocalDateTime.of(2024, 3, 30, 10, 58),
                "MB -> Mesto",
                -2
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 11, 20),
+               "MB -> Mesto"
+            ),
+         )
+      }
+   }
+
+   @Test
+   fun `Keep very late arrivals on the board indefinitely`() = scope.runTest {
+      service.provideArrivals(
+         77,
+         LiveArrivalsDto(
+            listOf(
+               LiveArrivalsDto.LiveArrivalDto(
+                  LocalTime.of(10, 0),
+                  50,
+                  2
+               ),
+            )
+         )
+      )
+
+      lievArrivalRepository.addLiveArrivals(77, FAKE_ARRIVALS).test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 10, 20),
+               "Mesto -> MB"
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 10, 50),
+               "MB -> Mesto",
+               liveDelayMin = 50
+            ),
+            Arrival(
+               FAKE_LINE_6,
+               LocalDateTime.of(2024, 3, 30, 11, 0),
+               "MB -> Mesto"
             ),
             Arrival(
                FAKE_LINE_2,

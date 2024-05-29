@@ -784,13 +784,11 @@ class ScheduleRepositoryImplTest {
             TEST_EXPECTED_ALL_LINES,
          )
       }
-
-      liveArrivalRepository.lastDeleteNonLiveArrivalsBefore shouldBe LocalDateTime.of(2024, 3, 30, 9, 30)
    }
 
    @Test
-   fun `Do not map live data for subsequent days`() = scope.runTest {
-      val stream = repo.getScheduleForStop(42, today)
+   fun `Do not map live data when not requested`() = scope.runTest {
+      val stream = repo.getScheduleForStop(42, today, includeLive = false)
 
       liveArrivalRepository.swapMap = mapOf(
          Arrival(
@@ -862,48 +860,6 @@ class ScheduleRepositoryImplTest {
 
       stream.data.test {
          runCurrent()
-         expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
-            listOf(
-               Arrival(
-                  TEST_EXPECTED_LINE_6,
-                  LocalDateTime.of(2024, 3, 31, 9, 0),
-                  "MB -> Mesto"
-               ),
-            ),
-            "Forest 77",
-            "http://stopimage.com",
-            "A stop in the forest",
-            true,
-            listOf(TEST_EXPECTED_LINE_6),
-         )
-      }
-
-      liveArrivalRepository.lastDeleteNonLiveArrivalsBefore shouldBe LocalDateTime.of(2024, 3, 30, 9, 30)
-   }
-
-   @Test
-   fun `Do not map live data for days other than today`() = scope.runTest {
-      val stream = repo.getScheduleForStop(
-         42,
-         LocalDateTime.of(2024, 3, 31, 8, 0)
-      )
-
-      liveArrivalRepository.swapMap = mapOf(
-         Arrival(
-            TEST_EXPECTED_LINE_6,
-            LocalDateTime.of(2024, 3, 31, 9, 0),
-            "MB -> Mesto"
-         ) to Arrival(
-            TEST_EXPECTED_LINE_6,
-            LocalDateTime.of(2024, 3, 31, 10, 0),
-            "MB -> Mesto",
-            5
-         )
-      )
-
-      stream.data.test {
-         runCurrent()
-
          expectMostRecentItem() shouldBeSuccessWithData StopSchedule(
             listOf(
                Arrival(

@@ -62,7 +62,7 @@ class StopScheduleViewModel @Inject constructor(
    }
 
    private fun load(date: LocalDateTime, customTimeSet: Boolean) = resources.launchResourceControlTask(_schedule) {
-      val paginator = scheduleRepository.getScheduleForStop(key.stopId, date)
+      val paginator = scheduleRepository.getScheduleForStop(key.stopId, date, includeLive = !customTimeSet)
       lastPaginator = paginator
 
       emitAll(

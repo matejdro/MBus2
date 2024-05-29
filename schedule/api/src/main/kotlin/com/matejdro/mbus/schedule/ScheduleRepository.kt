@@ -9,5 +9,6 @@ interface ScheduleRepository {
       stopId: Int,
       from: LocalDateTime,
       ignoreLineWhitelist: Boolean = false,
+      includeLive: Boolean = true,
    ): PaginatedDataStream<StopSchedule>
 }

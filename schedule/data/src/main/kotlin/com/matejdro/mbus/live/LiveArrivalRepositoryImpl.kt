@@ -15,18 +15,17 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeoutOrNull
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.flow.onlyFlowWhenUserPresent
-import java.time.LocalDateTime
+import si.inova.kotlinova.core.time.TimeProvider
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @ContributesBinding(ApplicationScope::class)
-class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService: SchedulesService) : LiveArrivalRepository {
-   override fun addLiveArrivals(
-      stopId: Int,
-      originalArrivals: List<Arrival>,
-      deleteNonLiveArrivalsBefore: LocalDateTime,
-   ): Flow<List<Arrival>> {
+class LiveArrivalRepositoryImpl @Inject constructor(
+   private val schedulesService: SchedulesService,
+   private val timeProvider: TimeProvider,
+) : LiveArrivalRepository {
+   override fun addLiveArrivals(stopId: Int, originalArrivals: List<Arrival>): Flow<List<Arrival>> {
       return tickerFlow().map { _ ->
          val liveArrivalForThisStop = withTimeoutOrNull(LOAD_TIMEOUT) {
             try {
@@ -34,26 +33,38 @@ class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService
             } catch (ignored: NoNetworkException) {
                null
             }
-         } ?: return@map originalArrivals
+         } ?: return@map originalArrivals.applyDefaultCutoff()
 
          originalArrivals.mapNotNull { arrival ->
             val arrivalTime = arrival.arrival.toLocalTime()
 
-            val matchingLiveArrival =
-               liveArrivalForThisStop.firstOrNull { it.lineId == arrival.line.id && it.arrivalTime == arrivalTime }
-
-            if (matchingLiveArrival != null && matchingLiveArrival.delayMin != null) {
-               arrival.copy(
-                  arrival = arrival.arrival.plusMinutes(matchingLiveArrival.delayMin.toLong()),
-                  liveDelayMin = matchingLiveArrival.delayMin
-               )
-            } else if (arrival.arrival < deleteNonLiveArrivalsBefore) {
-               null
+            val nextLiveArrivalForThisLine = liveArrivalForThisStop.firstOrNull { it.lineId == arrival.line.id }
+            if (nextLiveArrivalForThisLine != null) {
+               if (nextLiveArrivalForThisLine.arrivalTime == arrivalTime) {
+                  if (nextLiveArrivalForThisLine.delayMin != null) {
+                     arrival.copy(
+                        arrival = arrival.arrival.plusMinutes(nextLiveArrivalForThisLine.delayMin.toLong()),
+                        liveDelayMin = nextLiveArrivalForThisLine.delayMin
+                     )
+                  } else {
+                     arrival
+                  }
+               } else if (nextLiveArrivalForThisLine.arrivalTime < arrivalTime) {
+                  arrival
+               } else {
+                  null
+               }
             } else {
-               arrival
+               arrival.takeIf {
+                  val defaultCutoffPoint = timeProvider.currentLocalDateTime()
+                     .minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA)
+
+                  it.arrival >= defaultCutoffPoint
+               }
             }
          }
-      }.onStart { emit(originalArrivals) }
+            .sortedBy { it.arrival }
+      }.onStart { emit(originalArrivals.applyDefaultCutoff()) }
    }
 
    private fun tickerFlow(): Flow<Unit> {
@@ -64,7 +75,15 @@ class LiveArrivalRepositoryImpl @Inject constructor(private val schedulesService
          }
       }.onlyFlowWhenUserPresent { emit(Unit) }
    }
+
+   private fun List<Arrival>.applyDefaultCutoff(): List<Arrival> {
+      val cutoffPoint = timeProvider.currentLocalDateTime().minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA)
+
+      return filter { it.arrival >= cutoffPoint }
+   }
 }
 
 private val UPDATE_INTERVAL = 1.minutes
 private val LOAD_TIMEOUT = 5.seconds
+
+private const val CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA = 10L

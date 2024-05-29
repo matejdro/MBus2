@@ -55,14 +55,21 @@ class ScheduleRepositoryImpl @Inject constructor(
       stopId: Int,
       from: LocalDateTime,
       ignoreLineWhitelist: Boolean,
+      includeLive: Boolean,
    ): PaginatedDataStream<StopSchedule> {
       return object : PaginatedDataStream<StopSchedule> {
          val nextPageChannel = Channel<Unit>(1)
          val maxTime = MutableStateFlow<LocalDateTime>(LocalDateTime.MIN)
-         val liveCutoffTime = timeProvider.currentLocalDateTime().plusHours(1)
 
          val dbFlow = maxTime.flatMapLatest { maxTime ->
-            val minTimeIsoString = from.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
+            val minTimeIsoString = from
+               .let {
+                  if (includeLive) {
+                     it.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
+                  } else {
+                     it
+                  }
+               }
                .let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) }
             val maxTimeString = maxTime.toIsoString()
 
@@ -74,7 +81,13 @@ class ScheduleRepositoryImpl @Inject constructor(
          }.map { query ->
             query.awaitAsList().map { it.toArrival() }
          }
-            .insertLiveArrivals(stopId, liveCutoffTime)
+            .run {
+               if (includeLive) {
+                  insertLiveArrivals(stopId)
+               } else {
+                  this
+               }
+            }
 
          val statusFlow: Flow<Outcome<ScheduleMetadata>> = flow {
             var currentDate = from.toLocalDate()
@@ -235,13 +248,9 @@ class ScheduleRepositoryImpl @Inject constructor(
       )
    }
 
-   private fun Flow<List<Arrival>>.insertLiveArrivals(stopId: Int, liveCutoffTime: LocalDateTime): Flow<List<Arrival>> {
+   private fun Flow<List<Arrival>>.insertLiveArrivals(stopId: Int): Flow<List<Arrival>> {
       return flatMapLatest { arrivals ->
-         val (imminentArrivals, otherArrivals) = arrivals.partition { it.arrival < liveCutoffTime }
-         liveArrivalsRepository.addLiveArrivals(stopId, imminentArrivals, timeProvider.currentLocalDateTime())
-            .map { imminentWithLive ->
-               imminentWithLive + otherArrivals
-            }
+         liveArrivalsRepository.addLiveArrivals(stopId, arrivals)
       }
    }
 }
@@ -258,5 +267,8 @@ private data class ScheduleMetadata(
    val whitelistedLines: Set<Int>,
 )
 
-private const val CUTOFF_POINT_MINUTES_BEFORE_NOW = 10L
+// Actual filtering of the past arrivals will be done by the live arrivals. We just need to ensure that
+// any potentially late busses still show up.
+private const val CUTOFF_POINT_MINUTES_BEFORE_NOW = 30L
+
 private val CACHE_DURATION = 48.hours.toJavaDuration()

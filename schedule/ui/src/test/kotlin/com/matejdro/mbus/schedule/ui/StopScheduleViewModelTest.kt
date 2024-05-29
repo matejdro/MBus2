@@ -93,6 +93,7 @@ class StopScheduleViewModelTest {
       runCurrent()
 
       vm.schedule.value shouldBeSuccessWithData expectedData
+      repo.lastIncludeLive shouldBe true
    }
 
    @Test
@@ -287,6 +288,7 @@ class StopScheduleViewModelTest {
       runCurrent()
 
       repo.lastRequestedDate shouldBe LocalDateTime.of(2024, 3, 20, 8, 25)
+      repo.lastIncludeLive shouldBe false
       vm.schedule.value shouldBeSuccessWithData expectedData
    }
 }
