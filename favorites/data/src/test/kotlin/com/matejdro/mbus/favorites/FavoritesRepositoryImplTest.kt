@@ -4,6 +4,7 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
+import com.matejdro.mbus.favorites.model.LineStop
 import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.schedule.FakeScheduleRepository
 import com.matejdro.mbus.schedule.model.Arrival
@@ -164,20 +165,6 @@ class FavoritesRepositoryImplTest {
          expectMostRecentItem() shouldBeSuccessWithData FavoriteSchedule(
             Favorite(1, "Test", listOf(77, 88)),
             listOf(
-               StopInfo(
-                  77,
-                  "Forest 77",
-                  "A stop in the forest",
-                  "http://stopimage.com"
-               ),
-               StopInfo(
-                  88,
-                  "Forest 88",
-                  "Another stop in the forest",
-                  "http://stopimage88.com"
-               ),
-            ),
-            listOf(
                Arrival(
                   TEST_EXPECTED_LINE_2,
                   LocalDateTime.of(2024, 3, 30, 9, 0),
@@ -195,8 +182,9 @@ class FavoritesRepositoryImplTest {
                ),
             ),
             listOf(
-               TEST_EXPECTED_LINE_2,
-               TEST_EXPECTED_LINE_6
+               LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_77),
+               LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_88),
+               LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_88),
             ),
             false,
          )
@@ -248,38 +236,25 @@ class FavoritesRepositoryImplTest {
       favoritesRepository.getScheduleForFavorite(1, today).data.test {
          runCurrent()
 
-         favoritesRepository.setWhitelistedLines(1, setOf(6))
+         favoritesRepository.setWhitelistedLines(1, setOf(LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_88)))
          runCurrent()
 
          expectMostRecentItem() shouldBeSuccessWithData FavoriteSchedule(
             Favorite(1, "Test", listOf(77, 88)),
             listOf(
-               StopInfo(
-                  77,
-                  "Forest 77",
-                  "A stop in the forest",
-                  "http://stopimage.com"
-               ),
-               StopInfo(
-                  88,
-                  "Forest 88",
-                  "Another stop in the forest",
-                  "http://stopimage88.com"
-               ),
-            ),
-            listOf(
                Arrival(
-                  TEST_EXPECTED_LINE_6,
-                  LocalDateTime.of(2024, 3, 30, 12, 0),
+                  TEST_EXPECTED_LINE_2,
+                  LocalDateTime.of(2024, 3, 30, 9, 0),
                   "Forest 88\nMB -> Mesto"
                ),
             ),
             listOf(
-               TEST_EXPECTED_LINE_2,
-               TEST_EXPECTED_LINE_6
+               LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_77),
+               LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_88),
+               LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_88),
             ),
             false,
-            setOf(6)
+            setOf(LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_88))
          )
       }
 
@@ -289,3 +264,17 @@ class FavoritesRepositoryImplTest {
 
 private val TEST_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
 private val TEST_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
+
+private val TEST_STOP_77 = StopInfo(
+   77,
+   "Forest 77",
+   "A stop in the forest",
+   "http://stopimage.com"
+)
+
+private val TEST_STOP_88 = StopInfo(
+   88,
+   "Forest 88",
+   "Another stop in the forest",
+   "http://stopimage88.com"
+)

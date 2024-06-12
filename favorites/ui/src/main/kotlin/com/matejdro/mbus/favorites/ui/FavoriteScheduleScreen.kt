@@ -27,10 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.mbus.favorites.model.Favorite
+import com.matejdro.mbus.favorites.model.LineStop
+import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
-import com.matejdro.mbus.schedule.shared.FilterDialog
 import com.matejdro.mbus.schedule.shared.StopList
 import com.matejdro.mbus.schedule.shared.TimePickerDialog
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
@@ -63,7 +64,7 @@ class FavoriteScheduleScreen(
          val data = state.data
          var filterDialogShown by remember { mutableStateOf(false) }
          if (filterDialogShown && data != null) {
-            FilterDialog(
+            LineStopFilterDialog(
                data.allLines,
                data.whitelistedLines,
                { filterDialogShown = false },
@@ -320,7 +321,7 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
 internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
-         Outcome.Success(PREVIEW_FAKE_LIST.copy(whitelistedLines = setOf(2, 6, 18))),
+         Outcome.Success(PREVIEW_FAKE_LIST.copy(whitelistedLines = setOf(LineStop(PREVIEW_EXPECTED_LINE_2, PREVIEW_STOP_7)))),
          FakeAndroidTimeProvider(currentLocalDate = { LocalDate.of(2024, 3, 30) }),
          {},
          {},
@@ -349,6 +350,20 @@ internal fun ScheduleScreenSuccessWithTimeSetApplied() {
 internal val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
 internal val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
 internal val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
+
+internal val PREVIEW_STOP_7 = StopInfo(
+   7,
+   "Forest 7",
+   "A stop in the forest",
+   "http://stopimage.com"
+)
+
+internal val PREVIEW_STOP_8 = StopInfo(
+   8,
+   "Forest 8",
+   "Another stop in the forest",
+   "http://stopimage88.com"
+)
 
 val PREVIEW_FAKE_LIST = FavoriteScheduleUiState(
    favorite = Favorite(
@@ -382,7 +397,11 @@ val PREVIEW_FAKE_LIST = FavoriteScheduleUiState(
       ),
    ),
    hasAnyDataLeft = false,
-   allLines = listOf(PREVIEW_EXPECTED_LINE_2, PREVIEW_EXPECTED_LINE_6, PREVIEW_EXPECTED_LINE_18),
+   allLines = listOf(
+      LineStop(PREVIEW_EXPECTED_LINE_2, PREVIEW_STOP_7),
+      LineStop(PREVIEW_EXPECTED_LINE_2, PREVIEW_STOP_8),
+      LineStop(PREVIEW_EXPECTED_LINE_6, PREVIEW_STOP_8)
+   ),
    allStops = emptyList(),
    whitelistedLines = emptySet(),
    selectedTime = ZonedDateTime.of(2024, 4, 20, 11, 20, 0, 0, ZoneId.of("UTC")),

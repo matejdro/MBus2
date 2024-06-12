@@ -3,6 +3,7 @@ package com.matejdro.mbus.favorites
 import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
+import com.matejdro.mbus.favorites.model.LineStop
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
@@ -15,5 +16,5 @@ interface FavoritesRepository {
    suspend fun removeStopToFavourite(favouriteId: Long, stopId: Int)
 
    fun getScheduleForFavorite(favoriteId: Long, from: LocalDateTime): PaginatedDataStream<FavoriteSchedule>
-   suspend fun setWhitelistedLines(favoriteId: Long, whitelistedLines: Set<Int>)
+   suspend fun setWhitelistedLines(favoriteId: Long, whitelistedLines: Set<LineStop>)
 }

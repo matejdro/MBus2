@@ -6,10 +6,10 @@ import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.favorites.FavoritesRepository
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
+import com.matejdro.mbus.favorites.model.LineStop
 import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
-import com.matejdro.mbus.schedule.model.Line
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -51,7 +51,7 @@ class FavoriteScheduleViewModel @Inject constructor(
       }
    }
 
-   fun setFilter(filter: Set<Int>) = coroutineScope.launch {
+   fun setFilter(filter: Set<LineStop>) = coroutineScope.launch {
       actionLogger.logAction { "FavoriteScheduleViewModel.setFilter(filter = $filter)" }
       favoritesRepository.setWhitelistedLines(key.favoriteId, filter)
    }
@@ -99,7 +99,7 @@ class FavoriteScheduleViewModel @Inject constructor(
                      whitelistedLines = whitelistedLines,
                      selectedTime = date.atZone(timeProvider.systemDefaultZoneId()),
                      customTimeSet = customTimeSet,
-                     allStops = includedStops
+                     allStops = allLines.map { it.stop }.distinct()
                   )
                }
             }
@@ -112,9 +112,9 @@ data class FavoriteScheduleUiState(
    val favorite: Favorite,
    val arrivals: List<Arrival>,
    val hasAnyDataLeft: Boolean,
-   val allLines: List<Line>,
+   val allLines: List<LineStop>,
    val allStops: List<StopInfo>,
-   val whitelistedLines: Set<Int>,
+   val whitelistedLines: Set<LineStop>,
    val selectedTime: ZonedDateTime,
    val customTimeSet: Boolean,
    val closeScreenAfterDeletion: Boolean = false,

@@ -3,6 +3,7 @@ package com.matejdro.mbus.favorites.ui
 import app.cash.turbine.test
 import com.matejdro.mbus.favorites.FakeFavoritesRepository
 import com.matejdro.mbus.favorites.model.Favorite
+import com.matejdro.mbus.favorites.model.LineStop
 import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
@@ -68,7 +69,11 @@ class FavoriteScheduleViewModelTest {
          TEST_FAVORITE_1,
          arrivals.arrivals,
          false,
-         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
@@ -78,7 +83,11 @@ class FavoriteScheduleViewModelTest {
       repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
-         listOf(TEST_STOP_7, TEST_STOP_8),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          arrivals.arrivals,
       )
 
@@ -108,7 +117,11 @@ class FavoriteScheduleViewModelTest {
             ),
          ),
          true,
-         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
@@ -140,7 +153,11 @@ class FavoriteScheduleViewModelTest {
             ),
          ),
          false,
-         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 30, 9, 30, 0, 0, ZoneId.of("UTC")),
@@ -176,7 +193,11 @@ class FavoriteScheduleViewModelTest {
       repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
-         listOf(TEST_STOP_7, TEST_STOP_8),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          firstPage,
          secondPage
       )
@@ -202,17 +223,21 @@ class FavoriteScheduleViewModelTest {
       repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
-         listOf(TEST_STOP_7, TEST_STOP_8),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          emptyList(),
       )
 
       vm.onServiceRegistered()
       runCurrent()
 
-      vm.setFilter(setOf(6))
+      vm.setFilter(setOf(LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)))
       runCurrent()
 
-      repo.whitelistedLines shouldBe setOf(6)
+      repo.whitelistedLines shouldBe setOf(LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8))
    }
 
    @Test
@@ -223,14 +248,18 @@ class FavoriteScheduleViewModelTest {
          "http://stopimage.com",
          "A stop in the forest",
          false,
-         emptyList(),
+         listOf(TEST_EXPECTED_LINE_2, TEST_EXPECTED_LINE_6),
       )
 
       val expectedData = FavoriteScheduleUiState(
          TEST_FAVORITE_1,
          arrivals.arrivals,
          false,
-         emptyList(),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          listOf(TEST_STOP_7, TEST_STOP_8),
          emptySet(),
          ZonedDateTime.of(2024, 3, 20, 8, 25, 0, 0, ZoneId.of("UTC")),
@@ -240,7 +269,11 @@ class FavoriteScheduleViewModelTest {
       repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
-         listOf(TEST_STOP_7, TEST_STOP_8),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          arrivals.arrivals,
       )
 
@@ -270,7 +303,11 @@ class FavoriteScheduleViewModelTest {
       repo.setFavorites(listOf(TEST_FAVORITE_1))
       repo.provideSchedule(
          TEST_FAVORITE_1,
-         listOf(TEST_STOP_7, TEST_STOP_8),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          arrivals.arrivals,
       )
 
@@ -284,7 +321,10 @@ class FavoriteScheduleViewModelTest {
 
       repo.getScheduleForFavorite(TEST_FAVORITE_1.id, timeProvider.currentLocalDateTime()).data.test {
          runCurrent()
-         expectMostRecentItem().data?.includedStops shouldBe listOf(TEST_STOP_8)
+         expectMostRecentItem().data?.allLines shouldBe listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         )
       }
    }
 
@@ -302,7 +342,11 @@ class FavoriteScheduleViewModelTest {
       repo.setFavorites(listOf(TEST_FAVORITE_1, TEST_FAVORITE_2))
       repo.provideSchedule(
          TEST_FAVORITE_1,
-         listOf(TEST_STOP_7, TEST_STOP_8),
+         listOf(
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_7),
+            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+         ),
          arrivals.arrivals,
       )
 

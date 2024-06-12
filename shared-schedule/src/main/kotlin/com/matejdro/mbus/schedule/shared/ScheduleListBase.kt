@@ -162,7 +162,7 @@ private fun LazyListScope.bottomLoading(
 }
 
 @Composable
-internal fun LineLabel(line: Line) {
+fun LineLabel(line: Line, modifier: Modifier = Modifier) {
    val lineColor = Color(line.color)
    val textColor: Color = if (lineColor.luminance() > LUMINANCE_HALF_BRIGHT) {
       Color.Black
@@ -170,7 +170,7 @@ internal fun LineLabel(line: Line) {
       Color.White
    }
 
-   Box(Modifier.widthIn(min = 48.dp), contentAlignment = Alignment.Center) {
+   Box(modifier.widthIn(min = 48.dp), contentAlignment = Alignment.Center) {
       val shape = RoundedCornerShape(8.dp)
       Text(
          modifier = Modifier

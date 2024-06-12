@@ -4,10 +4,13 @@ import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.data.PaginatedDataStream
+import com.matejdro.mbus.common.data.PaginationResult
 import com.matejdro.mbus.common.data.flattenOutcomes
+import com.matejdro.mbus.common.data.mapData
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
+import com.matejdro.mbus.favorites.model.LineStop
 import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.favorites.model.toFavorite
 import com.matejdro.mbus.schedule.ScheduleRepository
@@ -83,7 +86,7 @@ class FavoritesRepositoryImpl @Inject constructor(
    }
 
    override fun getScheduleForFavorite(favoriteId: Long, from: LocalDateTime): PaginatedDataStream<FavoriteSchedule> {
-      var childStreams: List<PaginatedDataStream<StopSchedule>> = emptyList()
+      var childStreams: List<PaginatedDataStream<StopScheduleWithId>> = emptyList()
 
       return object : PaginatedDataStream<FavoriteSchedule> {
          override val data: Flow<Outcome<FavoriteSchedule>> = flow<Outcome<FavoriteSchedule>> {
@@ -94,40 +97,49 @@ class FavoritesRepositoryImpl @Inject constructor(
                   val dbFavorite = dbFavoriteQuery.executeAsOne()
                   val favorite = dbFavorite.toFavorite()
 
-                  val whitelistedLines =
-                     dbFavorite.lineWhitelist.split(",").mapNotNull { if (it.isEmpty()) null else it.toInt() }.toSet()
+                  val whitelistedLines = dbFavorite.getWhitelistedLines()
 
-                  childStreams = favorite.stopsIds.map {
-                     scheduleRepository.getScheduleForStop(it, from, ignoreLineWhitelist = true)
+                  childStreams = favorite.stopsIds.map { id ->
+                     scheduleRepository.getScheduleForStop(id, from, ignoreLineWhitelist = true).mapData {
+                        StopScheduleWithId(id, it)
+                     }
                   }
 
                   combine(childStreams.map { it.data }) { childOutcomes ->
                      childOutcomes.toList().flattenOutcomes().mapData { nullableStops ->
                         val stops = nullableStops.filterNotNull()
 
-                        FavoriteSchedule(
-                           favorite = favorite,
-                           includedStops = stops.mapIndexed { index, stopSchedule ->
-                              StopInfo(
-                                 favorite.stopsIds.elementAt(index),
+                        val allLines =
+                           stops.flatMap { (stopId, stopSchedule) ->
+                              val stopInfo = StopInfo(
+                                 stopId,
                                  stopSchedule.stopName,
                                  stopSchedule.stopDescription,
                                  stopSchedule.stopImage
                               )
-                           },
-                           arrivals = stops.map { stop ->
+
+                              stopSchedule.allLines.map { LineStop(it, stopInfo) }
+                           }
+
+                        FavoriteSchedule(
+                           favorite = favorite,
+                           arrivals = stops.map { (stopId, stop) ->
                               stop.arrivals
                                  .filter {
-                                    whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id)
+                                    whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id to stopId)
                                  }.map {
                                     it.copy(
                                        direction = "${stop.stopName}\n${it.direction}"
                                     )
                                  }
                            }.flatten().sortedBy { it.arrival },
-                           allLines = stops.map { it.allLines }.flatten().distinctBy { it.id },
+                           allLines = allLines,
                            hasAnyDataLeft = stops.any { it.hasAnyDataLeft },
-                           whitelistedLines = whitelistedLines
+                           whitelistedLines = allLines.filterTo(HashSet()) { lineStop ->
+                              whitelistedLines.any {
+                                 lineStop.line.id == it.first && lineStop.stop.id == it.second
+                              }
+                           }
                         )
                      }
                   }
@@ -141,9 +153,21 @@ class FavoritesRepositoryImpl @Inject constructor(
       }
    }
 
-   override suspend fun setWhitelistedLines(favoriteId: Long, whitelistedLines: Set<Int>) {
+   override suspend fun setWhitelistedLines(favoriteId: Long, whitelistedLines: Set<LineStop>) {
       withDefault {
-         db.updateWhitelist(whitelistedLines.joinToString(","), favoriteId)
+         db.updateWhitelist(whitelistedLines.joinToString(",") { "${it.line.id}-${it.stop.id}" }, favoriteId)
       }
    }
 }
+
+private fun DbFavorite.getWhitelistedLines() =
+   lineWhitelist.split(",").mapNotNull { whitelistEntry ->
+      if (whitelistEntry.isEmpty() || !whitelistEntry.contains("-")) {
+         null
+      } else {
+         whitelistEntry.split("-")
+            .let { it.elementAt(0).toInt() to it.elementAt(1).toInt() }
+      }
+   }.toSet()
+
+private data class StopScheduleWithId(val stopId: Int, val stopSchedule: StopSchedule) : PaginationResult by stopSchedule

@@ -4,9 +4,8 @@ import com.matejdro.mbus.common.data.ListPaginatedDataStream
 import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
-import com.matejdro.mbus.favorites.model.StopInfo
+import com.matejdro.mbus.favorites.model.LineStop
 import com.matejdro.mbus.schedule.model.Arrival
-import com.matejdro.mbus.schedule.model.Line
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +14,7 @@ import java.time.LocalDateTime
 
 class FakeFavoritesRepository : FavoritesRepository {
    private val favorites = MutableStateFlow<List<Favorite>>(emptyList())
-   var whitelistedLines = emptySet<Int>()
+   var whitelistedLines = emptySet<LineStop>()
       private set
    private val providedSchedules = HashMap<Long, FakeSchedules>()
 
@@ -67,12 +66,10 @@ class FakeFavoritesRepository : FavoritesRepository {
 
    fun provideSchedule(
       favorite: Favorite,
-      includedStops: List<StopInfo>,
+      includedLines: List<LineStop>,
       vararg arrivals: List<Arrival>,
    ) {
-      val allLines = arrivals.toList().flatten().map { it.line }.distinct()
-
-      providedSchedules[favorite.id] = FakeSchedules(favorite, includedStops, arrivals.toList(), allLines)
+      providedSchedules[favorite.id] = FakeSchedules(favorite, arrivals.toList(), includedLines)
    }
 
    override fun getScheduleForFavorite(favoriteId: Long, from: LocalDateTime): PaginatedDataStream<FavoriteSchedule> {
@@ -84,9 +81,8 @@ class FakeFavoritesRepository : FavoritesRepository {
          Outcome.Success(
             FavoriteSchedule(
                schedulePages.favorite,
-               schedulePages.includedStops.filter { favorite.stopsIds.contains(it.id) },
-               list.filter { whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id) },
-               schedulePages.allLines,
+               list.filter { whitelistedLines.isEmpty() || whitelistedLines.any { wl -> wl.line.id == it.line.id } },
+               schedulePages.allLines.filter { favorite.stopsIds.contains(it.stop.id) },
                hasAnyDataLeft,
                whitelistedLines
             )
@@ -94,7 +90,7 @@ class FakeFavoritesRepository : FavoritesRepository {
       }
    }
 
-   override suspend fun setWhitelistedLines(favoriteId: Long, whitelistedLines: Set<Int>) {
+   override suspend fun setWhitelistedLines(favoriteId: Long, whitelistedLines: Set<LineStop>) {
       this.whitelistedLines = whitelistedLines
    }
 
@@ -105,7 +101,6 @@ class FakeFavoritesRepository : FavoritesRepository {
 
 private data class FakeSchedules(
    val favorite: Favorite,
-   val includedStops: List<StopInfo>,
    val arrivals: List<List<Arrival>>,
-   val allLines: List<Line>,
+   val allLines: List<LineStop>,
 )
