@@ -26,9 +26,11 @@ class LiveArrivalRepositoryImplTest {
    private val userPresenceProvider = FakeUserPresenceProvider().apply { isPresent = true }
    private val scope = TestScope(userPresenceProvider)
 
+   var nowTime = LocalTime.of(10, 15)
+
    private val timeProvider = scope.virtualTimeProvider(
       currentLocalDate = { LocalDate.of(2024, 3, 30) },
-      currentLocalTime = { LocalTime.of(10, 15) }
+      currentLocalTime = { nowTime }
    )
 
    val lievArrivalRepository = LiveArrivalRepositoryImpl(service, timeProvider)
@@ -517,6 +519,132 @@ class LiveArrivalRepositoryImplTest {
                FAKE_LINE_2,
                LocalDateTime.of(2024, 3, 30, 11, 20),
                "MB -> Mesto"
+            ),
+         )
+      }
+   }
+
+   @Test
+   @Suppress("LongMethod") // Fake test data are long
+   fun `Show next day arrivals with earlier times`() = scope.runTest {
+      service.provideArrivals(
+         77,
+         LiveArrivalsDto(
+            listOf(
+               LiveArrivalsDto.LiveArrivalDto(
+                  LocalTime.of(10, 0),
+                  4,
+                  2
+               ),
+               LiveArrivalsDto.LiveArrivalDto(
+                  LocalTime.of(11, 0),
+                  -2,
+                  6
+               )
+            )
+         )
+      )
+
+      val arrivals = listOf(
+         Arrival(
+            FAKE_LINE_2,
+            LocalDateTime.of(2024, 3, 30, 10, 0),
+            "MB -> Mesto"
+         ),
+         Arrival(
+            FAKE_LINE_2,
+            LocalDateTime.of(2024, 3, 30, 10, 20),
+            "Mesto -> MB"
+         ),
+         Arrival(
+            FAKE_LINE_6,
+            LocalDateTime.of(2024, 3, 30, 11, 0),
+            "MB -> Mesto"
+         ),
+         Arrival(
+            FAKE_LINE_2,
+            LocalDateTime.of(2024, 3, 30, 11, 20),
+            "MB -> Mesto"
+         ),
+         Arrival(
+            FAKE_LINE_2,
+            LocalDateTime.of(2024, 3, 31, 8, 0),
+            "MB -> Mesto"
+         ),
+      )
+
+      lievArrivalRepository.addLiveArrivals(77, arrivals).test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 10, 4),
+               "MB -> Mesto",
+               4
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 10, 20),
+               "Mesto -> MB",
+            ),
+            Arrival(
+               FAKE_LINE_6,
+               LocalDateTime.of(2024, 3, 30, 10, 58),
+               "MB -> Mesto",
+               -2
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 30, 11, 20),
+               "MB -> Mesto"
+            ),
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 31, 8, 0),
+               "MB -> Mesto",
+            ),
+         )
+      }
+   }
+
+   @Test
+   fun `Show tomorrows live arrivals`() = scope.runTest {
+      nowTime = LocalTime.of(23, 50)
+
+      service.provideArrivals(
+         77,
+         LiveArrivalsDto(
+            listOf(
+               LiveArrivalsDto.LiveArrivalDto(
+                  LocalTime.of(0, 5),
+                  10,
+                  2
+               ),
+            )
+         )
+      )
+
+      val arrivals = listOf(
+         Arrival(
+            FAKE_LINE_2,
+            LocalDateTime.of(2024, 3, 31, 0, 5),
+            "MB -> Mesto"
+         ),
+         Arrival(
+            FAKE_LINE_2,
+            LocalDateTime.of(2024, 3, 30, 0, 10),
+            "MB -> Mesto"
+         ),
+      )
+
+      lievArrivalRepository.addLiveArrivals(77, arrivals).test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Arrival(
+               FAKE_LINE_2,
+               LocalDateTime.of(2024, 3, 31, 0, 15),
+               "MB -> Mesto",
+               10
             ),
          )
       }

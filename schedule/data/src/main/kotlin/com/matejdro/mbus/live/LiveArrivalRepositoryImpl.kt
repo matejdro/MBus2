@@ -2,6 +2,7 @@ package com.matejdro.mbus.live
 
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.live.models.LiveArrivalRepository
+import com.matejdro.mbus.live.models.LiveArrivalsDto
 import com.matejdro.mbus.schedule.SchedulesService
 import com.matejdro.mbus.schedule.model.Arrival
 import com.squareup.anvil.annotations.ContributesBinding
@@ -16,6 +17,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.flow.onlyFlowWhenUserPresent
 import si.inova.kotlinova.core.time.TimeProvider
+import java.time.Duration
+import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -36,16 +39,17 @@ class LiveArrivalRepositoryImpl @Inject constructor(
          } ?: return@map originalArrivals.applyDefaultCutoff()
 
          originalArrivals.mapNotNull { arrival ->
-            val arrivalTime = arrival.arrival.toLocalTime()
-
             val nextLiveArrivalForThisLine = liveArrivalForThisStop.firstOrNull { it.lineId == arrival.line.id }
+
             if (nextLiveArrivalForThisLine != null) {
-               if (nextLiveArrivalForThisLine.arrivalTime == arrivalTime) {
+               val nextLiveArrivalDateTime = nextLiveArrivalForThisLine.arrivalDateTime()
+
+               if (nextLiveArrivalDateTime == arrival.arrival) {
                   arrival.copy(
                      arrival = arrival.arrival.plusMinutes(nextLiveArrivalForThisLine.delayMin?.toLong() ?: 0L),
                      liveDelayMin = nextLiveArrivalForThisLine.delayMin
                   )
-               } else if (nextLiveArrivalForThisLine.arrivalTime < arrivalTime) {
+               } else if (arrival.arrival > nextLiveArrivalDateTime) {
                   arrival
                } else {
                   null
@@ -62,6 +66,22 @@ class LiveArrivalRepositoryImpl @Inject constructor(
       }.onStart { emit(originalArrivals.applyDefaultCutoff()) }
    }
 
+   private fun LiveArrivalsDto.LiveArrivalDto?.arrivalDateTime(): LocalDateTime? {
+      // If time differs is more 12 hours in the past, assume that it's actually the schedule for the next day
+
+      return this?.arrivalTime?.let {
+         val date = if (it < timeProvider.currentLocalTime() &&
+            (Duration.between(it, timeProvider.currentLocalTime())) > HALF_DAY
+         ) {
+            timeProvider.currentLocalDate().plusDays(1)
+         } else {
+            timeProvider.currentLocalDate()
+         }
+
+         it.atDate(date)
+      }
+   }
+
    private fun tickerFlow(): Flow<Unit> {
       return flow {
          while (currentCoroutineContext().isActive) {
@@ -72,7 +92,8 @@ class LiveArrivalRepositoryImpl @Inject constructor(
    }
 
    private fun List<Arrival>.applyDefaultCutoff(): List<Arrival> {
-      val cutoffPoint = timeProvider.currentLocalDateTime().minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA)
+      val cutoffPoint = timeProvider.currentLocalDateTime()
+         .minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA)
 
       return filter { it.arrival >= cutoffPoint }
    }
@@ -80,5 +101,6 @@ class LiveArrivalRepositoryImpl @Inject constructor(
 
 private val UPDATE_INTERVAL = 1.minutes
 private val LOAD_TIMEOUT = 5.seconds
+private val HALF_DAY = Duration.ofHours(12)
 
 private const val CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA = 10L
