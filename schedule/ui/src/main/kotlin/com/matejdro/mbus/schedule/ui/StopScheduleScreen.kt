@@ -29,7 +29,6 @@ import com.matejdro.mbus.navigation.keys.AddToFavouritesDialogScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
-import com.matejdro.mbus.schedule.shared.FilterDialog
 import com.matejdro.mbus.schedule.shared.StopList
 import com.matejdro.mbus.schedule.shared.TimePickerDialog
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews

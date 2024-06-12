@@ -1,4 +1,4 @@
-package com.matejdro.mbus.schedule.shared
+package com.matejdro.mbus.schedule.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.mbus.schedule.model.Line
+import com.matejdro.mbus.schedule.shared.LineLabel
+import com.matejdro.mbus.schedule.shared.R
 import com.matejdro.mbus.ui.components.AlertDialogWithContent
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
@@ -103,7 +105,3 @@ internal fun ScheduleScreenFilterDialogPreview() {
       )
    }
 }
-
-private val PREVIEW_EXPECTED_LINE_2 = Line(2, "2", 0xFFFF0000.toInt())
-private val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
-private val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
