@@ -67,9 +67,10 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: inovait/actions-common/changelog-since-last-build@v3
+        uses: inovait/actions-common/changelog-since-last-build@v8
         with:
           git_commit_url_prefix: 'https://github.com/matejdro/MBus2/commit/'
+          jira_url: 'https://github.com/matejdro/MBus2'
       - name: Tag build
         env:
           TAG_BUILD: "1.0.0-alpha${{env.BUILD_NUMBER}}"
