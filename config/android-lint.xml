@@ -24,4 +24,7 @@ Ignore unknown issue id to allow us to configure issues in this file  that
 
     <!-- We decide when we update target SDK, not lint -->
     <issue id="OldTargetApi" severity="ignore" />
+
+    <!-- With Compose, permission checks are more complicated than simple if statements. This Lint rule is not helpful anymore -->
+    <issue id="MissingPermission" severity="ignore" />
 </lint>
