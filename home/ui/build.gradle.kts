@@ -2,6 +2,7 @@ plugins {
    androidLibraryModule
    compose
    navigation
+   unmock
 }
 
 android {
@@ -21,6 +22,8 @@ dependencies {
    implementation(libs.accompanist.permissions)
    implementation(libs.dispatch)
    implementation(libs.googleMaps)
+   implementation(libs.kotlin.coroutines.playServices)
+   implementation(libs.playServices.location)
 
    testImplementation(projects.stops.test)
 }

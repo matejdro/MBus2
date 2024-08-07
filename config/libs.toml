@@ -49,12 +49,15 @@ moshi-ir = "0.25.1"
 retrofit = "2.9.0"
 paparazzi = "1.3.2"
 playServices-plugin = "4.4.1"
+playServices-location = "21.3.0"
 rebugger = "1.0.0-rc03"
 simpleStack = "2.8.0"
 showkase = "1.0.2"
 sqldelight = "2.0.1"
 tomlj = "1.1.0"
 turbine = "1.0.0"
+unmock-androidJar = "14-robolectric-10818077"
+unmock-plugin = "0.8.0"
 versionsChecker = "0.51.0"
 whatTheStack = "f508cf4ef5"
 
@@ -119,6 +122,7 @@ junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
 kotlin-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutableCollections" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
@@ -147,6 +151,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 versionsCheckerPlugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "versionsChecker" }
 paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi" }
+playServices-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServices-location" }
 showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
 showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
 simpleStack = { module = "com.github.Zhuinden:simple-stack", version.ref = "simpleStack" }
@@ -157,6 +162,8 @@ sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", 
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
 tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+unmock-androidJar = { module = "org.robolectric:android-all", version.ref = "unmock-androidJar" }
+unmock-plugin = { module = "com.github.bjoernq:unmockplugin", version.ref = "unmock-plugin" }
 whatTheStack = { module = "com.github.matejdro:WhatTheStack", version.ref = "whatTheStack" }
 
 

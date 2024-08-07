@@ -1,23 +1,33 @@
 package com.matejdro.mbus.home
 
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.matejdro.mbus.stops.FakeStopsRepository
 import com.matejdro.mbus.stops.model.Stop
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import si.inova.kotlinova.core.android.Location
+import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.test.TestScopeWithDispatcherProvider
+import si.inova.kotlinova.core.test.outcomes.ThrowingErrorReporter
 import si.inova.kotlinova.core.test.outcomes.shouldBeSuccessWithData
-import si.inova.kotlinova.core.test.outcomes.testCoroutineResourceManager
+import java.io.IOException
 
 class HomeMapViewModelTest {
    private val testScope = TestScopeWithDispatcherProvider()
    private val stopsRepo = FakeStopsRepository()
+   private var providedLocation: () -> Location = { throw IllegalStateException("Location not faked") }
+   private val errorReporter = ThrowingErrorReporter(testScope).apply { reportToTestScope = false }
 
-   private val viewModel = HomeMapViewModel(testScope.testCoroutineResourceManager(), stopsRepo, {})
+   val coroutineResourceManager = CoroutineResourceManager(testScope.backgroundScope, errorReporter)
+   private val viewModel = HomeMapViewModel(coroutineResourceManager, stopsRepo, {}, { providedLocation() }, errorReporter)
 
    @Test
    fun `Provide stops when loading stops via map area`() = testScope.runTest {
@@ -28,13 +38,15 @@ class HomeMapViewModelTest {
       )
       runCurrent()
 
-      viewModel.stops.value.shouldBeSuccessWithData(
-         listOf(
-            Stop(
-               5,
-               "Stop E",
-               0.002,
-               0.005
+      viewModel.state.value.shouldBeSuccessWithData(
+         HomeState(
+            listOf(
+               Stop(
+                  5,
+                  "Stop E",
+                  0.002,
+                  0.005
+               )
             )
          )
       )
@@ -82,6 +94,41 @@ class HomeMapViewModelTest {
       runCurrent()
 
       stopsRepo.numLoads shouldBe 2
+   }
+
+   @Test
+   fun `Provide location when requesting map move`() = testScope.runTest {
+      providedLocation = { Location(1.0, 2.0) }
+
+      viewModel.moveMapToUser()
+      runCurrent()
+
+      viewModel.state.value.data.shouldNotBeNull().event shouldBe HomeEvent.MoveMap(LatLng(1.0, 2.0))
+   }
+
+   @Test
+   fun `Reset event when requested`() = testScope.runTest {
+      providedLocation = { Location(1.0, 2.0) }
+
+      viewModel.moveMapToUser()
+      runCurrent()
+
+      viewModel.notifyEventHandled()
+      runCurrent()
+
+      viewModel.state.value.data.shouldNotBeNull().event.shouldBeNull()
+   }
+
+   @Test
+   fun `Report location retrieving errors`() = testScope.runTest {
+      val exception = IOException("No location")
+
+      providedLocation = { throw exception }
+
+      viewModel.moveMapToUser()
+      runCurrent()
+
+      errorReporter.receivedExceptions.shouldContainExactly(exception)
    }
 }
 

@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,7 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -49,6 +52,7 @@ import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.stops.model.Stop
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.Screen
@@ -62,7 +66,7 @@ class HomeMapScreen(
    @Composable
    override fun Content(key: HomeMapScreenKey) {
       val isLocationGranted = requestLocationPermission()
-      val data = viewModel.stops.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val data = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
       val context = LocalContext.current
       val colorScheme = MaterialTheme.colorScheme
@@ -82,8 +86,22 @@ class HomeMapScreen(
       Box {
          val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
 
-         Map(camera, isLocationGranted, mapStyle, backgroundColor, data)
+         Map(camera, isLocationGranted, mapStyle, backgroundColor, data?.mapData { it.stops })
          FavoritesButton(Modifier.safeDrawingPadding())
+      }
+
+      data?.data?.event?.let { HandleEvent(it, camera) }
+   }
+
+   @Composable
+   private fun HandleEvent(event: HomeEvent, camera: CameraPositionState) {
+      LaunchedEffect(event) {
+         when (event) {
+            is HomeEvent.MoveMap -> {
+               camera.animate(CameraUpdateFactory.newLatLng(event.latLng))
+               viewModel.notifyEventHandled()
+            }
+         }
       }
    }
 
@@ -166,12 +184,22 @@ class HomeMapScreen(
          listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
-         ),
+         )
       )
 
-      LaunchedEffect(locationPermission.allPermissionsGranted) {
-         if (!locationPermission.allPermissionsGranted) {
+      val granted = locationPermission.permissions
+         .first { it.permission == Manifest.permission.ACCESS_COARSE_LOCATION }
+         .status == PermissionStatus.Granted
+
+      LaunchedEffect(granted) {
+         if (!granted) {
             locationPermission.launchMultiplePermissionRequest()
+         }
+      }
+
+      if (granted) {
+         SideEffect {
+            viewModel.moveMapToUser()
          }
       }
 

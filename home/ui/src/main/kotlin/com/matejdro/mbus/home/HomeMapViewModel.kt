@@ -4,15 +4,23 @@ import androidx.compose.runtime.Stable
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.matejdro.mbus.common.logging.ActionLogger
+import com.matejdro.mbus.location.LocationProvider
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.stops.StopsRepository
 import com.matejdro.mbus.stops.model.Stop
 import dispatch.core.dispatcherProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.core.outcome.mapData
+import si.inova.kotlinova.core.outcome.mapNullableData
+import si.inova.kotlinova.core.reporting.ErrorReporter
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import javax.inject.Inject
 
@@ -21,9 +29,11 @@ class HomeMapViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val stopsRepository: StopsRepository,
    private val actionLogger: ActionLogger,
+   private val locationProvider: LocationProvider,
+   private val errorReporter: ErrorReporter,
 ) : SingleScreenViewModel<HomeMapScreenKey>(resources.scope) {
-   private val _stops = MutableStateFlow<Outcome<List<Stop>>>(Outcome.Progress())
-   val stops: StateFlow<Outcome<List<Stop>>> = _stops
+   private val _stops = MutableStateFlow<Outcome<HomeState>>(Outcome.Progress())
+   val state: StateFlow<Outcome<HomeState>> = _stops
 
    private var previousBounds: LatLngBounds? = null
 
@@ -34,7 +44,7 @@ class HomeMapViewModel @Inject constructor(
       val halfWidth = newBounds.northeast.longitude - newBounds.center.longitude
       if (halfWidth > MAX_HALF_WIDTH_TO_SHOW_POINTS) {
          resources.cancelResource(_stops)
-         _stops.value = Outcome.Success(emptyList())
+         _stops.value = Outcome.Success(HomeState(emptyList()))
          previousBounds = null
          return
       }
@@ -56,7 +66,39 @@ class HomeMapViewModel @Inject constructor(
             ).onEach {
                this@HomeMapViewModel.previousBounds = expandedBounds
             }
+               .map { it.mapData { HomeState(it) } }
          )
+      }
+   }
+
+   fun moveMapToUser() = coroutineScope.launch {
+      actionLogger.logAction { "HomeMapViewModel.moveMapToUser()" }
+      try {
+         val location = locationProvider.getUserLocation()!! ?: return@launch
+
+         _stops.update { outcome ->
+            outcome.mapNullableData {
+               (it ?: HomeState(emptyList())).copy(
+                  event = HomeEvent.MoveMap(
+                     LatLng(
+                        location.latitude,
+                        location.longitude
+                     )
+                  )
+               )
+            }
+         }
+      } catch (e: CancellationException) {
+         throw e
+      } catch (e: Exception) {
+         errorReporter.report(e)
+      }
+   }
+
+   fun notifyEventHandled() {
+      actionLogger.logAction { "HomeMapViewModel.notifyEventHandled()" }
+      _stops.update { outcome ->
+         outcome.mapData { it.copy(event = null) }
       }
    }
 
@@ -72,6 +114,15 @@ class HomeMapViewModel @Inject constructor(
          LatLng(center.latitude + expandedHalfHeight, center.longitude + expandedHalfWidth),
       )
    }
+}
+
+data class HomeState(
+   val stops: List<Stop>,
+   val event: HomeEvent? = null,
+)
+
+sealed class HomeEvent {
+   data class MoveMap(val latLng: LatLng) : HomeEvent()
 }
 
 private fun LatLngBounds.contains(other: LatLngBounds): Boolean {
