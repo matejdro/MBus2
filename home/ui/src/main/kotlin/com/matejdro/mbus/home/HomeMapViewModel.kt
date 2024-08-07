@@ -66,7 +66,7 @@ class HomeMapViewModel @Inject constructor(
             ).onEach {
                this@HomeMapViewModel.previousBounds = expandedBounds
             }
-               .map { it.mapData { HomeState(it) } }
+               .map { outcome -> outcome.mapData { HomeState(it) } }
          )
       }
    }
@@ -74,7 +74,7 @@ class HomeMapViewModel @Inject constructor(
    fun moveMapToUser() = coroutineScope.launch {
       actionLogger.logAction { "HomeMapViewModel.moveMapToUser()" }
       try {
-         val location = locationProvider.getUserLocation()!! ?: return@launch
+         val location = locationProvider.getUserLocation() ?: return@launch
 
          _stops.update { outcome ->
             outcome.mapNullableData {
