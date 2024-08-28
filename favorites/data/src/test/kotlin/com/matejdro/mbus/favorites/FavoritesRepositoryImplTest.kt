@@ -74,6 +74,23 @@ class FavoritesRepositoryImplTest {
    }
 
    @Test
+   fun `Update name`() = scope.runTest {
+      favoritesRepository.createFavourite("C")
+      favoritesRepository.createFavourite("A")
+      runCurrent()
+
+      favoritesRepository.updateFavoriteName(2, "D")
+
+      favoritesRepository.getListOfFavorites().test {
+         runCurrent()
+         expectMostRecentItem() shouldBe listOf(
+            Favorite(1, "C", emptyList()),
+            Favorite(2, "D", emptyList()),
+         )
+      }
+   }
+
+   @Test
    fun `Add stations to the favorite`() = scope.runTest {
       favoritesRepository.createFavourite("Test")
 

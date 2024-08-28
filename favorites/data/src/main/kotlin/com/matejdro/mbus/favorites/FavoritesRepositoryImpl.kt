@@ -57,6 +57,12 @@ class FavoritesRepositoryImpl @Inject constructor(
       }
    }
 
+   override suspend fun updateFavoriteName(favoriteId: Long, newName: String) {
+      withDefault {
+         db.updateName(newName, favoriteId)
+      }
+   }
+
    override suspend fun addStopToFavourite(favouriteId: Long, stopId: Int) {
       withDefault {
          db.transaction {

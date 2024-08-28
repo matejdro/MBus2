@@ -40,6 +40,21 @@ class FakeFavoritesRepository : FavoritesRepository {
       }
    }
 
+   override suspend fun updateFavoriteName(favoriteId: Long, newName: String) {
+      favorites.update { list ->
+         list.map {
+            if (it.id == favoriteId) {
+               it.copy(name = newName)
+            } else {
+               it
+            }
+         }
+      }
+      providedSchedules[favoriteId]?.let {
+         providedSchedules[favoriteId] = it.copy(favorite = it.favorite.copy(name = newName))
+      }
+   }
+
    override suspend fun addStopToFavourite(favouriteId: Long, stopId: Int) {
       favorites.update { list ->
          list.map {

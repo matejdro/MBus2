@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -33,25 +34,30 @@ import com.matejdro.mbus.ui.debugging.PreviewTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFavoriteDialog(
+   name: String,
    includedStops: List<StopInfo>,
    onCancel: () -> Unit,
-   onSubmit: (List<StopInfo>) -> Unit,
+   onSubmit: (newName: String, newStops: List<StopInfo>) -> Unit,
    onDelete: () -> Unit,
    modifier: Modifier = Modifier,
 ) {
    var includedStopsInDialog by remember { mutableStateOf(includedStops) }
+   var newName by remember { mutableStateOf(name) }
 
    AlertDialogWithContent(
       onDismissRequest = onCancel,
       title = { Text(stringResource(R.string.edit_favorite)) },
       confirmButton = {
-         TextButton(onClick = {
-            if (includedStopsInDialog.isEmpty()) {
-               onDelete()
-            } else {
-               onSubmit(includedStops - includedStopsInDialog)
-            }
-         }) {
+         TextButton(
+            onClick = {
+               if (includedStopsInDialog.isEmpty()) {
+                  onDelete()
+               } else {
+                  onSubmit(newName, includedStops - includedStopsInDialog)
+               }
+            },
+            enabled = newName.isNotBlank()
+         ) {
             Text(stringResource(android.R.string.ok))
          }
       },
@@ -68,6 +74,8 @@ fun EditFavoriteDialog(
       modifier = modifier
    ) {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
+         TextField(newName, onValueChange = { newName = it }, modifier = Modifier.fillMaxWidth())
+
          includedStopsInDialog.forEachIndexed { index, stop ->
             key(stop.id) {
                StopRow(stop) { removedId -> includedStopsInDialog = includedStopsInDialog.filter { it.id != removedId } }
@@ -106,13 +114,14 @@ private fun StopRow(
 internal fun ScheduleScreenFilterDialogPreview() {
    PreviewTheme() {
       EditFavoriteDialog(
+         "A favorite",
          listOf(
             StopInfo(1, "Stop 1"),
             StopInfo(2, "Stop 2"),
             StopInfo(2, "Stop 3"),
          ),
          {},
-         {},
+         { _, _ -> },
          {}
       )
    }

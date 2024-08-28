@@ -9,6 +9,8 @@ import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -290,7 +292,7 @@ class FavoriteScheduleViewModelTest {
    }
 
    @Test
-   fun `Delete stops`() = scope.runTest {
+   fun `Update favorite`() = scope.runTest {
       val arrivals = StopSchedule(
          emptyList(),
          "Forest 77",
@@ -311,20 +313,24 @@ class FavoriteScheduleViewModelTest {
          arrivals.arrivals,
       )
 
-      vm.key = FavoriteScheduleScreenKey(1)
+      vm.key = FavoriteScheduleScreenKey(TEST_FAVORITE_1.id)
 
       vm.onServiceRegistered()
       runCurrent()
 
-      vm.removeStops(listOf(TEST_STOP_7))
+      vm.updateFavorite("Favorite C", listOf(TEST_STOP_7))
       runCurrent()
 
       repo.getScheduleForFavorite(TEST_FAVORITE_1.id, timeProvider.currentLocalDateTime()).data.test {
          runCurrent()
-         expectMostRecentItem().data?.allLines shouldBe listOf(
-            LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
-            LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
-         )
+         assertSoftly(expectMostRecentItem().data.shouldNotBeNull()) {
+            favorite.name shouldBe "Favorite C"
+
+            allLines shouldBe listOf(
+               LineStop(TEST_EXPECTED_LINE_2, TEST_STOP_8),
+               LineStop(TEST_EXPECTED_LINE_6, TEST_STOP_8)
+            )
+         }
       }
    }
 

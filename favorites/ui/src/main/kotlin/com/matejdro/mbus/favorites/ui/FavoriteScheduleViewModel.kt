@@ -61,13 +61,14 @@ class FavoriteScheduleViewModel @Inject constructor(
       load(newDateTime, true)
    }
 
-   fun removeStops(stops: List<StopInfo>) = coroutineScope.launch {
-      actionLogger.logAction { "FavoriteScheduleViewModel.removeStops(stops = $stops)" }
+   fun updateFavorite(newName: String, stopsToRemove: List<StopInfo>) = coroutineScope.launch {
+      actionLogger.logAction { "FavoriteScheduleViewModel.updateFavorite(newName = $newName, stopsToRemove = $stopsToRemove)" }
 
       try {
-         for (stop in stops) {
+         for (stop in stopsToRemove) {
             favoritesRepository.removeStopToFavourite(key.favoriteId, stop.id)
          }
+         favoritesRepository.updateFavoriteName(key.favoriteId, newName)
       } catch (e: Exception) {
          _schedule.update { Outcome.Error(if (e is CauseException) e else UnknownCauseException(cause = e), it.data) }
       }

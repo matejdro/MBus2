@@ -20,6 +20,9 @@ DELETE FROM dbFavorite WHERE id = :favoriteId;
 updateStops:
 UPDATE dbFavorite SET stops = :stops WHERE id = :stopId;
 
+updateName:
+UPDATE dbFavorite SET name = :name WHERE id = :stopId;
+
 updateWhitelist:
 UPDATE dbFavorite SET lineWhitelist = :lineWhitelist WHERE id = :id;
 

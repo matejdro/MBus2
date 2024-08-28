@@ -90,11 +90,12 @@ class FavoriteScheduleScreen(
          var editDialogShown by remember { mutableStateOf(false) }
          if (editDialogShown && data != null) {
             EditFavoriteDialog(
+               data.favorite.name,
                data.allStops,
                { editDialogShown = false },
-               {
+               { newName, stopsToRemove ->
                   editDialogShown = false
-                  viewModel.removeStops(it)
+                  viewModel.updateFavorite(newName, stopsToRemove)
                },
                viewModel::deleteFavorite
             )

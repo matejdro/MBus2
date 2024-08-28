@@ -12,6 +12,7 @@ interface FavoritesRepository {
 
    suspend fun createFavourite(name: String): Long
    suspend fun deleteFavourite(favouriteId: Long)
+   suspend fun updateFavoriteName(favoriteId: Long, newName: String)
    suspend fun addStopToFavourite(favouriteId: Long, stopId: Int)
    suspend fun removeStopToFavourite(favouriteId: Long, stopId: Int)
 
