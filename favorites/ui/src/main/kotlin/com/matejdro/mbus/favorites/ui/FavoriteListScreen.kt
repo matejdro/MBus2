@@ -1,7 +1,9 @@
 package com.matejdro.mbus.favorites.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,15 +57,21 @@ private fun FavoriteListScreenContent(data: Outcome<List<Favorite>>?, selectFavo
             .fillMaxWidth()
             .weight(1f)
       ) { items ->
-         LazyColumn {
-            itemsWithDivider(items) {
-               Text(
-                  it.name,
-                  Modifier
-                     .clickable { selectFavorite(it.id) }
-                     .padding(24.dp)
-                     .fillMaxWidth()
-               )
+         Box(Modifier.fillMaxSize()) {
+            LazyColumn(Modifier.fillMaxSize()) {
+               itemsWithDivider(items) {
+                  Text(
+                     it.name,
+                     Modifier
+                        .clickable { selectFavorite(it.id) }
+                        .padding(24.dp)
+                        .fillMaxWidth()
+                  )
+               }
+            }
+
+            if (data is Outcome.Success && items.isEmpty()) {
+               Text(stringResource(R.string.no_favorites_placeholder), Modifier.align(Alignment.Center))
             }
          }
       }
@@ -98,6 +107,20 @@ internal fun SuccessPreview() {
                   emptyList()
                )
             )
+         ),
+         {},
+      )
+   }
+}
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun EmptyPreview() {
+   PreviewTheme {
+      FavoriteListScreenContent(
+         Outcome.Success(
+            emptyList()
          ),
          {},
       )

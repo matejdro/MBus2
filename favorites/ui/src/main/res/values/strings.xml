@@ -4,4 +4,5 @@
     <string name="edit_favorite">Edit favorite</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
+    <string name="no_favorites_placeholder">No favorites yet. You can create them by pressing hearth button on any of the stations</string>
 </resources>

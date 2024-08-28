@@ -4,4 +4,5 @@
     <string name="edit_favorite">Uredi priljubljeno</string>
     <string name="delete">Izbriši</string>
     <string name="delete_all">Izbriši vse</string>
+    <string name="no_favorites_placeholder">Ni priljubljenih. Lahko dodaš novo tako, da stisneš na slikico srca pri postaji.</string>
 </resources>
