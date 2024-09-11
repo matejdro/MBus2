@@ -197,8 +197,8 @@ class HomeMapScreen(
          }
       }
 
-      if (granted) {
-         SideEffect {
+      remember(granted) {
+         if (granted) {
             viewModel.moveMapToUser()
          }
       }
