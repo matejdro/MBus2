@@ -1,6 +1,7 @@
 package com.matejdro.mbus.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -131,6 +132,7 @@ class HomeMapScreen(
    }
 
    @Composable
+   @SuppressLint("UnrememberedMutableState") // Will fix as part of the issue #12
    private fun Map(
       camera: CameraPositionState,
       isLocationGranted: Boolean,
