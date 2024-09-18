@@ -9,4 +9,5 @@
     <string name="line_filter">Filter linij</string>
     <string name="select_time">Izberi čas</string>
     <string name="add_to_favorites">Dodaj med priljubljene</string>
+    <string name="invalid_station_error">Ta postaja več ne obstaja</string>
 </resources>

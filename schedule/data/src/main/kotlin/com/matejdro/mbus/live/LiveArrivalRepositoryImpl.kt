@@ -4,6 +4,7 @@ import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.live.models.LiveArrivalRepository
 import com.matejdro.mbus.live.models.LiveArrivalsDto
 import com.matejdro.mbus.schedule.SchedulesService
+import com.matejdro.mbus.schedule.exceptions.BrokenStationException
 import com.matejdro.mbus.schedule.model.Arrival
 import com.squareup.anvil.annotations.ContributesBinding
 import kotlinx.coroutines.currentCoroutineContext
@@ -33,6 +34,7 @@ class LiveArrivalRepositoryImpl @Inject constructor(
          val liveArrivalForThisStop = withTimeoutOrNull(LOAD_TIMEOUT) {
             try {
                schedulesService.getLiveArrivalsForStopPoint(stopId).arrivalsForStopPoints
+                  ?: throw BrokenStationException()
             } catch (ignored: NoNetworkException) {
                null
             }

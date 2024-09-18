@@ -34,9 +34,9 @@ import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.shared.StopList
 import com.matejdro.mbus.schedule.shared.TimePickerDialog
+import com.matejdro.mbus.schedule.shared.scheduleUserFriendlyMessage
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
-import com.matejdro.mbus.ui.errors.commonUserFriendlyMessage
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.LoadingStyle
@@ -192,7 +192,7 @@ private fun ScheduleScreenContent(
 private fun ColumnScope.TopError(data: Outcome<FavoriteScheduleUiState>) {
    if (data is Outcome.Error) {
       Text(
-         text = data.exception.commonUserFriendlyMessage(
+         text = data.exception.scheduleUserFriendlyMessage(
             hasExistingData = !data.data?.arrivals.isNullOrEmpty()
          ),
          Modifier.Companion

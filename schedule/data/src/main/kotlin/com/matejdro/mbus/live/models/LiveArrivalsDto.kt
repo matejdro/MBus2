@@ -7,7 +7,7 @@ import java.time.LocalTime
 @JsonClass(generateAdapter = true)
 data class LiveArrivalsDto(
    @Json(name = "ArrivalsForStopPoints")
-   val arrivalsForStopPoints: List<LiveArrivalDto>,
+   val arrivalsForStopPoints: List<LiveArrivalDto>?,
 ) {
    @JsonClass(generateAdapter = true)
    data class LiveArrivalDto(
