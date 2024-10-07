@@ -28,6 +28,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "MBus2"
 
 include(":app")
+include(":app-benchmark")
 include(":app-screenshot-tests")
 include(":common")
 include(":detekt")

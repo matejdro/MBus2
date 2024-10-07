@@ -35,7 +35,6 @@ import si.inova.kotlinova.navigation.di.NavigationInjection
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 import si.inova.kotlinova.navigation.simplestack.RootNavigationContainer
 import javax.inject.Inject
-import javax.inject.Provider
 
 class MainActivity : ComponentActivity() {
    @Inject
@@ -51,7 +50,7 @@ class MainActivity : ComponentActivity() {
    lateinit var dateFormatter: AndroidDateTimeFormatter
 
    @Inject
-   lateinit var viewModelProvider: Provider<MainViewModel>
+   lateinit var viewModelProvider: MainViewModel.Factory
 
    private val viewModel by viewModels<MainViewModel>() { ViewModelFactory() }
    private var initComplete = false
@@ -122,7 +121,7 @@ class MainActivity : ComponentActivity() {
    private inner class ViewModelFactory : ViewModelProvider.Factory {
       override fun <T : ViewModel> create(modelClass: Class<T>): T {
          @Suppress("UNCHECKED_CAST")
-         return requireNotNull(viewModelProvider.get()) as T
+         return requireNotNull(viewModelProvider.create(intent)) as T
       }
    }
 }

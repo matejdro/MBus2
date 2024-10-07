@@ -47,6 +47,7 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.matejdro.mbus.location.toLatLng
 import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
@@ -66,14 +67,19 @@ class HomeMapScreen(
 
    @Composable
    override fun Content(key: HomeMapScreenKey) {
-      val isLocationGranted = requestLocationPermission()
+      val isLocationGranted = if (key.forcedLocation == null) requestLocationPermission() else false
       val data = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
       val context = LocalContext.current
       val colorScheme = MaterialTheme.colorScheme
 
       val camera = rememberCameraPositionState(init = {
-         this.position = DEFAULT_POSITION
+         val forcedLocation = key.forcedLocation
+         this.position = if (forcedLocation != null) {
+            CameraPosition.builder(DEFAULT_POSITION).target(forcedLocation.toLatLng()).build()
+         } else {
+            DEFAULT_POSITION
+         }
       })
 
       val mapStyle = remember(colorScheme.background) {
