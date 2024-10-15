@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
    private inner class ViewModelFactory : ViewModelProvider.Factory {
       override fun <T : ViewModel> create(modelClass: Class<T>): T {
          @Suppress("UNCHECKED_CAST")
-         return requireNotNull(viewModelProvider.create(intent)) as T
+         return viewModelProvider.create(intent) as T
       }
    }
 }
