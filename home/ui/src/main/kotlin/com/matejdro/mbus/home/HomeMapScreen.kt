@@ -45,8 +45,8 @@ import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.matejdro.mbus.location.toLatLng
 import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
@@ -158,18 +158,19 @@ class HomeMapScreen(
          UpdateModelOnCameraChange(camera, viewModel::loadStops)
 
          val stops = data?.data.orEmpty()
-         key(stops) {
-            for (stop in stops) {
-               key(stop.id) {
-                  Marker(
-                     state = MarkerState(LatLng(stop.lat, stop.lon)),
-                     title = stop.name,
-                     onClick = {
-                        navigator.navigateTo(StopScheduleScreenKey(stop.id))
-                        true
-                     }
-                  )
-               }
+         stops.forEachIndexed { index, stop ->
+            key(index) {
+               val state = rememberMarkerState()
+               state.position = LatLng(stop.lat, stop.lon)
+
+               Marker(
+                  state = state,
+                  title = stop.name,
+                  onClick = {
+                     navigator.navigateTo(StopScheduleScreenKey(stop.id))
+                     true
+                  }
+               )
             }
          }
       }
