@@ -184,7 +184,7 @@ fun LineLabel(line: Line, modifier: Modifier = Modifier) {
       Text(
          modifier = Modifier
             .background(lineColor, shape = shape)
-            .border(Dp.Hairline, textColor, shape)
+            .border(Dp.Hairline, MaterialTheme.colorScheme.onSurface, shape)
             .padding(horizontal = 8.dp, vertical = 4.dp),
          text = line.label,
          textAlign = TextAlign.Center,
