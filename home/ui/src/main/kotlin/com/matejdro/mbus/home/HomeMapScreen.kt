@@ -151,7 +151,7 @@ class HomeMapScreen(
          modifier = Modifier.fillMaxSize(),
          properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
          googleMapOptionsFactory = {
-            GoogleMapOptions().backgroundColor(backgroundColor)
+            GoogleMapOptions().backgroundColor(backgroundColor).compassEnabled(false)
          },
          contentPadding = WindowInsets.safeDrawing.asPaddingValues()
       ) {
