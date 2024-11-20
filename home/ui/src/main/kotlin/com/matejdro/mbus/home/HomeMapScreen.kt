@@ -2,6 +2,7 @@ package com.matejdro.mbus.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -21,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -30,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -52,9 +57,11 @@ import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.stops.model.Stop
+import com.matejdro.mbus.ui.components.ErrorPopup
 import com.matejdro.mbus.ui.debugging.FullScreenPreviews
 import com.matejdro.mbus.ui.debugging.PreviewTheme
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.instructions.navigateTo
@@ -165,6 +172,33 @@ private fun ContentStateless(
 
       Map(camera, isLocationGranted, mapStyle, backgroundColor, data?.mapData { it.stops }, onCameraUpdate, openStopSchedule)
       FavoritesButton(Modifier.safeDrawingPadding(), navigateToFavorites)
+
+      println("data $data")
+      if (data is Outcome.Progress) {
+         CircularProgressIndicator(
+            Modifier
+               .padding(top = 20.dp)
+               .safeDrawingPadding()
+               .align(Alignment.TopCenter)
+               .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f), shape = RoundedCornerShape(8.dp))
+               .padding(8.dp)
+         )
+      } else if (data is Outcome.Error && data.exception is NoNetworkException) {
+         Icon(
+            painterResource(R.drawable.ic_no_internet),
+            tint = MaterialTheme.colorScheme.error,
+            contentDescription = stringResource(com.matejdro.mbus.ui.R.string.error_no_network),
+            modifier = Modifier
+               .padding(top = 16.dp)
+               .safeDrawingPadding()
+               .align(Alignment.TopCenter)
+               .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(8.dp))
+               .padding(8.dp)
+               .alpha(HALF_LUMINANCE)
+         )
+      }
+
+      ErrorPopup((data as? Outcome.Error)?.exception, data?.data != null)
    }
 }
 
@@ -251,12 +285,46 @@ private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425
 @SuppressLint("UnrememberedMutableState")
 @FullScreenPreviews
 @Composable
+@ShowkaseComposable(group = "Test")
 internal fun HomeMapScreenPreviewSuccess() {
    PreviewTheme {
       ContentStateless(
          CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
          true,
          Outcome.Success(HomeState(emptyList(), null)),
+         {},
+         {},
+         {}
+      )
+   }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun HomeMapScreenPreviewLoading() {
+   PreviewTheme {
+      ContentStateless(
+         CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
+         true,
+         Outcome.Progress(),
+         {},
+         {},
+         {}
+      )
+   }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@FullScreenPreviews
+@Composable
+internal fun HomeMapScreenPreviewNetworkError() {
+   PreviewTheme {
+      ContentStateless(
+         CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
+         true,
+         Outcome.Error(NoNetworkException()),
          {},
          {},
          {}

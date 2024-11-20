@@ -3,6 +3,7 @@ plugins {
    compose
    navigation
    unmock
+   showkase
 }
 
 android {
