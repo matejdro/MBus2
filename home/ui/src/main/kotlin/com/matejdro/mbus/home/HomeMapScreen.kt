@@ -52,6 +52,8 @@ import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.navigation.keys.StopScheduleScreenKey
 import com.matejdro.mbus.stops.model.Stop
+import com.matejdro.mbus.ui.debugging.FullScreenPreviews
+import com.matejdro.mbus.ui.debugging.PreviewTheme
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
@@ -70,9 +72,6 @@ class HomeMapScreen(
       val isLocationGranted = if (key.forcedLocation == null) requestLocationPermission() else false
       val data = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
-      val context = LocalContext.current
-      val colorScheme = MaterialTheme.colorScheme
-
       val camera = rememberCameraPositionState(init = {
          val forcedLocation = key.forcedLocation
          this.position = if (forcedLocation != null) {
@@ -82,20 +81,18 @@ class HomeMapScreen(
          }
       })
 
-      val mapStyle = remember(colorScheme.background) {
-         if (colorScheme.isDarkMode()) {
-            null
-         } else {
-            MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_night)
-         }
-      }
-
-      Box {
-         val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
-
-         Map(camera, isLocationGranted, mapStyle, backgroundColor, data?.mapData { it.stops })
-         FavoritesButton(Modifier.safeDrawingPadding())
-      }
+      ContentStateless(
+         camera,
+         isLocationGranted,
+         data,
+         navigateToFavorites = {
+            navigator.navigateTo(FavoriteListScreenKey)
+         },
+         openStopSchedule = {
+            navigator.navigateTo(StopScheduleScreenKey(it.id))
+         },
+         onCameraUpdate = viewModel::loadStops
+      )
 
       data?.data?.event?.let { HandleEvent(it, camera) }
    }
@@ -109,81 +106,6 @@ class HomeMapScreen(
                viewModel.notifyEventHandled()
             }
          }
-      }
-   }
-
-   @Composable
-   private fun FavoritesButton(modifier: Modifier = Modifier) {
-      ElevatedButton(
-         onClick = {
-            navigator.navigateTo(FavoriteListScreenKey)
-         },
-         modifier
-            .padding(16.dp)
-            .size(40.dp)
-            .alpha(MAP_BUTTON_ALPHA),
-         shape = MaterialTheme.shapes.extraSmall,
-         contentPadding = PaddingValues(4.dp),
-         elevation = ButtonDefaults.elevatedButtonElevation(2.dp),
-         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
-         )
-      ) {
-         Icon(
-            painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
-            contentDescription = stringResource(com.matejdro.mbus.shared_resources.R.string.favorites)
-         )
-      }
-   }
-
-   @Composable
-   @SuppressLint("UnrememberedMutableState") // Will fix as part of the issue #12
-   private fun Map(
-      camera: CameraPositionState,
-      isLocationGranted: Boolean,
-      mapStyle: MapStyleOptions?,
-      backgroundColor: Int,
-      data: Outcome<List<Stop>>?,
-   ) {
-      GoogleMap(
-         cameraPositionState = camera,
-         modifier = Modifier.fillMaxSize(),
-         properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
-         googleMapOptionsFactory = {
-            GoogleMapOptions().backgroundColor(backgroundColor).compassEnabled(false)
-         },
-         contentPadding = WindowInsets.safeDrawing.asPaddingValues()
-      ) {
-         UpdateModelOnCameraChange(camera, viewModel::loadStops)
-
-         val stops = data?.data.orEmpty()
-         stops.forEachIndexed { index, stop ->
-            key(index) {
-               val state = rememberMarkerState()
-               state.position = LatLng(stop.lat, stop.lon)
-
-               Marker(
-                  state = state,
-                  title = stop.name,
-                  onClick = {
-                     navigator.navigateTo(StopScheduleScreenKey(stop.id))
-                     true
-                  }
-               )
-            }
-         }
-      }
-   }
-
-   @OptIn(MapsComposeExperimentalApi::class)
-   @Composable
-   private fun UpdateModelOnCameraChange(
-      camera: CameraPositionState,
-      updateCamera: (LatLngBounds) -> Unit,
-   ) {
-      MapEffect(camera.position) {
-         updateCamera(it.projection.visibleRegion.latLngBounds)
       }
    }
 
@@ -218,7 +140,126 @@ class HomeMapScreen(
    }
 }
 
+@Composable
+private fun ContentStateless(
+   camera: CameraPositionState,
+   isLocationGranted: Boolean,
+   data: Outcome<HomeState>?,
+   navigateToFavorites: () -> Unit,
+   onCameraUpdate: (LatLngBounds) -> Unit,
+   openStopSchedule: (Stop) -> Unit,
+) {
+   val context = LocalContext.current
+   val colorScheme = MaterialTheme.colorScheme
+
+   val mapStyle = remember(colorScheme.background) {
+      if (colorScheme.isDarkMode()) {
+         null
+      } else {
+         MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_night)
+      }
+   }
+
+   Box {
+      val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
+
+      Map(camera, isLocationGranted, mapStyle, backgroundColor, data?.mapData { it.stops }, onCameraUpdate, openStopSchedule)
+      FavoritesButton(Modifier.safeDrawingPadding(), navigateToFavorites)
+   }
+}
+
+@Composable
+private fun FavoritesButton(modifier: Modifier = Modifier, navigateToFavorites: () -> Unit) {
+   ElevatedButton(
+      onClick = navigateToFavorites,
+      modifier
+         .padding(16.dp)
+         .size(40.dp)
+         .alpha(MAP_BUTTON_ALPHA),
+      shape = MaterialTheme.shapes.extraSmall,
+      contentPadding = PaddingValues(4.dp),
+      elevation = ButtonDefaults.elevatedButtonElevation(2.dp),
+      colors = ButtonDefaults.buttonColors(
+         containerColor = Color.White,
+         contentColor = Color.Black
+      )
+   ) {
+      Icon(
+         painterResource(com.matejdro.mbus.shared_resources.R.drawable.ic_favorite),
+         contentDescription = stringResource(com.matejdro.mbus.shared_resources.R.string.favorites)
+      )
+   }
+}
+
+@Composable
+@SuppressLint("UnrememberedMutableState") // Will fix as part of the issue #12
+private fun Map(
+   camera: CameraPositionState,
+   isLocationGranted: Boolean,
+   mapStyle: MapStyleOptions?,
+   backgroundColor: Int,
+   data: Outcome<List<Stop>>?,
+   onCameraUpdate: (LatLngBounds) -> Unit,
+   openStopSchedule: (Stop) -> Unit,
+) {
+   GoogleMap(
+      cameraPositionState = camera,
+      modifier = Modifier.fillMaxSize(),
+      properties = MapProperties(isMyLocationEnabled = isLocationGranted, mapStyleOptions = mapStyle),
+      googleMapOptionsFactory = {
+         GoogleMapOptions().backgroundColor(backgroundColor).compassEnabled(false)
+      },
+      contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+   ) {
+      UpdateModelOnCameraChange(camera, onCameraUpdate)
+
+      val stops = data?.data.orEmpty()
+      stops.forEachIndexed { index, stop ->
+         key(index) {
+            val state = rememberMarkerState()
+            state.position = LatLng(stop.lat, stop.lon)
+
+            Marker(
+               state = state,
+               title = stop.name,
+               onClick = {
+                  openStopSchedule(stop)
+                  true
+               }
+            )
+         }
+      }
+   }
+}
+
+@OptIn(MapsComposeExperimentalApi::class)
+@Composable
+private fun UpdateModelOnCameraChange(
+   camera: CameraPositionState,
+   updateCamera: (LatLngBounds) -> Unit,
+) {
+   MapEffect(camera.position) {
+      updateCamera(it.projection.visibleRegion.latLngBounds)
+   }
+}
+
 private fun ColorScheme.isDarkMode() = background.luminance() > HALF_LUMINANCE
 private const val HALF_LUMINANCE = 0.5f
 private const val MAP_BUTTON_ALPHA = 0.8f
 private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425766468048), 16f, 0f, 0f)
+
+@SuppressLint("UnrememberedMutableState")
+@FullScreenPreviews
+@Composable
+internal fun HomeMapScreenPreviewSuccess() {
+   PreviewTheme {
+      ContentStateless(
+         CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
+         true,
+         Outcome.Success(HomeState(emptyList(), null)),
+         {},
+         {},
+         {}
+      )
+   }
+}
