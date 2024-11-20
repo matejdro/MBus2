@@ -173,7 +173,6 @@ private fun ContentStateless(
       Map(camera, isLocationGranted, mapStyle, backgroundColor, data?.mapData { it.stops }, onCameraUpdate, openStopSchedule)
       FavoritesButton(Modifier.safeDrawingPadding(), navigateToFavorites)
 
-      println("data $data")
       if (data is Outcome.Progress) {
          CircularProgressIndicator(
             Modifier
