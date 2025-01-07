@@ -5,6 +5,7 @@ val libs = the<LibrariesForLibs>()
 plugins {
    id("checks")
    id("com.squareup.anvil")
+   id("dependency-analysis")
 }
 
 anvil {

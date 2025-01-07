@@ -83,9 +83,11 @@ dependencies {
 }
 
 // Even empty android test tasks take a while to execute. Disable all of them by default.
+@Suppress("ComplexCondition") // It is just a properly commented list of tasks
 tasks.configureEach {
    if (!customConfig.enableEmulatorTests.getOrElse(false) &&
       name.contains("AndroidTest", ignoreCase = true) &&
+      !javaClass.name.startsWith("com.autonomousapps") && // https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/945
       !name.contains("Lint", ignoreCase = true) // Android lint does not like disabling their tasks) {
    ) {
       enabled = false

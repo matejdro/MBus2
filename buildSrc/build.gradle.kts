@@ -44,6 +44,7 @@ dependencies {
    implementation(libs.androidGradleCacheFix)
    implementation(libs.android.agp)
    implementation(libs.anvil)
+   implementation(libs.dependencyAnalysis)
    implementation(libs.detekt.plugin)
    implementation(libs.kotlin.plugin)
    implementation(libs.kotlinova.gradle)

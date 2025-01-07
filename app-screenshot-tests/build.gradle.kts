@@ -18,6 +18,20 @@ android {
    }
 }
 
+dependencyAnalysis {
+   issues {
+      onIncorrectConfiguration {
+         // screenshot tests need to include app as implementation, otherwise resources do not work properly
+         exclude(":app")
+      }
+
+      onModuleStructure {
+         // False positive
+         severity("ignore")
+      }
+   }
+}
+
 plugins.withId("app.cash.paparazzi") {
    // Defer until afterEvaluate so that testImplementation is created by Android plugin.
    afterEvaluate {
