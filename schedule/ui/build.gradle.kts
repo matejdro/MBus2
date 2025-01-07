@@ -1,6 +1,7 @@
 plugins {
    androidLibraryModule
    compose
+   di
    navigation
    showkase
 }

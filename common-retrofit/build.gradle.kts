@@ -1,5 +1,7 @@
 plugins {
    pureKotlinModule
+
+   di
    moshi
 }
 

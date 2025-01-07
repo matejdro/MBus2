@@ -8,6 +8,7 @@ plugins {
    id("kotlin-kapt")
    id("kotlinova")
    id("com.jraska.module.graph.assertion")
+   id("com.squareup.anvil")
 }
 
 anvil {
