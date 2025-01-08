@@ -111,7 +111,7 @@ private fun StopRow(
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenFilterDialogPreview() {
+internal fun EditFavoriteDialogPreview() {
    PreviewTheme() {
       EditFavoriteDialog(
          "A favorite",

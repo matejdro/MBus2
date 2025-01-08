@@ -206,7 +206,7 @@ private fun ColumnScope.TopLoading(data: Outcome<StopScheduleUiState>) {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenSuccessPreview() {
+internal fun StopScheduleScreenSuccessPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST),
@@ -222,7 +222,7 @@ internal fun ScheduleScreenSuccessPreview() {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenLoadingPreview() {
+internal fun StopScheduleScreenLoadingPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Progress(),
@@ -238,7 +238,7 @@ internal fun ScheduleScreenLoadingPreview() {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenRefreshLoadingPreview() {
+internal fun StopScheduleScreenRefreshLoadingPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Progress(PREVIEW_FAKE_LIST),
@@ -254,7 +254,7 @@ internal fun ScheduleScreenRefreshLoadingPreview() {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenErrorPreview() {
+internal fun StopScheduleScreenErrorPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Error(NoNetworkException()),
@@ -270,7 +270,7 @@ internal fun ScheduleScreenErrorPreview() {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenRefreshErrorPreview() {
+internal fun StopScheduleScreenRefreshErrorPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Error(NoNetworkException(), PREVIEW_FAKE_LIST),
@@ -286,7 +286,7 @@ internal fun ScheduleScreenRefreshErrorPreview() {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenRefreshLoadingMorePreview() {
+internal fun StopScheduleScreenRefreshLoadingMorePreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Progress(
@@ -308,7 +308,7 @@ internal fun ScheduleScreenRefreshLoadingMorePreview() {
 @Preview
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
+internal fun StopScheduleScreenSuccessWithFilterAppliedPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST.copy(whitelistedLines = setOf(2, 6, 18))),
@@ -324,7 +324,7 @@ internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
 @Preview
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenSuccessWithTimeSetAppliedPreview() {
+internal fun StopScheduleScreenSuccessWithTimeSetAppliedPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST.copy(customTimeSet = true)),
