@@ -15,14 +15,18 @@ android {
 }
 
 dependencies {
-   implementation(projects.favorites.api)
+   api(projects.common)
+   api(projects.favorites.api)
+   api(projects.schedule.api)
+   api(libs.kotlinova.navigation)
 
-   implementation(projects.common)
    implementation(projects.commonCompose)
    implementation(projects.sharedResources)
    implementation(projects.sharedSchedule)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.kotlinova.compose)
    implementation(libs.kotlinova.core)
 
    testImplementation(projects.favorites.test)
+   testImplementation(libs.kotlinova.core.test)
 }

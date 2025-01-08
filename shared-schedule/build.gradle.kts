@@ -13,10 +13,10 @@ android {
 }
 
 dependencies {
-   implementation(projects.schedule.api)
+   api(projects.schedule.api)
 
-   implementation(projects.common)
    implementation(projects.commonCompose)
    implementation(libs.coil)
+   implementation(libs.kotlinova.compose)
    implementation(libs.kotlinova.core)
 }

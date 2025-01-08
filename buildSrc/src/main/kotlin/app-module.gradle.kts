@@ -50,6 +50,4 @@ android {
 dependencies {
    implementation(libs.dagger.runtime)
    kapt(libs.dagger.compiler)
-   kaptAndroidTest(libs.dagger.compiler)
-   androidTestImplementation(libs.androidx.test.runner)
 }

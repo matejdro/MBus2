@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-   implementation(projects.common)
-
-   implementation(libs.kotlin.coroutines)
+   api(libs.kotlinova.core)
+   api(projects.common)
 }

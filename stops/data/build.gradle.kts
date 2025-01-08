@@ -6,17 +6,20 @@ plugins {
 }
 
 dependencies {
+   api(projects.common)
+   api(projects.commonRetrofit)
+   api(projects.sharedDb)
    api(projects.stops.api)
+   api(libs.androidx.datastore.core)
+   api(libs.kotlin.coroutines)
+   api(libs.kotlinova.core)
+   api(libs.retrofit)
 
-   implementation(projects.common)
-   implementation(projects.commonRetrofit)
-   implementation(projects.sharedDb)
-
-   implementation(libs.androidx.datastore.core)
    implementation(libs.androidx.datastore.preferences.core)
    implementation(libs.dispatch)
 
-   testImplementation(projects.stops.test)
+   testImplementation(projects.common.test)
+   testImplementation(libs.kotlinova.core.test)
    testImplementation(libs.kotlinova.retrofit.test)
    testImplementation(libs.turbine)
 }

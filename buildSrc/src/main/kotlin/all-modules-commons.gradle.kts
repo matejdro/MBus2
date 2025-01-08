@@ -13,9 +13,6 @@ dependencies {
       add("testImplementation", libs.kotest.assertions)
       add("testImplementation", libs.kotlin.coroutines.test)
       add("testImplementation", libs.turbine)
-      if (path != ":common:test") {
-         add("testImplementation", project(":common:test"))
-      }
 
       add("testRuntimeOnly", libs.junit5.engine)
    }

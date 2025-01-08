@@ -4,10 +4,11 @@ plugins {
 }
 
 dependencies {
+   api(projects.common)
    api(projects.favorites.api)
+   api(projects.schedule.api)
+   api(projects.sharedDb)
 
-   implementation(projects.common)
-   implementation(projects.sharedDb)
    implementation(libs.dispatch)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
@@ -16,4 +17,5 @@ dependencies {
 
    testImplementation(projects.schedule.test)
    testImplementation(libs.sqldelight.jvm)
+   testImplementation(libs.kotlinova.core.test)
 }

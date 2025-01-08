@@ -24,11 +24,6 @@ dependencyAnalysis {
          // screenshot tests need to include app as implementation, otherwise resources do not work properly
          exclude(":app")
       }
-
-      onModuleStructure {
-         // False positive
-         severity("ignore")
-      }
    }
 }
 

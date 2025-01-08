@@ -19,9 +19,8 @@ dependencies {
    add("implementation", libs.androidx.compose.ui.util)
    add("implementation", libs.androidx.compose.material3)
    add("implementation", libs.androidx.lifecycle.compose)
-   add("implementation", libs.kotlinova.compose)
 
-   add("debugImplementation", libs.androidx.compose.ui.test.manifest)
+   add("debugRuntimeOnly", libs.androidx.compose.ui.test.manifest)
    add("debugImplementation", libs.androidx.compose.ui.tooling)
    add("debugImplementation", libs.rebugger)
 

@@ -24,6 +24,7 @@ configure<DependencyAnalysisSubExtension> {
       onUnusedDependencies {
          // Standard test dependencies, included in all modules by default for huge convenience boost
          exclude("org.junit.jupiter:junit-jupiter-api")
+         exclude("org.junit.jupiter:junit-jupiter-engine")
          exclude("io.kotest:kotest-assertions-core")
          exclude("org.jetbrains.kotlinx:kotlinx-coroutines-test")
          exclude("app.cash.turbine:turbine")
@@ -35,6 +36,7 @@ configure<DependencyAnalysisSubExtension> {
          // Standard compose dependencies, always included for convenience
          exclude("androidx.compose.ui:ui-graphics")
          exclude("androidx.compose.ui:ui-test-junit4")
+         exclude("androidx.compose.ui:ui-util")
          exclude("androidx.compose.material3:material3")
          exclude("androidx.compose.material:material")
          exclude("androidx.compose.ui:ui-tooling-preview")
@@ -70,6 +72,15 @@ configure<DependencyAnalysisSubExtension> {
 
          // This is fine, included with kotlinova navigation
          exclude("com.github.Zhuinden:simple-stack")
+
+         // This is fine, auto-included with every di module
+         exclude("com.squareup.anvil:annotations")
+      }
+
+      onModuleStructure {
+         // Disable this one as it gives out to many false positives
+         // https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/1206
+         severity("ignore")
       }
    }
 }

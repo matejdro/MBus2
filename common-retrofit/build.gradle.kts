@@ -6,17 +6,19 @@ plugins {
 }
 
 dependencies {
+   api(projects.common)
+   api(libs.certificateTransparency)
    api(libs.kotlinova.retrofit)
+   api(libs.kotlinova.core)
+   api(libs.kotlinova.retrofit)
+   api(libs.okhttp)
+   api(libs.retrofit)
 
-   implementation(libs.certificateTransparency)
-   implementation(libs.dispatch)
-   implementation(libs.okhttp)
    implementation(libs.retrofit.moshi)
    implementation(libs.kotlin.coroutines)
 
-   implementation(projects.common)
-
-   testImplementation(projects.common.test)
    testImplementation(projects.commonRetrofit.test)
+   testImplementation(libs.kotlinova.retrofit.test)
+   testImplementation(libs.okhttp.mockWebServer)
    testImplementation(libs.turbine)
 }
