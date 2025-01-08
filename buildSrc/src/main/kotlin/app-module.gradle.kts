@@ -1,4 +1,5 @@
 import org.gradle.accessors.dm.LibrariesForLibs
+import tasks.setupTooManyKotlinFilesTask
 
 val libs = the<LibrariesForLibs>()
 
@@ -51,3 +52,5 @@ dependencies {
    implementation(libs.dagger.runtime)
    kapt(libs.dagger.compiler)
 }
+
+project.setupTooManyKotlinFilesTask()
