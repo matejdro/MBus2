@@ -60,7 +60,7 @@ tomlj = "1.1.0"
 turbine = "1.0.0"
 unmock-androidJar = "14-robolectric-10818077"
 unmock-plugin = "0.8.0"
-versionsChecker = "0.51.0"
+versionCatalogUpdate = "0.8.4"
 whatTheStack = "f508cf4ef5"
 
 [libraries]
@@ -153,7 +153,6 @@ orgJson = { module = "org.json:json", version.ref = "orgJson" }
 rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
-versionsCheckerPlugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "versionsChecker" }
 paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi" }
 playServices-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServices-location" }
 showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
@@ -175,6 +174,6 @@ whatTheStack = { module = "com.github.matejdro:WhatTheStack", version.ref = "wha
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
-versionsChecker = { id = "com.github.ben-manes.versions", version.ref = "versionsChecker" }
 playServices = { id = "com.google.gms.google-services", version.ref = "playServices-plugin" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
+versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
