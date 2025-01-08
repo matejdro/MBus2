@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import com.matejdro.mbus.schedule.shared.R as scheduleScharedR
 
+@Stable
 class StopScheduleScreen(
    private val viewModel: StopScheduleViewModel,
    private val timeProvider: TimeProvider,

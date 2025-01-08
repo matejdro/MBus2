@@ -1,6 +1,7 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.commonAndroid
+import util.commonKotlinOptions
 
 val libs = the<LibrariesForLibs>()
 
@@ -14,6 +15,13 @@ commonAndroid {
    }
    composeOptions {
       kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
+   }
+   commonKotlinOptions {
+      freeCompilerArgs += listOf(
+         "-P",
+         "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=" +
+            "${rootDir.absolutePath}/config/global-compose-stable-classes.txt"
+      )
    }
 }
 

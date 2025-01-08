@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -39,6 +40,7 @@ import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 import si.inova.kotlinova.navigation.simplestack.RootNavigationContainer
 import javax.inject.Inject
 
+@Stable
 class MainActivity : ComponentActivity() {
    @Inject
    lateinit var navigationInjectionFactory: NavigationInjection.Factory
