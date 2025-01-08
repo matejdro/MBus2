@@ -1,4 +1,5 @@
-package com.matejdro.mbus.screenshottests
+// Package is intentionally short to reduce image file name
+package screenshot
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -19,7 +20,7 @@ import org.junit.runner.RunWith
 
 @Suppress("JUnitMalformedDeclaration")
 @RunWith(TestParameterInjector::class)
-class ScreenshotTests {
+class Tests {
    @get:Rule
    val paparazzi = Paparazzi(
       deviceConfig = PIXEL_5,
@@ -30,21 +31,32 @@ class ScreenshotTests {
    )
 
    object PreviewProvider : TestParameterValuesProvider() {
-      override fun provideValues(context: Context?): List<TestKey> {
-         return Showkase.getMetadata().componentList
+      override fun provideValues(context: Context?): List<*> {
+         val components = Showkase.getMetadata().componentList
             .filter { it.group != "Default Group" }
             .map { TestKey(it) }
+
+         for (i in components.indices) {
+            for (j in components.indices) {
+               if (i != j && components[i].key == components[j].key) {
+                  throw AssertionError("Duplicate @Preview: '${components[i].key}'")
+               }
+            }
+         }
+         return components
       }
    }
 
    data class TestKey(val showkaseBrowserComponent: ShowkaseBrowserComponent) {
-      override fun toString(): String {
-         return showkaseBrowserComponent.componentKey
+      val key = with(showkaseBrowserComponent) {
+         componentName + (styleName?.let { "-$it" }.orEmpty())
       }
+
+      override fun toString(): String = key
    }
 
    @Test
-   fun launchTests(
+   fun test(
       @TestParameter(valuesProvider = PreviewProvider::class)
       testKey: TestKey,
    ) {
