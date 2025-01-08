@@ -9,7 +9,7 @@ plugins {
 }
 
 configure<KotlinProjectExtension> {
-   jvmToolchain(17)
+   jvmToolchain(21)
 }
 
 dependencies {
