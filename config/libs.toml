@@ -25,6 +25,7 @@ firebase-crashlytics-gradle = "2.9.9"
 anvil = "2.5.0-beta03"
 certificateTransparency = "2.5.6"
 coil = "2.5.0"
+composeGuard = "2.4.0"
 dagger = "2.51"
 desugarJdkLibs = "2.0.4"
 detekt = "1.23.5"
@@ -104,6 +105,7 @@ anvil-utils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anv
 certificateTransparency = { module = "com.appmattus.certificatetransparency:certificatetransparency", version.ref = "certificateTransparency" }
 certificateTransparency-android = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificateTransparency" }
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
 detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
 dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }

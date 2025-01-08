@@ -43,6 +43,7 @@ tasks.withType<DependencyUpdatesTask> {
 dependencies {
    implementation(libs.androidGradleCacheFix)
    implementation(libs.android.agp)
+   implementation(libs.composeGuard)
    implementation(libs.anvil)
    implementation(libs.dependencyAnalysis)
    implementation(libs.detekt.plugin)
