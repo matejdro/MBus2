@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.LibraryBuildFeatures
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import util.commonAndroid
 import util.commonKotlinOptions
 
@@ -21,8 +22,11 @@ commonAndroid {
    compileSdk = 34
 
    compileOptions {
-      sourceCompatibility = JavaVersion.VERSION_17
-      targetCompatibility = JavaVersion.VERSION_17
+      // Android still creates java tasks, even with 100% Kotlin.
+      // Ensure that target compatiblity is equal to kotlin's jvmToolchain
+      lateinit var javaVersion: JavaVersion
+      the<KotlinProjectExtension>().jvmToolchain { javaVersion = JavaVersion.toVersion(this.languageVersion.get().asInt()) }
+      targetCompatibility = javaVersion
 
       isCoreLibraryDesugaringEnabled = true
    }
@@ -63,10 +67,6 @@ commonAndroid {
          androidResources = false
       }
    }
-}
-
-kotlin {
-   jvmToolchain(17)
 }
 
 detekt {
