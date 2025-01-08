@@ -8,7 +8,7 @@ import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 
 class FakeLinesRepository : LinesRepository {
-   private var providedLines = MutableStateFlow<Outcome<List<Line>>?>(null)
+   private val providedLines = MutableStateFlow<Outcome<List<Line>>?>(null)
    var numLoads = 0
 
    fun provideLines(stops: Outcome<List<Line>>) {
