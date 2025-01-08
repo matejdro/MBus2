@@ -2,17 +2,17 @@ package com.matejdro.mbus.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColors = lightColorScheme(
@@ -79,6 +79,7 @@ private val DarkColors = darkColorScheme(
    scrim = md_theme_dark_scrim,
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MBusTheme(
    darkTheme: Boolean = isSystemInDarkTheme(),
@@ -100,31 +101,27 @@ fun MBusTheme(
       colorScheme = colorScheme,
       typography = MyTypography,
    ) {
-      val defaultRippleTheme = LocalRippleTheme.current
       if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
          // Workaround for https://issuetracker.google.com/issues/274471576 - Ripple effects do not work on Android 13
-         CompositionLocalProvider(LocalRippleTheme provides TransparencyFixRippleTheme(defaultRippleTheme)) {
+         val defaultRippleConfig = LocalRippleConfiguration.current ?: RippleConfiguration()
+         val transparencyFixRippleConfiguration = RippleConfiguration(
+            color = defaultRippleConfig.color,
+            rippleAlpha = defaultRippleConfig.rippleAlpha?.run {
+               RippleAlpha(
+                  draggedAlpha,
+                  focusedAlpha,
+                  hoveredAlpha,
+                  pressedAlpha.coerceAtLeast(MIN_RIPPLE_ALPHA_ON_TIRAMISU)
+               )
+            }
+
+         )
+         CompositionLocalProvider(LocalRippleConfiguration provides transparencyFixRippleConfiguration) {
             content()
          }
       } else {
          content()
       }
-   }
-}
-
-@Stable
-private class TransparencyFixRippleTheme(private val defaultTheme: RippleTheme) : RippleTheme {
-   @Composable
-   override fun defaultColor() = defaultTheme.defaultColor()
-
-   @Composable
-   override fun rippleAlpha() = defaultTheme.rippleAlpha().run {
-      RippleAlpha(
-         draggedAlpha,
-         focusedAlpha,
-         hoveredAlpha,
-         pressedAlpha.coerceAtLeast(MIN_RIPPLE_ALPHA_ON_TIRAMISU)
-      )
    }
 }
 

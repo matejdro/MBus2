@@ -7,6 +7,7 @@ import nl.littlerobots.vcu.plugin.versionSelector
 plugins {
    id("com.autonomousapps.dependency-analysis")
    alias(libs.plugins.versionCatalogUpdate)
+   id("kotlinova")
 }
 
 dependencyAnalysis {

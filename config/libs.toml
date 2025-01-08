@@ -1,104 +1,107 @@
 [versions]
-accompanist-permissions = "0.35.0-alpha"
-androidGradlePlugin = "8.3.0"
+accompanist-permissions = "0.37.0"
 androidGradleCacheFix = "3.0.1"
-androidx-activity-compose = "1.8.2"
-androidx-core = "1.12.0"
-androidx-core-splashscreen = "1.0.1"
+androidGradlePlugin = "8.7.3"
+androidx-activity-compose = "1.9.3"
+androidx-benchmark = "1.3.3"
 # See https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-androidx-compose-compiler = "1.5.10"
-androidx-compose-runtime = "1.6.2"
-androidx-compose-material = "1.6.2"
-androidx-compose-material3 = "1.2.0"
-androidx-compose-tracing = "1.0.0-beta01"
-androidx-datastore = "1.0.0"
-androidx-lifecycle = "2.7.0"
-androidx-benchmark = "1.2.3"
-androidx-profileInstaller = "1.3.1"
-androidx-test-uiautomator = "2.3.0"
-androidx-test-espresso = "3.5.1"
-androidx-test-runner = "1.5.2"
-androidx-test-orchestrator = "1.4.2"
+androidx-compose-compiler = "1.5.14"
+androidx-compose-material = "1.7.6"
+androidx-compose-material3 = "1.3.1"
+androidx-compose-runtime = "1.7.6"
+androidx-compose-tracing = "1.7.6"
+androidx-core = "1.15.0"
+androidx-core-splashscreen = "1.0.1"
+androidx-datastore = "1.1.1"
+androidx-lifecycle = "2.8.7"
 androidx-perfetto = "1.0.0"
-firebase-crashlytics = "18.6.2"
-firebase-crashlytics-gradle = "2.9.9"
-anvil = "2.5.0-beta03"
-certificateTransparency = "2.5.6"
-coil = "2.5.0"
+androidx-profileInstaller = "1.4.1"
+androidx-test-espresso = "3.6.1"
+androidx-test-orchestrator = "1.5.1"
+androidx-test-runner = "1.6.2"
+androidx-test-uiautomator = "2.3.0"
+anvil = "2.5.0"
+certificateTransparency = "2.5.71"
+coil = "2.7.0"
 composeGuard = "2.4.0"
-dagger = "2.51"
-desugarJdkLibs = "2.0.4"
-detekt = "1.23.5"
-detekt-compilerWarnings = "0.0.4"
-detekt-compose = "0.3.5"
+dagger = "2.54"
 dependencyAnalysis = "2.6.1"
+desugarJdkLibs = "2.1.4"
+detekt = "1.23.7"
+detekt-compilerWarnings = "0.0.4"
+detekt-compose = "0.4.22"
 dispatch = "1.0.0-beta10"
-googleMaps = "6.1.2"
-kotlin = "1.9.22"
-kotlin-coroutines = "1.8.0"
-kotlin-immutableCollections = "0.3.7"
+firebase-crashlytics = "19.3.0"
+firebase-crashlytics-gradle = "2.9.9"
+googleMaps = "6.4.1"
 junit4 = "4.13.2"
-junit4-parameterinjector = "1.15"
-junit5 = "5.10.2"
-kotlinova = "3.0.2"
-okhttp = "4.12.0"
-orgJson = "20240205"
-kotest = "5.8.0"
-ksp = "1.9.22-1.0.17"
-moduleGraphAssert = "2.5.0"
-moshi = "1.15.1"
+junit4-parameterinjector = "1.18"
+junit5 = "5.11.4"
+kotest = "5.9.1"
+# @pin as Anvil is not compatible with the K2 yet. See https://github.com/square/anvil/issues/733
+kotlin = "1.9.24"
+# @pin until we can also update Kotlin
+kotlin-coroutines = "1.8.0"
+kotlin-immutableCollections = "0.3.8"
+kotlinova = "3.3.0"
+# @pin until we can also update Kotlin
+ksp = "1.9.24-1.0.20"
+moduleGraphAssert = "2.7.1"
+moshi = "1.15.2"
+# @pin until we can also update Kotlin
 moshi-ir = "0.25.1"
-retrofit = "2.9.0"
-paparazzi = "1.3.2"
-playServices-plugin = "4.4.1"
+okhttp = "4.12.0"
+orgJson = "20250107"
+paparazzi = "1.3.5"
 playServices-location = "21.3.0"
+playServices-plugin = "4.4.1"
 rebugger = "1.0.0-rc03"
-simpleStack = "2.8.0"
-showkase = "1.0.2"
-sqldelight = "2.0.1"
-tomlj = "1.1.0"
-turbine = "1.0.0"
-unmock-androidJar = "14-robolectric-10818077"
-unmock-plugin = "0.8.0"
+retrofit = "2.11.0"
+showkase = "1.0.3"
+simpleStack = "2.9.0"
+sqldelight = "2.0.2"
+tomlj = "1.1.1"
+turbine = "1.2.0"
+unmock-androidJar = "15-robolectric-12650502"
+unmock-plugin = "0.9.0"
 versionCatalogUpdate = "0.8.4"
 whatTheStack = "f508cf4ef5"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
-androidGradleCacheFix = { module = "org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin", version.ref = "androidGradleCacheFix" }
 android-agp = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+androidGradleCacheFix = { module = "org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin", version.ref = "androidGradleCacheFix" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
-androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
-androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidx-benchmark" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-runtime" }
-androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidx-compose-runtime" }
-androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "androidx-compose-runtime" }
-androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-runtime" }
-androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-runtime" }
-androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-runtime" }
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-runtime" }
-androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose-runtime" }
-androidx-compose-tracing = { module = "androidx.compose.runtime:runtime-tracing", version.ref = "androidx-compose-tracing" }
+androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose-material" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
 androidx-compose-material3-sizeClasses = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "androidx-compose-material3" }
-androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
+androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidx-compose-runtime" }
+androidx-compose-tracing = { module = "androidx.compose.runtime:runtime-tracing", version.ref = "androidx-compose-tracing" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-runtime" }
+androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "androidx-compose-runtime" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose-runtime" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-runtime" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-runtime" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-runtime" }
+androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-runtime" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "androidx-datastore" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
-androidx-test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
-androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test-orchestrator" }
-androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-test-uiautomator" }
+androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-perfetto" }
 androidx-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-perfetto" }
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebase-crashlytics" }
+androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
+androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
+androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test-orchestrator" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
 anvil = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
 anvil-api = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
 anvil-utils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
@@ -106,18 +109,19 @@ certificateTransparency = { module = "com.appmattus.certificatetransparency:cert
 certificateTransparency-android = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificateTransparency" }
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
-detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
-dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
-detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
 detekt-compilerWarnings = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version.ref = "detekt-compilerWarnings" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
-desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 dispatch = { module = "com.rickbusarow.dispatch:dispatch-core", version.ref = "dispatch" }
 dispatch-espresso = { module = "com.rickbusarow.dispatch:dispatch-android-espresso", version.ref = "dispatch" }
 dispatch-test = { module = "com.rickbusarow.dispatch:dispatch-test", version.ref = "dispatch" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebase-crashlytics" }
 googleMaps = { module = "com.google.maps.android:maps-compose", version.ref = "googleMaps" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
@@ -125,55 +129,54 @@ junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "ju
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
-kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutableCollections" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinova-compose = { module = "si.inova.kotlinova:compose", version.ref = "kotlinova" }
+kotlinova-compose-androidTest = { module = "si.inova.kotlinova:compose-android-test", version.ref = "kotlinova" }
+kotlinova-core = { module = "si.inova.kotlinova:core", version.ref = "kotlinova" }
+kotlinova-core-test = { module = "si.inova.kotlinova:core-test", version.ref = "kotlinova" }
+kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlinova" }
 kotlinova-navigation = { module = "si.inova.kotlinova:navigation", version.ref = "kotlinova" }
 kotlinova-navigation-compiler = { module = "si.inova.kotlinova:navigation-compiler", version.ref = "kotlinova" }
 kotlinova-navigation-detekt = { module = "si.inova.kotlinova:navigation-detekt", version.ref = "kotlinova" }
 kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", version.ref = "kotlinova" }
-kotlinova-compose-androidTest = { module = "si.inova.kotlinova:compose-android-test", version.ref = "kotlinova" }
-kotlinova-core = { module = "si.inova.kotlinova:core", version.ref = "kotlinova" }
-kotlinova-core-test = { module = "si.inova.kotlinova:core-test", version.ref = "kotlinova" }
 kotlinova-retrofit = { module = "si.inova.kotlinova:retrofit", version.ref = "kotlinova" }
 kotlinova-retrofit-test = { module = "si.inova.kotlinova:retrofit-test", version.ref = "kotlinova" }
-kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlinova" }
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 moduleGraphAssert = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-ir = { module = "dev.zacsweers.moshix:dev.zacsweers.moshix.gradle.plugin", version.ref = "moshi-ir" }
 moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
+moshi-ir = { module = "dev.zacsweers.moshix:dev.zacsweers.moshix.gradle.plugin", version.ref = "moshi-ir" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 orgJson = { module = "org.json:json", version.ref = "orgJson" }
+paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi" }
+playServices-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServices-location" }
 rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
-paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi" }
-playServices-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServices-location" }
 showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
 showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
 simpleStack = { module = "com.github.Zhuinden:simple-stack", version.ref = "simpleStack" }
 sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
-sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
 tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unmock-androidJar = { module = "org.robolectric:android-all", version.ref = "unmock-androidJar" }
 unmock-plugin = { module = "com.github.bjoernq:unmockplugin", version.ref = "unmock-plugin" }
 whatTheStack = { module = "com.github.matejdro:WhatTheStack", version.ref = "whatTheStack" }
 
-
 [plugins]
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 playServices = { id = "com.google.gms.google-services", version.ref = "playServices-plugin" }
-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }

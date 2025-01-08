@@ -35,10 +35,6 @@ configure<KotlinovaExtension> {
    enableDetektPreCommitHook = true
 }
 
-tasks.withType<com.android.build.gradle.internal.lint.AndroidLintTask>().configureEach {
-   finalizedBy(":reportMerge")
-}
-
 dependencies {
    detektPlugins(libs.detekt.formatting)
    detektPlugins(libs.detekt.compilerWarnings)

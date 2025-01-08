@@ -19,7 +19,7 @@ commonAndroid {
    // Use default namespace for no resources, modules that use resources must override this
    namespace = "com.matejdro.mbus.noresources"
 
-   compileSdk = 34
+   compileSdk = 35
 
    compileOptions {
       // Android still creates java tasks, even with 100% Kotlin.

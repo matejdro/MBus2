@@ -48,7 +48,7 @@ jobs:
       # Tests
 
       - name: Lint
-        run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph verifyDebugDatabaseMigration buildHealth detectTooManyFiles debugComposeCompilerCheck"
+        run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph verifyDebugDatabaseMigration buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge"
       - name: Double check db with generated schema
         run: "./gradlew generateDatabaseSchema verifyDebugDatabaseMigration"
       - name: Compile Unit Tests

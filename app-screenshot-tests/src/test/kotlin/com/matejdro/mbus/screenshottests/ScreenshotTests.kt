@@ -5,14 +5,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.detectEnvironment
 import com.airbnb.android.showkase.models.Showkase
 import com.airbnb.android.showkase.models.ShowkaseBrowserComponent
 import com.android.ide.common.rendering.api.SessionParams
-import com.android.resources.Density
 import com.android.resources.NightMode
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
+import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
 import com.matejdro.mbus.showkase.getMetadata
 import org.junit.Rule
 import org.junit.Test
@@ -28,14 +27,10 @@ class ScreenshotTests {
       maxPercentDifference = 0.0,
       showSystemUi = false,
       renderingMode = SessionParams.RenderingMode.SHRINK,
-      environment = detectEnvironment().run {
-         // Workaround for the https://github.com/cashapp/paparazzi/issues/1025
-         copy(compileSdkVersion = 33, platformDir = platformDir.replace("34", "33"))
-      }
    )
 
-   object PreviewProvider : TestParameter.TestParameterValuesProvider {
-      override fun provideValues(): List<TestKey> {
+   object PreviewProvider : TestParameterValuesProvider() {
+      override fun provideValues(context: Context?): List<TestKey> {
          return Showkase.getMetadata().componentList
             .filter { it.group != "Default Group" }
             .map { TestKey(it) }
@@ -74,8 +69,8 @@ class ScreenshotTests {
          PIXEL_5.copy(
             ydpi = 600,
             xdpi = 300,
-            screenWidth = 300 * Density.DPI_440.dpiValue / 160,
-            screenHeight = 600 * Density.DPI_440.dpiValue / 160,
+            screenWidth = 300 * 440 / 160,
+            screenHeight = 600 * 440 / 160,
             nightMode = NightMode.NOTNIGHT
          )
       )

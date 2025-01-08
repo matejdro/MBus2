@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-   compileSdk = 34
+   compileSdk = 35
 
    namespace = "com.matejdro.mbus.shared_resources"
 

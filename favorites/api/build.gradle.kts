@@ -7,4 +7,5 @@ dependencies {
    api(projects.schedule.api)
 
    implementation(libs.kotlin.coroutines)
+   implementation(libs.kotlinova.core)
 }
