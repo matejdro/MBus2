@@ -10,13 +10,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.matejdro.mbus.ui.theme.MBusTheme
+import com.zhuinden.simplestack.Backstack
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -112,9 +115,23 @@ class MainActivity : ComponentActivity() {
                   }
                )
 
+               LogCurrentScreen(backstack)
+
                mainDeepLinkHandler.HandleNewIntentDeepLinks(this@MainActivity, backstack)
             }
          }
+      }
+   }
+
+   @Composable
+   private fun LogCurrentScreen(backstack: Backstack) {
+      DisposableEffect(backstack) {
+         val listener = Backstack.CompletionListener {
+            val newTopKey = it.topNewKey<ScreenKey>()
+            FirebaseCrashlytics.getInstance().setCustomKey("Screen", newTopKey.toString())
+         }
+         backstack.addStateChangeCompletionListener(listener)
+         onDispose { backstack.removeStateChangeCompletionListener(listener) }
       }
    }
 
