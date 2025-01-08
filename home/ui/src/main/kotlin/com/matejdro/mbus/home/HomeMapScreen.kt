@@ -285,7 +285,7 @@ private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun HomeMapScreenPreviewSuccess() {
+internal fun HomeMapScreenSuccessPreview() {
    PreviewTheme {
       ContentStateless(
          CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
@@ -302,7 +302,7 @@ internal fun HomeMapScreenPreviewSuccess() {
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun HomeMapScreenPreviewLoading() {
+internal fun HomeMapScreenLoadingPreview() {
    PreviewTheme {
       ContentStateless(
          CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
@@ -318,7 +318,7 @@ internal fun HomeMapScreenPreviewLoading() {
 @SuppressLint("UnrememberedMutableState")
 @FullScreenPreviews
 @Composable
-internal fun HomeMapScreenPreviewNetworkError() {
+internal fun HomeMapScreenNetworkErrorPreview() {
    PreviewTheme {
       ContentStateless(
          CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),

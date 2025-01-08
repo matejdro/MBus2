@@ -337,7 +337,7 @@ internal fun ScheduleScreenSuccessWithFilterAppliedPreview() {
 @Preview
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun ScheduleScreenSuccessWithTimeSetApplied() {
+internal fun ScheduleScreenSuccessWithTimeSetAppliedPreview() {
    PreviewTheme() {
       ScheduleScreenContent(
          Outcome.Success(PREVIEW_FAKE_LIST.copy(customTimeSet = true)),
