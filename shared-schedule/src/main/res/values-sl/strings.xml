@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tomorrow">Tomorrow</string>
+    <string name="tomorrow">Jutri</string>
     <string name="filter_lines">Filtriraj linije</string>
     <string name="live_arrival">Prihod linije</string>
     <string name="late">zamuja %1$s min</string>
