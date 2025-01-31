@@ -20,11 +20,11 @@ jobs:
         run: "sudo apt-get install -y libfreetype6 fontconfig fonts-dejavu"
       - name: Globally enable build cache and parallel execution
         run: "mkdir -p ~/.gradle && echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' >> ~/.gradle/gradle.properties"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: temurin
@@ -40,7 +40,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
       - name: "Upload proguard mappings"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mapping-app-develop-release.txt
           path: app/build/outputs/mapping/release/mapping.txt
@@ -60,7 +60,7 @@ jobs:
       - name: "Run Screenshot Tests"
         run: "./gradlew --continue verifyPaparazziDebug"
       - name: "Upload Screenshot test failures"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: failed-screenshot-tests
@@ -79,7 +79,7 @@ jobs:
           git tag ${{env.TAG_BUILD}}
           git push origin ${{env.TAG_BUILD}}
       - name: "Publish arficats to action"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-apk
           path: app/build/outputs/**/*-release.apk
