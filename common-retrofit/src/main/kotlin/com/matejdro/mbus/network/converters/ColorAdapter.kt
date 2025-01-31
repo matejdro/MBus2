@@ -20,7 +20,7 @@ class ColorAdapter @Inject constructor() : MoshiAdapter {
    @HexColor
    @Suppress("MagicNumber")
    fun fromHexToInt(jsonValue: String): Int {
-      val colorHex = jsonValue.removePrefix("#")
+      val colorHex = jsonValue.removePrefix("#").trim()
       return when (colorHex.length) {
          8 -> colorHex.toInt(16)
          6 -> colorHex.toInt(16) or 0xFF000000.toInt() // Set alpha to 0xFF
