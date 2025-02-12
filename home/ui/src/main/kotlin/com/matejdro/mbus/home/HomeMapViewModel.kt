@@ -66,7 +66,7 @@ class HomeMapViewModel @Inject constructor(
             ).onEach {
                this@HomeMapViewModel.previousBounds = expandedBounds
             }
-               .map { outcome -> outcome.mapData { HomeState(it) } }
+               .map { outcome -> outcome.mapData { HomeState(it, _stops.value.data?.event) } }
          )
       }
    }
