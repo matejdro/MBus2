@@ -1,0 +1,13 @@
+-- Turn color from non null to nullable
+
+CREATE TABLE dbLine_tmp (
+    id INTEGER PRIMARY KEY NOT NULL,
+    label TEXT NOT NULL,
+    color INTEGER
+);
+
+INSERT INTO dbLine_tmp SELECT * FROM dbLine;
+
+DROP TABLE dbLine;
+
+ALTER TABLE dbLine_tmp RENAME TO dbLine;

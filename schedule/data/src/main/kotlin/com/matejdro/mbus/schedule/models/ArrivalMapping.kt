@@ -11,7 +11,7 @@ fun SelectAllOnStop.toArrival(): Arrival {
       Line(
          lineId.toInt(),
          label,
-         color.toInt()
+         color?.toInt()
       ),
       LocalDateTime.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(arrivalTime)),
       direction

@@ -17,7 +17,7 @@ data class LinesDto(
       val code: String,
       @Json(name = "Color")
       @HexColor
-      val color: Int,
+      val color: Int?,
       @Json(name = "Description")
       val description: String,
       @Json(name = "LineId")
@@ -29,7 +29,7 @@ fun LinesDto.Line.toDbLine(): DbLine {
    return DbLine(
       lineId.toLong(),
       code,
-      color.toLong()
+      color?.toLong()
    )
 }
 
@@ -37,6 +37,6 @@ fun DbLine.toLine(): Line {
    return Line(
       id.toInt(),
       label,
-      color.toInt()
+      color?.toInt()
    )
 }

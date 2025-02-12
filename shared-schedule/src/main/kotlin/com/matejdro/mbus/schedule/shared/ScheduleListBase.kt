@@ -172,7 +172,7 @@ private fun LazyListScope.bottomLoading(
 
 @Composable
 fun LineLabel(line: Line, modifier: Modifier = Modifier) {
-   val lineColor = Color(line.color)
+   val lineColor = line.color?.let { Color(it) } ?: Color.Gray
    val textColor: Color = if (lineColor.luminance() > LUMINANCE_HALF_BRIGHT) {
       Color.Black
    } else {

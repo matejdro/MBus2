@@ -6,5 +6,5 @@ import si.inova.kotlinova.core.data.Immutable
 data class Line(
    val id: Int,
    val label: String,
-   val color: Int,
+   val color: Int?,
 )
