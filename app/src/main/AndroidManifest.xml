@@ -29,7 +29,7 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|locale|layoutDirection|density"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstancePerTask"
             android:theme="@style/Theme.MBus.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -37,6 +37,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <property
+                android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
         </activity>
 
         <meta-data
