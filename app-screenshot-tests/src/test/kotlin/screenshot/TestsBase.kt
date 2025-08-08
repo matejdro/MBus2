@@ -4,36 +4,48 @@ package screenshot
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
 import com.airbnb.android.showkase.models.Showkase
 import com.airbnb.android.showkase.models.ShowkaseBrowserComponent
 import com.android.ide.common.rendering.api.SessionParams
 import com.android.resources.NightMode
-import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
 import com.matejdro.mbus.showkase.getMetadata
+import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 @Suppress("JUnitMalformedDeclaration")
 @RunWith(TestParameterInjector::class)
-class Tests {
+abstract class TestsBase {
    @get:Rule
    val paparazzi = Paparazzi(
-      deviceConfig = PIXEL_5,
+      deviceConfig = DeviceConfig.PIXEL_5,
       theme = "android:Theme.Material.Light.NoActionBar",
       maxPercentDifference = 0.0,
       showSystemUi = false,
-      renderingMode = SessionParams.RenderingMode.SHRINK,
+      renderingMode = SessionParams.RenderingMode.SHRINK
    )
 
    object PreviewProvider : TestParameterValuesProvider() {
-      override fun provideValues(context: Context?): List<*> {
+      override fun provideValues(context: Context): List<*> {
+         val splitIndex = context.getOtherAnnotation(SplitIndex::class.java).index
+         val whitelistedPackages = Splits.paparazziSplits.elementAt(splitIndex)
+
          val components = Showkase.getMetadata().componentList
-            .filter { it.group != "Default Group" }
+            .filter { showkaseBrowserComponent ->
+               val isInSplit = if (whitelistedPackages.isNotEmpty()) {
+                  whitelistedPackages.any { showkaseBrowserComponent.componentKey.startsWith(it) }
+               } else {
+                  val blacklistedPackages = Splits.paparazziSplits.flatten()
+                  blacklistedPackages.all { !showkaseBrowserComponent.componentKey.startsWith(it) }
+               }
+
+               isInSplit && showkaseBrowserComponent.group != "Default Group"
+            }
             .map { TestKey(it) }
 
          for (i in components.indices) {
@@ -43,6 +55,7 @@ class Tests {
                }
             }
          }
+
          return components
       }
    }
@@ -55,9 +68,15 @@ class Tests {
       override fun toString(): String = key
    }
 
-   @Test
-   fun test(
-      @TestParameter(valuesProvider = PreviewProvider::class)
+   @Before
+   fun setUp() {
+      // Note: if you have lottie in your project, uncomment this
+      // Workaround for the https://github.com/cashapp/paparazzi/issues/630
+      // LottieTask.EXECUTOR = Executor(Runnable::run)
+   }
+
+   protected open fun test(
+
       testKey: TestKey,
    ) {
       val composable = @Composable {
@@ -70,7 +89,7 @@ class Tests {
          composable()
       }
       paparazzi.unsafeUpdateConfig(
-         PIXEL_5.copy(
+         DeviceConfig.PIXEL_5.copy(
             nightMode = NightMode.NIGHT
          )
       )
@@ -89,5 +108,15 @@ class Tests {
       paparazzi.snapshot("small") {
          composable()
       }
+      paparazzi.unsafeUpdateConfig(
+         PIXEL_5.copy(
+            fontScale = 1.5f
+         )
+      )
+      paparazzi.snapshot("largefont") {
+         composable()
+      }
    }
+
+   annotation class SplitIndex(val index: Int)
 }

@@ -14,6 +14,7 @@ android {
    testOptions {
       unitTests.all {
          it.useJUnit()
+         it.maxParallelForks = minOf(Runtime.getRuntime().availableProcessors(), 2)
       }
    }
 }
