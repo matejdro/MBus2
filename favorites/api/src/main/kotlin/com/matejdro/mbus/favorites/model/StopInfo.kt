@@ -1,6 +1,6 @@
 package com.matejdro.mbus.favorites.model
 
-import si.inova.kotlinova.core.data.Immutable
+import androidx.compose.runtime.Immutable
 
 @Immutable
 data class StopInfo(

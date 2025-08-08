@@ -1,6 +1,6 @@
 package com.matejdro.mbus.schedule.model
 
-import si.inova.kotlinova.core.data.Immutable
+import androidx.compose.runtime.Immutable
 import java.time.LocalDateTime
 
 @Immutable
