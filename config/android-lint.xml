@@ -27,4 +27,7 @@ Ignore unknown issue id to allow us to configure issues in this file  that
 
     <!-- With Compose, permission checks are more complicated than simple if statements. This Lint rule is not helpful anymore -->
     <issue id="MissingPermission" severity="ignore" />
+
+    <!-- We regularly update AGP at our own pace -->
+    <issue id="AndroidGradlePluginVersion" severity="ignore"/>
 </lint>
