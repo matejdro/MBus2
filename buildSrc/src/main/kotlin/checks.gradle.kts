@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.accessors.dm.LibrariesForLibs
 import si.inova.kotlinova.gradle.KotlinovaExtension
 import util.commonAndroid
@@ -24,6 +25,15 @@ if (isAndroidProject()) {
 
 detekt {
    config.setFrom("$rootDir/config/detekt.yml")
+}
+
+tasks.withType<Detekt>() {
+   val buildDir = project.layout.buildDirectory.asFile.get().absolutePath
+
+   // Exclude all generated files
+   exclude {
+      it.file.absolutePath.contains(buildDir)
+   }
 }
 
 configure<KotlinovaExtension> {

@@ -175,13 +175,6 @@ sqldelight {
    }
 }
 
-afterEvaluate {
-   tasks.named("verifyDebugDatabaseMigration") {
-      // Workaround for the https://github.com/cashapp/sqldelight/issues/5115
-      mustRunAfter(":shared-db:generateMainDatabaseSchema")
-   }
-}
-
 dependencies {
    implementation(projects.common)
    implementation(projects.commonCompose)
