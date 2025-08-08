@@ -9,9 +9,7 @@ plugins {
 android {
    namespace = "com.matejdro.mbus.schedule"
 
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 }
 
 dependencies {

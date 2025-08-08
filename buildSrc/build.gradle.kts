@@ -1,6 +1,10 @@
 plugins {
    `kotlin-dsl`
    alias(libs.plugins.detekt)
+   // We must specify JVM plugin explicitly here to avoid version conflicts
+   // It produces "Unsupported Kotlin plugin version" but it lets us compile
+   // See https://slack-chats.kotlinlang.org/t/29177439/when-updating-kotlin-to-2-2-0-i-m-getting-https-github-com-t
+   alias(libs.plugins.kotlin.jvm)
 }
 
 repositories {
@@ -28,6 +32,7 @@ dependencies {
    implementation(libs.dependencyAnalysis)
    implementation(libs.detekt.plugin)
    implementation(libs.kotlin.plugin)
+   implementation(libs.kotlin.plugin.compose)
    implementation(libs.kotlinova.gradle)
    implementation(libs.moduleGraphAssert)
    implementation(libs.moshi.ir)

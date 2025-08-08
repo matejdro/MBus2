@@ -1,8 +1,7 @@
-import com.android.build.api.dsl.LibraryBuildFeatures
+import com.android.build.api.dsl.LibraryAndroidResources
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import util.commonAndroid
-import util.commonKotlinOptions
 
 val libs = the<LibrariesForLibs>()
 
@@ -31,11 +30,6 @@ commonAndroid {
       isCoreLibraryDesugaringEnabled = true
    }
 
-   commonKotlinOptions {
-      freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-      freeCompilerArgs += "-opt-in=kotlinx.coroutines.FlowPreview"
-   }
-
    defaultConfig {
       minSdk = 24
 
@@ -62,10 +56,17 @@ commonAndroid {
       buildConfig = false
       resValues = false
       shaders = false
+   }
 
-      if (this is LibraryBuildFeatures) {
-         androidResources = false
-      }
+   if (this is LibraryAndroidResources) {
+      (this as LibraryAndroidResources).enable = false
+   }
+}
+
+kotlin {
+   compilerOptions {
+      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.FlowPreview")
    }
 }
 

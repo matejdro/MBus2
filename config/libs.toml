@@ -1,70 +1,68 @@
 [versions]
-accompanist-permissions = "0.37.0"
+accompanist-permissions = "0.37.3"
 androidGradleCacheFix = "3.0.1"
-androidGradlePlugin = "8.7.3"
-androidx-activity-compose = "1.9.3"
-androidx-benchmark = "1.3.3"
+androidGradlePlugin = "8.12.0"
+androidx-activity-compose = "1.10.1"
+androidx-benchmark = "1.4.0"
 # See https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 androidx-compose-compiler = "1.5.14"
-androidx-compose-material = "1.7.6"
-androidx-compose-material3 = "1.3.1"
-androidx-compose-runtime = "1.7.6"
-androidx-compose-tracing = "1.7.6"
-androidx-core = "1.15.0"
+androidx-compose-material = "1.8.3"
+androidx-compose-material3 = "1.3.2"
+androidx-compose-runtime = "1.8.3"
+androidx-compose-tracing = "1.8.3"
+androidx-core = "1.16.0"
 androidx-core-splashscreen = "1.0.1"
-androidx-datastore = "1.1.1"
-androidx-lifecycle = "2.8.7"
+androidx-datastore = "1.1.7"
+androidx-lifecycle = "2.9.2"
 androidx-perfetto = "1.0.0"
 androidx-profileInstaller = "1.4.1"
-androidx-test-espresso = "3.6.1"
-androidx-test-orchestrator = "1.5.1"
-androidx-test-runner = "1.6.2"
+androidx-test-espresso = "3.7.0"
+androidx-test-monitor = "1.8.0"
+androidx-test-orchestrator = "1.6.1"
+androidx-test-runner = "1.7.0"
 androidx-test-uiautomator = "2.3.0"
-anvil = "2.5.0"
-certificateTransparency = "2.5.71"
-coil = "2.7.0"
+anvil = "2.6.1"
+certificateTransparency = "2.8.1"
+coil = "3.3.0"
 composeGuard = "2.4.0"
-dagger = "2.54"
-dependencyAnalysis = "2.6.1"
-desugarJdkLibs = "2.1.4"
-detekt = "1.23.7"
+dagger = "2.57"
+dependencyAnalysis = "2.19.0"
+desugarJdkLibs = "2.1.5"
+detekt = "1.23.8"
 detekt-compilerWarnings = "0.0.4"
-detekt-compose = "0.4.22"
+detekt-compose = "0.4.27"
 dispatch = "1.0.0-beta10"
-firebase-crashlytics = "19.3.0"
-firebase-crashlytics-gradle = "2.9.9"
-googleMaps = "6.4.1"
+firebase-crashlytics = "20.0.0"
+firebase-crashlytics-gradle = "3.0.6"
+googleMaps = "6.7.1"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.18"
-junit5 = "5.11.4"
+junit5 = "5.13.4"
+junit5-launcher = "1.13.4"
 kotest = "5.9.1"
-# @pin as Anvil is not compatible with the K2 yet. See https://github.com/square/anvil/issues/733
-kotlin = "1.9.24"
-# @pin until we can also update Kotlin
-kotlin-coroutines = "1.8.0"
-kotlin-immutableCollections = "0.3.8"
-kotlinova = "3.3.0"
-# @pin until we can also update Kotlin
-ksp = "1.9.24-1.0.20"
+kotlin = "2.2.0"
+kotlin-coroutines = "1.10.2"
+kotlin-immutableCollections = "0.4.0"
+kotlinova = "3.5.0"
+ksp = "2.2.0-2.0.2"
 moduleGraphAssert = "2.7.1"
 moshi = "1.15.2"
-# @pin until we can also update Kotlin
-moshi-ir = "0.25.1"
-okhttp = "4.12.0"
-orgJson = "20250107"
+moshi-ir = "0.31.0"
+okhttp = "5.1.0"
+orgJson = "20250517"
 paparazzi = "1.3.5"
 playServices-location = "21.3.0"
-playServices-plugin = "4.4.1"
+playServices-plugin = "4.4.3"
 rebugger = "1.0.0-rc03"
-retrofit = "2.11.0"
-showkase = "1.0.3"
+retrofit = "3.0.0"
+showkase = "1.0.5"
 simpleStack = "2.9.0"
-sqldelight = "2.0.2"
+sqldelight = "2.1.0"
 tomlj = "1.1.1"
-turbine = "1.2.0"
-unmock-androidJar = "15-robolectric-12650502"
+turbine = "1.2.1"
+unmock-androidJar = "16-robolectric-13785805"
 unmock-plugin = "0.9.0"
-versionCatalogUpdate = "0.8.4"
+versionCatalogUpdate = "1.0.0"
 whatTheStack = "f508cf4ef5"
 
 [libraries]
@@ -99,6 +97,7 @@ androidx-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref 
 androidx-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-perfetto" }
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
+androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
 androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test-orchestrator" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
@@ -107,7 +106,8 @@ anvil-api = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" 
 anvil-utils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 certificateTransparency = { module = "com.appmattus.certificatetransparency:certificatetransparency", version.ref = "certificateTransparency" }
 certificateTransparency-android = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificateTransparency" }
-coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
@@ -127,12 +127,14 @@ junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
 junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5-launcher" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutableCollections" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-plugin-compose = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinova-compose = { module = "si.inova.kotlinova:compose", version.ref = "kotlinova" }
@@ -177,6 +179,7 @@ whatTheStack = { module = "com.github.matejdro:WhatTheStack", version.ref = "wha
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 playServices = { id = "com.google.gms.google-services", version.ref = "playServices-plugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }

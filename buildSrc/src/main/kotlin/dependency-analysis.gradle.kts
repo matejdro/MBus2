@@ -75,6 +75,9 @@ configure<DependencyAnalysisSubExtension> {
 
          // This is fine, auto-included with every di module
          exclude("com.squareup.anvil:annotations")
+
+         // AndroidX Annotations are auto-included with many other AndroidX libraries. It's fine to not explicitly depend on them
+         exclude("androidx.annotation:annotation")
       }
 
       onModuleStructure {

@@ -8,13 +8,12 @@ import android.os.StrictMode.VmPolicy
 import android.os.strictmode.Violation
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import coil.Coil
-import coil.ImageLoader
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import com.matejdro.mbus.di.ApplicationComponent
 import com.matejdro.mbus.di.DaggerMainApplicationComponent
 import dispatch.core.DefaultCoroutineScope
 import dispatch.core.DefaultDispatcherProvider
-import dispatch.core.defaultDispatcher
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
 import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
@@ -60,11 +59,11 @@ open class MBusApplication : Application() {
          }
       )
 
-      Coil.setImageLoader {
+      SingletonImageLoader.setSafe {
          ImageLoader.Builder(this)
             // Load Coil cache on the background thread
             // See https://github.com/coil-kt/coil/issues/1878
-            .interceptorDispatcher(defaultScope.defaultDispatcher)
+            .interceptorCoroutineContext(defaultScope.coroutineContext)
             .build()
       }
    }
@@ -107,11 +106,7 @@ open class MBusApplication : Application() {
             .detectResourceMismatches()
             .detectUnbufferedIo()
             .penaltyListener(ContextCompat.getMainExecutor(this)) { e ->
-               if (BuildConfig.DEBUG) {
-                  throw e
-               } else {
-                  errorReporter.get().report(e)
-               }
+               reportStrictModePenalty(e)
             }
             .build()
       )
@@ -165,4 +160,6 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "UnixSecureDirectoryStream", // https://issuetracker.google.com/issues/270704908
    "UnixDirectoryStream", // https://issuetracker.google.com/issues/270704908,
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
+   "gcore.dynamite", // https://issuetracker.google.com/issues/73800617
+   "MapsApiSettings", // https://github.com/googlemaps/android-maps-compose/issues/732
 )

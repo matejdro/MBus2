@@ -37,8 +37,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.ui.lists.DetectScrolledToBottom

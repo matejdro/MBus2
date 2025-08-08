@@ -1,28 +1,23 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.commonAndroid
-import util.commonKotlinOptions
 
 val libs = the<LibrariesForLibs>()
 
 plugins {
    id("com.joetr.compose.guard")
+   id("org.jetbrains.kotlin.plugin.compose")
 }
 
 commonAndroid {
    buildFeatures {
       compose = true
    }
-   composeOptions {
-      kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-   }
-   commonKotlinOptions {
-      freeCompilerArgs += listOf(
-         "-P",
-         "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=" +
-            "${rootDir.absolutePath}/config/global-compose-stable-classes.txt"
-      )
-   }
+}
+
+val stableClassesFile = rootProject.layout.projectDirectory.file("config/global-compose-stable-classes.txt")
+composeCompiler {
+   stabilityConfigurationFiles.add(stableClassesFile)
 }
 
 //region Compose Guard
@@ -61,7 +56,13 @@ project.tasks.named { composeCompileTasks.contains(it) }.withType<KotlinCompile>
       )
    }
 
+   inputs.file(stableClassesFile)
+
    outputs.dir(composeReportsFolder)
+}
+
+project.tasks.named { it.contains("ComposeCompilerCheck") }.configureEach {
+   inputs.file(stableClassesFile)
 }
 
 tasks.register<Copy>("generateComposeGuardBaseline") {

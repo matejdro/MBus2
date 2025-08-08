@@ -1,4 +1,4 @@
-# Default ignored files
+1# Default ignored files
 /shelf/
 /workspace.xml
 /androidTestResultsUserPreferences.xml
@@ -6,3 +6,4 @@
 /other.xml
 /git_toolbox_blame.xml
 /runConfigurations.xml
+/AndroidProjectSystem.xml

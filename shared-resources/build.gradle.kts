@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-   compileSdk = 35
+   compileSdk = 36
 
    namespace = "com.matejdro.mbus.shared_resources"
 
@@ -15,9 +15,7 @@ android {
       minSdk = 24
    }
 
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 
    lint {
       abortOnError = true

@@ -16,7 +16,7 @@ dependencyAnalysis {
 
       bundle("coil") {
          // We only ever want coil-compose, so coil is considered as a group
-         includeGroup("io.coil-kt")
+         includeGroup("io.coil-kt.coil3")
       }
 
       bundle("compose") {
@@ -35,12 +35,21 @@ dependencyAnalysis {
          includeGroup("androidx.activity")
       }
 
+      bundle("androidxBenchmark") {
+         includeGroup("androidx.benchmark")
+      }
+
+
       bundle("androidxCore") {
          includeGroup("androidx.core")
       }
 
       bundle("androidxLifecycle") {
          includeGroup("androidx.lifecycle")
+      }
+
+      bundle("androidxTest") {
+         includeGroup("androidx.test")
       }
 
       bundle("inject") {

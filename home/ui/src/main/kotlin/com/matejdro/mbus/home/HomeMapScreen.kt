@@ -51,7 +51,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.matejdro.mbus.location.toLatLng
 import com.matejdro.mbus.navigation.keys.FavoriteListScreenKey
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
@@ -249,7 +249,7 @@ private fun Map(
       val stops = data?.data.orEmpty()
       stops.forEachIndexed { index, stop ->
          key(index) {
-            val state = rememberMarkerState()
+            val state = rememberUpdatedMarkerState()
             state.position = LatLng(stop.lat, stop.lon)
 
             Marker(

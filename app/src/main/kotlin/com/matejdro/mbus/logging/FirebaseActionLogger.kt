@@ -1,7 +1,7 @@
 package com.matejdro.mbus.logging
 
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.common.logging.ActionLogger
 import com.squareup.anvil.annotations.ContributesBinding

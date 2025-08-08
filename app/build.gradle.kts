@@ -1,5 +1,17 @@
 import com.android.build.api.variant.BuildConfigField
 import com.android.build.api.variant.VariantOutputConfiguration
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.android
+import org.gradle.kotlin.dsl.androidComponents
+import org.gradle.kotlin.dsl.debugRuntimeOnly
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.implementation
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.libs
+import org.gradle.kotlin.dsl.projects
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.sqldelight
 import java.util.Optional
 
 plugins {
@@ -50,7 +62,7 @@ android {
                }
             }
 
-            variant.buildConfigFields.put(
+            variant.buildConfigFields?.put(
                "VERSION_NAME",
                appendedVersionName.map {
                   BuildConfigField(
@@ -194,6 +206,7 @@ dependencies {
    implementation(libs.androidx.lifecycle.viewModel.compose)
    implementation(libs.certificateTransparency)
    implementation(libs.coil)
+   implementation(libs.coil.okhttp)
    implementation(libs.dispatch)
    implementation(libs.firebase.crashlytics)
    implementation(libs.kotlin.coroutines)

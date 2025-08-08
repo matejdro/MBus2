@@ -8,9 +8,7 @@ plugins {
 android {
    namespace = "com.matejdro.mbus.ui"
 
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 }
 
 dependencies {
