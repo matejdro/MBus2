@@ -279,7 +279,7 @@ private fun UpdateModelOnCameraChange(
 private fun ColorScheme.isDarkMode() = background.luminance() > HALF_LUMINANCE
 private const val HALF_LUMINANCE = 0.5f
 private const val MAP_BUTTON_ALPHA = 0.8f
-private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425766468048), 16f, 0f, 0f)
+private val DEFAULT_POSITION = CameraPosition(LatLng(46.55260772813225, 15.64425766468048), 18f, 0f, 0f)
 
 @SuppressLint("UnrememberedMutableState")
 @FullScreenPreviews
