@@ -879,6 +879,8 @@ style:
         reason: "Use logcat for logging"
       - value: 'kotlin.io.println'
         reason: "Use logcat for logging"
+      - value: 'kotlinx.coroutines.flow.emptyFlow'
+        reason: "Not emitting anything from a flow usually results in an UI getting stuck"
   ForbiddenSuppress:
     active: false
     rules: [ ]
