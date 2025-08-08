@@ -25,6 +25,7 @@ class UseActionLoggerInViewModels(ruleSetConfig: Config) : Rule(ruleSetConfig) {
 
    override fun visitClass(klass: KtClass) {
       inViewModel = !klass.isInterface() &&
+         klass.name?.startsWith("Fake") != true &&
          (klass.name?.endsWith("ViewModel") == true || klass.name?.endsWith("ViewModelImpl") == true)
       super.visitClass(klass)
    }
