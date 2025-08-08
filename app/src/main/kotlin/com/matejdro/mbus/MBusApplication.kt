@@ -100,7 +100,9 @@ open class MBusApplication : Application() {
       StrictMode.setThreadPolicy(
          StrictMode.ThreadPolicy.Builder()
             .detectCustomSlowCalls()
-            .detectDiskReads()
+//             Disable detectDiskReads as it causes massive performance issues on the Google map
+//             See https://github.com/googlemaps/android-maps-compose/issues/732
+//            .detectDiskReads()
             .detectDiskWrites()
             .detectNetwork()
             .detectResourceMismatches()
