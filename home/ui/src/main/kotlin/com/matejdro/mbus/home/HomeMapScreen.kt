@@ -21,9 +21,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -79,6 +82,8 @@ class HomeMapScreen(
       val isLocationGranted = if (key.forcedLocation == null) requestLocationPermission() else false
       val data = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
+      var mapReady by remember { mutableStateOf(false) }
+
       val camera = rememberCameraPositionState(init = {
          val forcedLocation = key.forcedLocation
          this.position = if (forcedLocation != null) {
@@ -98,10 +103,13 @@ class HomeMapScreen(
          openStopSchedule = {
             navigator.navigateTo(StopScheduleScreenKey(it.id))
          },
-         onCameraUpdate = viewModel::loadStops
+         onCameraUpdate = viewModel::loadStops,
+         onMapReady = { mapReady = true }
       )
 
-      data?.data?.event?.let { HandleEvent(it, camera) }
+      if (mapReady) {
+         data?.data?.event?.let { HandleEvent(it, camera) }
+      }
    }
 
    @Composable
@@ -155,6 +163,7 @@ private fun ContentStateless(
    navigateToFavorites: () -> Unit,
    onCameraUpdate: (LatLngBounds) -> Unit,
    openStopSchedule: (Stop) -> Unit,
+   onMapReady: () -> Unit,
 ) {
    val context = LocalContext.current
    val colorScheme = MaterialTheme.colorScheme
@@ -170,7 +179,16 @@ private fun ContentStateless(
    Box {
       val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
 
-      Map(camera, isLocationGranted, mapStyle, backgroundColor, data?.mapData { it.stops }, onCameraUpdate, openStopSchedule)
+      Map(
+         camera,
+         isLocationGranted,
+         mapStyle,
+         backgroundColor,
+         data?.mapData { it.stops },
+         onCameraUpdate,
+         openStopSchedule,
+         onMapReady
+      )
       FavoritesButton(Modifier.safeDrawingPadding(), navigateToFavorites)
 
       if (data is Outcome.Progress) {
@@ -234,6 +252,7 @@ private fun Map(
    data: Outcome<List<Stop>>?,
    onCameraUpdate: (LatLngBounds) -> Unit,
    openStopSchedule: (Stop) -> Unit,
+   onMapReady: () -> Unit,
 ) {
    GoogleMap(
       cameraPositionState = camera,
@@ -242,7 +261,9 @@ private fun Map(
       googleMapOptionsFactory = {
          GoogleMapOptions().backgroundColor(backgroundColor).compassEnabled(false)
       },
-      contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+      contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+      onMapLoaded = onMapReady
+
    ) {
       UpdateModelOnCameraChange(camera, onCameraUpdate)
 
@@ -293,6 +314,7 @@ internal fun HomeMapScreenSuccessPreview() {
          Outcome.Success(HomeState(emptyList(), null)),
          {},
          {},
+         {},
          {}
       )
    }
@@ -310,6 +332,7 @@ internal fun HomeMapScreenLoadingPreview() {
          Outcome.Progress(),
          {},
          {},
+         {},
          {}
       )
    }
@@ -324,6 +347,7 @@ internal fun HomeMapScreenNetworkErrorPreview() {
          CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)),
          true,
          Outcome.Error(NoNetworkException()),
+         {},
          {},
          {},
          {}
