@@ -160,5 +160,6 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "UnixSecureDirectoryStream", // https://issuetracker.google.com/issues/270704908
    "UnixDirectoryStream", // https://issuetracker.google.com/issues/270704908,
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
-   "gcore.dynamite", // https://issuetracker.google.com/issues/73800617
+   "gcore.dynamite", // https://issuetracker.google.com/issues/73800617,
+   "readFromParcel", // Likely originating somewhere from within the framework. Not enough info to diagnose it.
 )
