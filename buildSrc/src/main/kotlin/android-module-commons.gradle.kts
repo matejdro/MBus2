@@ -16,7 +16,10 @@ val customConfig = extensions.create<CustomBuildConfiguration>("custom")
 
 commonAndroid {
    // Use default namespace for no resources, modules that use resources must override this
-   namespace = "com.matejdro.mbus.noresources"
+   // Add a unique suffix to every module to stop AGP from complaining about "is used in multiple modules"
+   // Workaround for the https://issuetracker.google.com/issues/332947919
+   val uniqueNamespaceSuffix = path.removePrefix(":").replace(':', '.').replace("-", "")
+   namespace = "com.matejdro.mbus.noresources.$uniqueNamespaceSuffix"
 
    compileSdk = 36
 
