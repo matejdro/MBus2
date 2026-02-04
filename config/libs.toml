@@ -31,7 +31,6 @@ googleMaps = "8.0.1"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.21"
 junit = "6.0.2"
-junit-launcher = "6.0.2"
 kotest = "6.1.2"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
@@ -109,7 +108,7 @@ junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
