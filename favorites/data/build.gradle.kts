@@ -15,7 +15,7 @@ dependencies {
    implementation(libs.sqldelight.async)
    implementation(libs.sqldelight.coroutines)
 
-   testImplementation(projects.schedule.test)
+   testImplementation(testFixtures(projects.schedule.api))
    testImplementation(libs.sqldelight.jvm)
    testImplementation(libs.kotlinova.core.test)
 }

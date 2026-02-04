@@ -28,5 +28,8 @@ inline val PluginDependenciesSpec.navigation: PluginDependencySpec
 inline val PluginDependenciesSpec.testHelpers: PluginDependencySpec
    get() = id("test-module")
 
+inline val PluginDependenciesSpec.testFixtures: PluginDependencySpec
+   get() = id("test-fixtures")
+
 inline val PluginDependenciesSpec.sqldelight: PluginDependencySpec
    get() = id("sqldelight")

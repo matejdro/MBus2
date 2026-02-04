@@ -1,5 +1,6 @@
 plugins {
    pureKotlinModule
+   testFixtures
 
    di
    moshi
@@ -16,8 +17,11 @@ dependencies {
    implementation(libs.retrofit.moshi)
    implementation(libs.kotlin.coroutines)
 
-   testImplementation(projects.commonRetrofit.test)
    testImplementation(libs.kotlinova.retrofit.test)
    testImplementation(libs.okhttp.mockWebServer)
    testImplementation(libs.turbine)
+
+   testFixturesApi(libs.kotlinova.retrofit.test)
+   testFixturesImplementation(libs.dagger.runtime)
+   testFixturesImplementation(libs.kotlinova.core.test)
 }

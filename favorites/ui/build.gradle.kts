@@ -25,6 +25,6 @@ dependencies {
    implementation(libs.kotlinova.compose)
    implementation(libs.kotlinova.core)
 
-   testImplementation(projects.favorites.test)
+   testImplementation(testFixtures(projects.favorites.api))
    testImplementation(libs.kotlinova.core.test)
 }

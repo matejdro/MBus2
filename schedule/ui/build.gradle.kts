@@ -25,7 +25,7 @@ dependencies {
    implementation(libs.kotlinova.compose)
    implementation(libs.kotlinova.core)
 
-   testImplementation(projects.schedule.test)
-   testImplementation(projects.stops.test)
+   testImplementation(testFixtures(projects.schedule.api))
+   testImplementation(testFixtures(projects.stops.api))
    testImplementation(libs.kotlinova.core.test)
 }

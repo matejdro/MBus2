@@ -18,8 +18,8 @@ dependencies {
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
 
-   testImplementation(projects.common.test)
-   testImplementation(projects.stops.test)
+   testImplementation(testFixtures(projects.common))
+   testImplementation(testFixtures(projects.stops.api))
    testImplementation(libs.kotlinova.core.test)
    testImplementation(libs.kotlinova.retrofit.test)
 }

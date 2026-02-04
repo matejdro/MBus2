@@ -29,6 +29,6 @@ dependencies {
    implementation(libs.kotlinova.compose)
    implementation(libs.playServices.location)
 
-   testImplementation(projects.stops.test)
+   testImplementation(testFixtures(projects.stops.api))
    testImplementation(libs.kotlinova.core.test)
 }
