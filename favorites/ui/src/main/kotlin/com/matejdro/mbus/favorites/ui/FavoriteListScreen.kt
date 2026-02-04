@@ -39,7 +39,7 @@ class FavoriteListScreen(
    override fun Content(key: FavoriteListScreenKey) {
       val state = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention()
 
-      FavoriteListScreenContent(state.value) {
+      FavoriteListScreenContent(state::value) {
          navigator.replaceTopWith(FavoriteScheduleScreenKey(it))
       }
    }
@@ -47,7 +47,7 @@ class FavoriteListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FavoriteListScreenContent(data: Outcome<List<Favorite>>?, selectFavorite: (id: Long) -> Unit) {
+private fun FavoriteListScreenContent(data: () -> Outcome<List<Favorite>>?, selectFavorite: (id: Long) -> Unit) {
    Column {
       TopAppBar(title = { Text(stringResource(com.matejdro.mbus.shared_resources.R.string.favorites)) })
 
@@ -70,7 +70,7 @@ private fun FavoriteListScreenContent(data: Outcome<List<Favorite>>?, selectFavo
                }
             }
 
-            if (data is Outcome.Success && items.isEmpty()) {
+            if (data() is Outcome.Success && items.isEmpty()) {
                Text(stringResource(R.string.no_favorites_placeholder), Modifier.align(Alignment.Center))
             }
          }
@@ -84,30 +84,32 @@ private fun FavoriteListScreenContent(data: Outcome<List<Favorite>>?, selectFavo
 internal fun SuccessPreview() {
    PreviewTheme {
       FavoriteListScreenContent(
-         Outcome.Success(
-            listOf(
-               Favorite(
-                  1,
-                  "Favorite a",
-                  emptyList()
-               ),
-               Favorite(
-                  2,
-                  "Favorite b",
-                  emptyList()
-               ),
-               Favorite(
-                  3,
-                  "Favorite c",
-                  emptyList()
-               ),
-               Favorite(
-                  4,
-                  "Favorite d",
-                  emptyList()
+         {
+            Outcome.Success(
+               listOf(
+                  Favorite(
+                     1,
+                     "Favorite a",
+                     emptyList()
+                  ),
+                  Favorite(
+                     2,
+                     "Favorite b",
+                     emptyList()
+                  ),
+                  Favorite(
+                     3,
+                     "Favorite c",
+                     emptyList()
+                  ),
+                  Favorite(
+                     4,
+                     "Favorite d",
+                     emptyList()
+                  )
                )
             )
-         ),
+         },
          {},
       )
    }
@@ -119,9 +121,11 @@ internal fun SuccessPreview() {
 internal fun EmptyPreview() {
    PreviewTheme {
       FavoriteListScreenContent(
-         Outcome.Success(
-            emptyList()
-         ),
+         {
+            Outcome.Success(
+               emptyList()
+            )
+         },
          {},
       )
    }
@@ -133,7 +137,7 @@ internal fun EmptyPreview() {
 internal fun ErrorPreview() {
    PreviewTheme {
       FavoriteListScreenContent(
-         Outcome.Error(UnknownCauseException()),
+         { Outcome.Error(UnknownCauseException()) },
          {},
       )
    }
@@ -145,7 +149,7 @@ internal fun ErrorPreview() {
 internal fun LoadingPreview() {
    PreviewTheme {
       FavoriteListScreenContent(
-         Outcome.Progress(),
+         { Outcome.Progress() },
          {},
       )
    }

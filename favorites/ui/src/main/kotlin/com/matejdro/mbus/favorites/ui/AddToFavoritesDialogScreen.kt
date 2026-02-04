@@ -92,7 +92,7 @@ private fun AddToFavoritesDialogScreenContent(
          }
       }
 
-      ProgressErrorSuccessScaffold(outcome) { data ->
+      ProgressErrorSuccessScaffold({ outcome }) { data ->
          Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             for (favorite in data.favorites) {
                FavoriteRow(favorite.name) {
