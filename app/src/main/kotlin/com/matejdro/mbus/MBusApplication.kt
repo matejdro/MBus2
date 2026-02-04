@@ -2,10 +2,13 @@ package com.matejdro.mbus
 
 import android.app.ActivityManager
 import android.app.Application
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.os.strictmode.Violation
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import coil3.ImageLoader
@@ -44,6 +47,14 @@ open class MBusApplication : Application() {
       }
 
       applicationComponent.inject(this)
+
+      Composer.setDiagnosticStackTraceMode(
+         if (isDebuggable()) {
+            ComposeStackTraceMode.SourceInformation
+         } else {
+            ComposeStackTraceMode.GroupKeys
+         }
+      )
 
       enableStrictMode()
 
@@ -150,6 +161,12 @@ open class MBusApplication : Application() {
          it.pid == myPid && packageName == it.processName
       } == true
    }
+
+   /**
+    * A better way to check that application is debuggable - BuildConfig.DEBUG does not work when compiling application
+    * as profileable.
+    */
+   private fun isDebuggable(): Boolean = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
 }
 
 private val STRICT_MODE_EXCLUSIONS = listOf(
