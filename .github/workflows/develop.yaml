@@ -53,7 +53,7 @@ jobs:
       - name: Double check db with generated schema
         run: "./gradlew generateDatabaseSchema verifyDebugDatabaseMigration"
       - name: Run Unit Tests
-        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
+        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue"
       - name: "Generate new Screenshot Tests"
         run: "config/generate-screenshots.sh master"
       - name: "Run Screenshot Tests"
