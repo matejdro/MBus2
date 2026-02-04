@@ -1,7 +1,9 @@
 import com.android.build.api.dsl.LibraryAndroidResources
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import util.commonAndroid
+import util.commonAndroidComponents
 
 val libs = the<LibrariesForLibs>()
 
@@ -76,6 +78,23 @@ dependencies {
 
    if (configurations.findByName("androidTestImplementation") != null) {
       add("androidTestImplementation", libs.kotest.assertions)
+   }
+}
+
+val runDebugTestsTask = tasks.register("runDebugTests")
+val runDebugDetektTask = tasks.register("runDebugDetekt")
+
+commonAndroidComponents {
+   onVariants { variant ->
+      // For variants, you can add extra filters, such as
+      // && (variant.productFlavors.isEmpty() || variant.productFlavors.contains("version" to "develop"))
+      if (variant.buildType == "debug") {
+         runDebugTestsTask.dependsOn(variant.computeTaskName("test", "UnitTest"))
+
+         runDebugDetektTask.dependsOn(variant.computeTaskName("detekt", "UnitTest"))
+         runDebugDetektTask.dependsOn(variant.computeTaskName("detekt", "AndroidTest"))
+         runDebugDetektTask.dependsOn("detekt${variant.name.replaceFirstChar { it.uppercaseChar() }}")
+      }
    }
 }
 
