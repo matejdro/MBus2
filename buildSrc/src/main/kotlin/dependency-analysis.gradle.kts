@@ -45,6 +45,9 @@ configure<DependencyAnalysisSubExtension> {
 
          // This is fine, included with anvil
          exclude("software.amazon.lastmile.kotlin.inject.anvil:runtime-optional")
+
+         // Auto included with MetroX
+         exclude("dev.zacsweers.moshix:moshix-runtime")
       }
 
       onIncorrectConfiguration {

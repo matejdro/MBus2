@@ -7,10 +7,6 @@ plugins {
 android {
    namespace = "com.matejdro.mbus.screenshottests"
 
-   buildFeatures {
-      androidResources = true
-   }
-
    testOptions {
       unitTests.all {
          it.useJUnit()

@@ -1032,7 +1032,7 @@ style:
   UntilInsteadOfRangeTo:
     active: false
   UnusedImports:
-    active: true
+    active: false # Disabled temporarily
   UnusedParameter:
     active: true
     allowedNames: 'ignored|expected'
@@ -1102,8 +1102,6 @@ Compose:
     active: true
   ModifierClickableOrder:
     active: true
-  ModifierComposable:
-    active: false # Now recommended by Google since Modifier.composed {} has performance drawbacks
   ModifierMissing:
     active: true
   ModifierNaming:
@@ -1143,15 +1141,6 @@ Compose:
     active: true
   ViewModelInjection:
     active: true
-
-compiler:
-  CompilerInfo:
-    active: false
-    ignoreDiagnostic: [ ]
-  CompilerWarning:
-    active: true
-    ignoreDiagnostic:
-      - OPT_IN_USAGE
 
 kotlinovanavigation:
   NavigationKeyNoEnums:

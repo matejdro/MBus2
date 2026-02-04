@@ -8,7 +8,7 @@ import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
 @DisableCachingByDefault(because = "IO bound task")
-open class DetectTooManyKotlinFilesTask : SourceTask() {
+abstract class DetectTooManyKotlinFilesTask : SourceTask() {
    @TaskAction
    fun execute() {
       val fileCount = source.files.count()

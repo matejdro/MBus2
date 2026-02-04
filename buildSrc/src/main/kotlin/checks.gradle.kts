@@ -47,7 +47,6 @@ configure<KotlinovaExtension> {
 
 dependencies {
    detektPlugins(libs.detekt.formatting)
-   detektPlugins(libs.detekt.compilerWarnings)
    detektPlugins(libs.detekt.compose)
    detektPlugins(libs.kotlinova.navigation.detekt)
 }
