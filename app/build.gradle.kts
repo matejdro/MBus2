@@ -210,7 +210,6 @@ dependencies {
    implementation(libs.dispatch)
    implementation(libs.firebase.crashlytics)
    implementation(libs.kotlin.coroutines)
-   implementation(libs.kotlin.immutableCollections)
    implementation(libs.kotlinova.compose)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)

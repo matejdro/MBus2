@@ -39,7 +39,6 @@ junit-launcher = "6.0.2"
 kotest = "6.1.2"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
-kotlin-immutableCollections = "0.4.0"
 kotlinova = "3.7.0"
 ksp = "2.3.5"
 moduleGraphAssert = "2.9.0"
@@ -126,7 +125,6 @@ kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref =
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
-kotlin-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutableCollections" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-plugin-compose = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
