@@ -66,13 +66,6 @@ commonAndroid {
    }
 }
 
-kotlin {
-   compilerOptions {
-      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.FlowPreview")
-   }
-}
-
 detekt {
    config.from("$rootDir/config/detekt-android.yml")
 }

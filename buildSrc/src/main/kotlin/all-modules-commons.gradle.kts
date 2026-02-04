@@ -1,5 +1,6 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import util.commonKotlinCompilerOptions
 
 val libs = the<LibrariesForLibs>()
 
@@ -10,6 +11,14 @@ plugins {
 
 configure<KotlinProjectExtension> {
    jvmToolchain(21)
+}
+
+commonKotlinCompilerOptions {
+   optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
+   optIn.add("kotlinx.coroutines.FlowPreview")
+
+   // https://blog.jetbrains.com/idea/2025/09/improved-annotation-handling-in-kotlin-2-2-less-boilerplate-fewer-surprises/
+   freeCompilerArgs.add("-Xannotation-default-target=param-property")
 }
 
 dependencies {

@@ -1,16 +1,5 @@
 import com.android.build.api.variant.BuildConfigField
 import com.android.build.api.variant.VariantOutputConfiguration
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.android
-import org.gradle.kotlin.dsl.androidComponents
-import org.gradle.kotlin.dsl.debugRuntimeOnly
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.implementation
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.libs
-import org.gradle.kotlin.dsl.projects
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.sqldelight
 import java.util.Optional
 
@@ -49,7 +38,18 @@ android {
 
             val gitHashProvider = providers.exec {
                commandLine("git", "rev-parse", "--short", "HEAD")
-            }.standardOutput.asText.map { it.trim() }
+               setIgnoreExitValue(true)
+            }.let { execOutput ->
+               execOutput.result.flatMap { result ->
+                  if (result.exitValue == 0) {
+                     execOutput.standardOutput.asText.map { it.trim() }
+                  } else {
+                     execOutput.standardError.asText.map {
+                        throw ProcessExecutionException("Git failed: $it")
+                     }
+                  }
+               }
+            }
 
             val baseVersionName = defaultConfig.versionName
             val buildNumberProvider = provider { Optional.ofNullable(System.getenv("BUILD_NUMBER")?.toInt()) }
