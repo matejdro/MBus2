@@ -34,8 +34,8 @@ firebase-crashlytics-gradle = "3.0.6"
 googleMaps = "8.0.1"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.21"
-junit5 = "6.0.2"
-junit5-launcher = "6.0.2"
+junit = "6.0.2"
+junit-launcher = "6.0.2"
 kotest = "6.1.2"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
@@ -119,9 +119,9 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", ve
 googleMaps = { module = "com.google.maps.android:maps-compose", version.ref = "googleMaps" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
-junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
-junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
-junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5-launcher" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
