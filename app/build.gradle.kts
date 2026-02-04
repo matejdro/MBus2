@@ -87,7 +87,7 @@ android {
       execution = "ANDROIDX_TEST_ORCHESTRATOR"
    }
 
-   if (hasProperty("testAppWithProguard")) {
+   if (providers.gradleProperty("testAppWithProguard").isPresent) {
       testBuildType = "proguardedDebug"
    }
 
