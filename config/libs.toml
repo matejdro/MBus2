@@ -4,7 +4,6 @@ androidGradleCacheFix = "3.0.1"
 androidGradlePlugin = "8.13.2"
 androidx-activity-compose = "1.12.3"
 androidx-benchmark = "1.4.1"
-androidx-compose-material = "1.10.2"
 androidx-compose-material3 = "1.4.0"
 androidx-compose-runtime = "1.10.2"
 androidx-compose-tracing = "1.10.2"
@@ -15,10 +14,7 @@ androidx-lifecycle = "2.10.0"
 androidx-perfetto = "1.0.1"
 androidx-profileInstaller = "1.4.1"
 android-securityLints = "1.0.3"
-androidx-test-espresso = "3.7.0"
 androidx-test-monitor = "1.8.0"
-androidx-test-orchestrator = "1.6.1"
-androidx-test-runner = "1.7.0"
 androidx-test-uiautomator = "2.3.0"
 anvil = "2.7.0"
 coil = "3.3.0"
@@ -67,7 +63,6 @@ androidGradleCacheFix = { module = "org.gradle.android.cache-fix:org.gradle.andr
 android-securityLints = { module = "com.android.security.lint:lint", version.ref = "android-securityLints" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
-androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose-material" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
 androidx-compose-material3-sizeClasses = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "androidx-compose-material3" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidx-compose-runtime" }
@@ -92,14 +87,9 @@ androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-perfetto" }
 androidx-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-perfetto" }
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
-androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
-androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test-orchestrator" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
 anvil = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
-anvil-api = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
-anvil-utils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
@@ -112,7 +102,6 @@ detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "det
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 dispatch = { module = "com.rickbusarow.dispatch:dispatch-core", version.ref = "dispatch" }
-dispatch-espresso = { module = "com.rickbusarow.dispatch:dispatch-android-espresso", version.ref = "dispatch" }
 dispatch-test = { module = "com.rickbusarow.dispatch:dispatch-test", version.ref = "dispatch" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebase-crashlytics" }
 googleMaps = { module = "com.google.maps.android:maps-compose", version.ref = "googleMaps" }
@@ -128,9 +117,7 @@ kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-te
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-plugin-compose = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinova-compose = { module = "si.inova.kotlinova:compose", version.ref = "kotlinova" }
-kotlinova-compose-androidTest = { module = "si.inova.kotlinova:compose-android-test", version.ref = "kotlinova" }
 kotlinova-core = { module = "si.inova.kotlinova:core", version.ref = "kotlinova" }
 kotlinova-core-test = { module = "si.inova.kotlinova:core-test", version.ref = "kotlinova" }
 kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlinova" }
@@ -143,12 +130,10 @@ kotlinova-retrofit-test = { module = "si.inova.kotlinova:retrofit-test", version
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 moduleGraphAssert = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 moshi-ir = { module = "dev.zacsweers.moshix:dev.zacsweers.moshix.gradle.plugin", version.ref = "moshi-ir" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 orgJson = { module = "org.json:json", version.ref = "orgJson" }
-paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi" }
 playServices-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServices-location" }
 rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
@@ -167,7 +152,6 @@ unmock-plugin = { module = "com.github.bjoernq:unmockplugin", version.ref = "unm
 whatTheStack = { module = "com.github.matejdro:WhatTheStack", version.ref = "whatTheStack" }
 
 [plugins]
-anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
