@@ -46,13 +46,12 @@ jobs:
           path: app/build/outputs/mapping/release/mapping.txt
 
       # Tests
-
+      - name: Compile Unit Tests
+        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
       - name: Lint
         run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph verifyDebugDatabaseMigration buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge --continue"
       - name: Double check db with generated schema
         run: "./gradlew generateDatabaseSchema verifyDebugDatabaseMigration"
-      - name: Compile Unit Tests
-        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
       - name: Run Unit Tests
         run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
       - name: "Generate new Screenshot Tests"
