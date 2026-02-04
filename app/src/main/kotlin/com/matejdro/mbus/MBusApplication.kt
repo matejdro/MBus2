@@ -15,8 +15,6 @@ import com.matejdro.mbus.di.DaggerMainApplicationComponent
 import dispatch.core.DefaultCoroutineScope
 import dispatch.core.DefaultDispatcherProvider
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
-import si.inova.kotlinova.core.logging.AndroidLogcatLogger
-import si.inova.kotlinova.core.logging.LogPriority
 import si.inova.kotlinova.core.reporting.ErrorReporter
 import javax.inject.Inject
 import javax.inject.Provider
@@ -46,8 +44,6 @@ open class MBusApplication : Application() {
       }
 
       applicationComponent.inject(this)
-
-      AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
 
       enableStrictMode()
 
