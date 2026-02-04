@@ -15,7 +15,7 @@ commonAndroid {
    }
 }
 
-val stableClassesFile = project.layout.settingsDirectory.file("config/global_compose_stable_classes.txt")
+val stableClassesFile = project.layout.settingsDirectory.file("config/global-compose-stable-classes.txt")
 composeCompiler {
    stabilityConfigurationFiles.add(stableClassesFile)
 }
