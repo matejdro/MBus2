@@ -12,5 +12,4 @@ dependencies {
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.core.test)
    implementation(libs.okhttp)
-   implementation(libs.certificateTransparency)
 }

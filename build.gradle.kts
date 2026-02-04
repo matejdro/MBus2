@@ -84,10 +84,6 @@ dependencyAnalysis {
          includeDependency("com.google.android.gms:play-services-maps")
       }
 
-      bundle("certificate transparency") {
-         includeGroup("com.appmattus.certificatetransparency")
-      }
-
       bundle("okhttp and okio") {
          includeGroup("com.squareup.okhttp3")
          includeGroup("com.squareup.okio")

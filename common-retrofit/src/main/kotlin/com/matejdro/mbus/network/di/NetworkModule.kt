@@ -1,7 +1,5 @@
 package com.matejdro.mbus.network.di
 
-import com.appmattus.certificatetransparency.cache.DiskCache
-import com.appmattus.certificatetransparency.certificateTransparencyInterceptor
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.moshi.JsonAdapter
@@ -43,24 +41,17 @@ abstract class NetworkModule {
 
       @Provides
       @Singleton
-      fun provideOkHttpClient(
-         certificateTransparencyDiskCache: DiskCache?,
-      ): OkHttpClient {
+      fun provideOkHttpClient(): OkHttpClient {
          if (Thread.currentThread().name == "main") {
             error("OkHttp should not be initialized on the main thread")
          }
 
-         return prepareDefaultOkHttpClient(certificateTransparencyDiskCache).build()
+         return prepareDefaultOkHttpClient().build()
       }
 
-      fun prepareDefaultOkHttpClient(certificateTransparencyDiskCache: DiskCache? = null): OkHttpClient.Builder {
+      fun prepareDefaultOkHttpClient(): OkHttpClient.Builder {
          return OkHttpClient.Builder()
             .addInterceptor(BypassCacheInterceptor())
-            .addNetworkInterceptor(
-               certificateTransparencyInterceptor {
-                  diskCache = certificateTransparencyDiskCache
-               }
-            )
             .callTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
             .readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
             .connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))

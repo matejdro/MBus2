@@ -21,7 +21,6 @@ androidx-test-orchestrator = "1.6.1"
 androidx-test-runner = "1.7.0"
 androidx-test-uiautomator = "2.3.0"
 anvil = "2.7.0"
-certificateTransparency = "2.8.20"
 coil = "3.3.0"
 composeGuard = "2.4.0"
 dagger = "2.59.1"
@@ -102,8 +101,6 @@ androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", 
 anvil = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
 anvil-api = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
 anvil-utils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
-certificateTransparency = { module = "com.appmattus.certificatetransparency:certificatetransparency", version.ref = "certificateTransparency" }
-certificateTransparency-android = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificateTransparency" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
