@@ -45,10 +45,16 @@ Every feature should contain following modules:
 
 # Creating screenshot tests
 
-To create screenshot tests for your compose screen:
-
-1. Make preview functions public
+1. Make the preview functions public
 2. Add `showkase` plugin to the module of the screen you want to test
-2. Add `@ShowkaseComposable(group = "Test")` annotation to the preview of the screen you want to test
-3. run `recordPaparazziDebug` gradle task to record golden screenshot
-   (double check that only previews for your screen were generated)
+3. Add `@ShowkaseComposable(group = "Test")` annotation to the preview of the screen you want to test
+4. That's it. Screenshots will be generated automatically on the CI
+
+# Updating screenshot tests
+
+To update screenshot tests:
+
+1. Delete the outdatd screenshot from
+   the [app-screenshot-tests/src/test/snapshots/images](app-screenshot-tests/src/test/snapshots/images)
+   folder
+2. Missing screenshot will be re-generated automatically on the CI
