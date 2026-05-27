@@ -32,10 +32,8 @@ data class StopScheduleDto(
    @JsonClass(generateAdapter = true)
    data class StaticData(
       @Json(name = "Description")
-      val description: String,
+      val description: String?,
       @Json(name = "StopPointImgPath")
       val image: String?,
-      @Json(name = "StopPointName")
-      val name: String,
    )
 }

@@ -8,6 +8,7 @@ import com.matejdro.mbus.common.data.awaitFirstSuccess
 import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.lines.LinesRepository
 import com.matejdro.mbus.live.models.LiveArrivalRepository
+import com.matejdro.mbus.schedule.exceptions.BrokenStationException
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.schedule.models.toArrival
@@ -238,9 +239,14 @@ class ScheduleRepositoryImpl @Inject constructor(
          }
       }
 
+      val description = onlineSchedule.staticData.description
+      if (description == null) {
+         emit(Outcome.Error(BrokenStationException()))
+         return
+      }
       stopsRepository.update(
          stop.copy(
-            description = onlineSchedule.staticData.description,
+            description = description,
             imageUrl = onlineSchedule.staticData.image,
             lastScheduleUpdate = now
          )
@@ -251,7 +257,7 @@ class ScheduleRepositoryImpl @Inject constructor(
             ScheduleMetadata(
                stop.name,
                onlineSchedule.staticData.image,
-               onlineSchedule.staticData.description,
+               description,
                true,
                emptySet()
             )
