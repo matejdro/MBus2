@@ -960,7 +960,6 @@ private val PROVIDED_DATA_STOP_42_MAR_30 = StopScheduleDto(
    StopScheduleDto.StaticData(
       "A stop in the forest",
       "http://stopimage.com",
-      "Forest 77"
    )
 )
 
@@ -1002,7 +1001,6 @@ private val PROVIDED_DATA_STOP_42_MAR_30_MODIFIED = StopScheduleDto(
    StopScheduleDto.StaticData(
       "A stop in the forest",
       "http://stopimage.com",
-      "Forest 77"
    )
 )
 
@@ -1036,7 +1034,6 @@ private val PROVIDED_DATA_STOP_42_MAR_31 = StopScheduleDto(
    StopScheduleDto.StaticData(
       "A stop in the forest",
       "http://stopimage.com",
-      "Forest 77"
    )
 )
 
@@ -1070,7 +1067,6 @@ private val PROVIDED_DATA_STOP_42_APR_1 = StopScheduleDto(
    StopScheduleDto.StaticData(
       "A stop in the forest",
       "http://stopimage.com",
-      "Forest 77"
    )
 )
 
