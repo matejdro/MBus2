@@ -22,7 +22,7 @@ commonAndroid {
    val uniqueNamespaceSuffix = path.removePrefix(":").replace(':', '.').replace("-", "")
    namespace = "com.matejdro.mbus.noresources.$uniqueNamespaceSuffix"
 
-   compileSdk = 36
+   compileSdk = 37
 
    compileOptions.apply {
       // Android still creates java tasks, even with 100% Kotlin.
