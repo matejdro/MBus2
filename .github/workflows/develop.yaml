@@ -47,13 +47,13 @@ jobs:
 
       # Tests
       - name: Compile Unit Tests
-        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
+        run: "./gradlew compileDebugUnitTestSources compileDebugUnitTestSources"
       - name: Lint
         run: "./gradlew lintRelease runDebugDetekt assertModuleGraph verifyDebugDatabaseMigration buildHealth detectTooManyFiles reportMerge --continue"
       - name: Double check db with generated schema
         run: "./gradlew generateDatabaseSchema verifyDebugDatabaseMigration"
       - name: Run Unit Tests
-        run: "./gradlew runDebugTests -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue"
+        run: "./gradlew runDebugTests -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testDebugUnitTest --continue"
       - name: "Generate new Screenshot Tests"
         run: "config/generate-screenshots.sh master"
       - name: "Run Screenshot Tests"
