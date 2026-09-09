@@ -22,7 +22,7 @@ internal class PredictiveBackFadeAnimationSpec(
 
 private class PredictiveBackFadeFloatAnimationSpec(
    duration: Int = AnimationConstants.DefaultDurationMillis,
-   private val easing: Easing = FastOutSlowInEasing,
+   easing: Easing = FastOutSlowInEasing,
 ) : FloatAnimationSpec {
    private val tweenSpec = FloatTweenSpec(duration, easing = easing)
    override fun getDurationNanos(
