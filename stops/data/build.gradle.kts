@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-   api(projects.common)
    api(projects.commonRetrofit)
    api(projects.sharedDb)
    api(projects.stops.api)

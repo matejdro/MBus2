@@ -3,7 +3,6 @@ import org.gradle.accessors.dm.LibrariesForLibs
 val libs = the<LibrariesForLibs>()
 
 plugins {
-   id("di")
    id("com.google.devtools.ksp")
    id("serialization")
 }

@@ -51,20 +51,8 @@ configure<DependencyAnalysisSubExtension> {
       }
 
       onIncorrectConfiguration {
-         // Showkase is only used by the generated code, by app module that also needs to explicitly include showkase
-         exclude("com.airbnb.android:showkase")
-
-         // Navigation should be included as-needed to reduce already huge amount of modules depending on it
-         exclude(":common-navigation")
-
-         // Standard compose dependencies, always included in compose modules, so we don't need to expose them as api()
-         exclude("androidx.compose.ui:ui-graphics")
-         exclude("androidx.compose.ui:ui-test-junit4")
-         exclude("androidx.compose.material3:material3")
-         exclude("androidx.compose.material:material")
-         exclude("androidx.compose.ui:ui-tooling-preview")
-         exclude("androidx.lifecycle:lifecycle-runtime-compose")
-         exclude("si.inova.kotlinova:compose")
+         // there is no clear benefit to using api over implementation, and it is causing extra effort to do this
+         severity("ignore")
       }
 
       onUsedTransitiveDependencies {
