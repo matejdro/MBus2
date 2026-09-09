@@ -2,7 +2,6 @@ plugins {
    pureKotlinModule
    di
    moshi
-   sqldelight
 }
 
 dependencies {
@@ -17,9 +16,13 @@ dependencies {
    implementation(libs.dispatch)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
+   implementation(libs.sqldelight.async)
+   implementation(libs.sqldelight.coroutines)
+   implementation(libs.sqldelight.runtime)
 
    testImplementation(testFixtures(projects.common))
    testImplementation(testFixtures(projects.stops.api))
    testImplementation(libs.kotlinova.core.test)
    testImplementation(libs.kotlinova.retrofit.test)
+   testImplementation(libs.sqldelight.jvm)
 }

@@ -1,18 +1,11 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import util.commonAndroid
 
 val libs = the<LibrariesForLibs>()
 
 plugins {
    id("com.joetr.compose.guard")
    id("org.jetbrains.kotlin.plugin.compose")
-}
-
-commonAndroid {
-   buildFeatures {
-      compose = true
-   }
 }
 
 val stableClassesFile = project.layout.settingsDirectory.file("config/global-compose-stable-classes.txt")
