@@ -1,7 +1,11 @@
 package com.matejdro.mbus.navigation.keys
 
 import android.location.Location
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
-@Parcelize
-data class HomeMapScreenKey(val forcedLocation: Location?) : BaseScreenKey()
+@Serializable
+data class HomeMapScreenKey(
+   @Transient
+   val forcedLocation: Location? = null,
+) : BaseScreenKey()

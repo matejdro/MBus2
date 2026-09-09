@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.LibraryAndroidResources
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import dev.detekt.gradle.extensions.DetektExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import util.commonAndroid
@@ -68,7 +69,7 @@ commonAndroid {
    }
 }
 
-detekt {
+configure<DetektExtension> {
    config.from("$rootDir/config/detekt-android.yml")
 }
 

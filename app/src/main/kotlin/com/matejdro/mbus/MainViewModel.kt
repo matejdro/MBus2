@@ -36,7 +36,7 @@ class MainViewModel @AssistedInject constructor(
 
    @AssistedFactory
    interface Factory {
-      fun create(intent: Intent): MainViewModel
+      fun create(startIntent: Intent): MainViewModel
    }
 }
 

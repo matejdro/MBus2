@@ -1,9 +1,9 @@
 package com.matejdro.mbus.navigation.keys
 
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import si.inova.kotlinova.compose.result.ResultKey
 
-@Parcelize
+@Serializable
 data class AddToFavouritesDialogScreenKey(
    val stopId: Int,
    val stopName: String,

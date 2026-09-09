@@ -17,13 +17,12 @@ androidx-profileInstaller = "1.4.1"
 android-securityLints = "1.0.3"
 androidx-test-monitor = "1.8.0"
 androidx-test-uiautomator = "2.3.0"
-anvil = "2.7.0"
 coil = "3.3.0"
 composeGuard = "2.4.0"
 dependencyAnalysis = "3.5.1"
 desugarJdkLibs = "2.1.5"
-detekt = "1.23.8"
-detekt-compose = "0.5.6"
+detekt = "2.0.0-alpha.3"
+detekt-compose = "0.6.6"
 dispatch = "1.0.0-beta10"
 firebase-crashlytics = "20.0.4"
 firebase-crashlytics-gradle = "3.0.6"
@@ -31,12 +30,13 @@ googleMaps = "8.0.1"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.21"
 junit = "6.0.2"
-kotest = "6.1.2"
+kotest = "6.2.4"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
-kotlinova = "4.0.0-alpha11"
+kotlin-serializationRuntime = "1.10.0"
+kotlinova = "4.0.0"
 ksp = "2.3.5"
-metro = "0.9.4"
+metro = "0.11.0"
 moduleGraphAssert = "2.9.0"
 moshi = "1.15.2"
 moshi-ir = "0.34.4"
@@ -48,7 +48,6 @@ playServices-plugin = "4.4.4"
 rebugger = "1.0.1"
 retrofit = "3.0.0"
 showkase = "1.0.5"
-simpleStack = "2.9.1"
 sqldelight = "2.2.1"
 turbine = "1.2.1"
 unmock-androidJar = "16-robolectric-13921718"
@@ -91,16 +90,15 @@ androidx-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary"
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
-anvil = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
-detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
+detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-ktlint = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+detekt-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 dispatch = { module = "com.rickbusarow.dispatch:dispatch-core", version.ref = "dispatch" }
 dispatch-test = { module = "com.rickbusarow.dispatch:dispatch-test", version.ref = "dispatch" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebase-crashlytics" }
@@ -116,6 +114,8 @@ kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-corou
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-plugin-compose = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+kotlin-plugin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serializationRuntime" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
 kotlinova-compose = { module = "si.inova.kotlinova:compose", version.ref = "kotlinova" }
 kotlinova-core = { module = "si.inova.kotlinova:core", version.ref = "kotlinova" }
@@ -123,11 +123,14 @@ kotlinova-core-test = { module = "si.inova.kotlinova:core-test", version.ref = "
 kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlinova" }
 kotlinova-navigation = { module = "si.inova.kotlinova:navigation", version.ref = "kotlinova" }
 kotlinova-navigation-compiler = { module = "si.inova.kotlinova:navigation-compiler", version.ref = "kotlinova" }
+kotlinova-navigation-deeplink = { module = "si.inova.kotlinova:navigation-deeplink", version.ref = "kotlinova" }
 kotlinova-navigation-detekt = { module = "si.inova.kotlinova:navigation-detekt", version.ref = "kotlinova" }
 kotlinova-navigation-navigation3 = { module = "si.inova.kotlinova:navigation-navigation3", version.ref = "kotlinova" }
 kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", version.ref = "kotlinova" }
 kotlinova-retrofit = { module = "si.inova.kotlinova:retrofit", version.ref = "kotlinova" }
+kotlinova-retrofit-moshi = { module = "si.inova.kotlinova:retrofit-moshi", version.ref = "kotlinova" }
 kotlinova-retrofit-test = { module = "si.inova.kotlinova:retrofit-test", version.ref = "kotlinova" }
+
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 metro-plugin = { module = "dev.zacsweers.metro:gradle-plugin", version.ref = "metro" }
 moduleGraphAssert = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
@@ -142,7 +145,6 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
 showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
-simpleStack = { module = "com.github.Zhuinden:simple-stack", version.ref = "simpleStack" }
 sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
@@ -155,7 +157,7 @@ whatTheStack = { module = "com.github.fvito:WhatTheStack", version.ref = "whatTh
 
 [plugins]
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 playServices = { id = "com.google.gms.google-services", version.ref = "playServices-plugin" }

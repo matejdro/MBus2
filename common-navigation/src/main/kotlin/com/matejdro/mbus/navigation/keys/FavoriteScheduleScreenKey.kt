@@ -1,6 +1,6 @@
 package com.matejdro.mbus.navigation.keys
 
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class FavoriteScheduleScreenKey(val favoriteId: Long) : BaseScreenKey()

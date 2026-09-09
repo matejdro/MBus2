@@ -5,5 +5,5 @@ plugins {
 
 
 dependencies {
-   implementation(libs.detekt.api)
+   compileOnly(libs.detekt.api)
 }

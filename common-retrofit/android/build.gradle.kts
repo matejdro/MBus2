@@ -12,4 +12,5 @@ dependencies {
    api(libs.okhttp)
 
    implementation(libs.kotlin.coroutines)
+   implementation(libs.kotlinova.retrofit.moshi)
 }

@@ -178,7 +178,7 @@ class LinesRepositoryImplTest {
          runCurrent()
          expectMostRecentItem().shouldBeErrorWith(
             expectedData = expectedLines,
-            exceptionType = NoNetworkException::class.java
+            exceptionType = NoNetworkException::class
          )
       }
    }

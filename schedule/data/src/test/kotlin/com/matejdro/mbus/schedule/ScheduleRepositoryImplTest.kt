@@ -560,7 +560,7 @@ class ScheduleRepositoryImplTest {
                true,
                TEST_EXPECTED_ALL_LINES
             ),
-            exceptionType = NoNetworkException::class.java
+            exceptionType = NoNetworkException::class
          )
 
          stream.nextPage()
@@ -605,7 +605,7 @@ class ScheduleRepositoryImplTest {
                true,
                TEST_EXPECTED_ALL_LINES,
             ),
-            exceptionType = NoNetworkException::class.java
+            exceptionType = NoNetworkException::class
          )
       }
    }

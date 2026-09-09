@@ -373,7 +373,7 @@ class StopsRepositoryImplTest {
          runCurrent()
          expectMostRecentItem().shouldBeErrorWith(
             expectedData = expectedStops,
-            exceptionType = NoNetworkException::class.java
+            exceptionType = NoNetworkException::class
          )
       }
    }

@@ -215,10 +215,10 @@ dependencies {
    implementation(libs.kotlinova.compose)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)
+   implementation(libs.kotlinova.navigation.deeplink)
    implementation(libs.kotlinova.navigation.navigation3)
    implementation(libs.kotlinova.retrofit)
    implementation(libs.okhttp)
-   implementation(libs.simpleStack)
    implementation(libs.sqldelight.android)
 
    debugRuntimeOnly(libs.whatTheStack)
