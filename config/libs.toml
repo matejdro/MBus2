@@ -18,7 +18,6 @@ androidx-profileInstaller = "1.4.1"
 androidx-test-monitor = "1.8.0"
 androidx-test-uiautomator = "2.4.0"
 coil = "3.6.2"
-composeGuard = "2.6.0"
 dependencyAnalysis = "3.19.1"
 desugarJdkLibs = "2.1.5"
 detekt = "2.0.0-alpha.6"
@@ -92,7 +91,6 @@ androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "andro
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
-composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
