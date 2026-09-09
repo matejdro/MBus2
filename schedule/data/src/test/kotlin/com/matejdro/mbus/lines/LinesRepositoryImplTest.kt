@@ -5,7 +5,7 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import com.matejdro.mbus.common.test.datastore.InMemoryDataStore
 import com.matejdro.mbus.schedule.FakeSchedulesService
-import com.matejdro.mbus.schedule.di.SchedulesModule
+import com.matejdro.mbus.schedule.di.SchedulesProviders
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.models.LinesDto
 import com.matejdro.mbus.sqldelight.generated.Database
@@ -241,5 +241,5 @@ private fun createTestLineQueries(): DbLineQueries {
    val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
    Database.Schema.create(driver)
 
-   return SchedulesModule.provideLineQueries(driver)
+   return SchedulesProviders.provideLineQueries(driver)
 }

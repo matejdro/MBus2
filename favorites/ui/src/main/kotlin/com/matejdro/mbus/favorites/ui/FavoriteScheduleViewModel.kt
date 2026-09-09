@@ -10,6 +10,7 @@ import com.matejdro.mbus.favorites.model.LineStop
 import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -21,12 +22,13 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.core.time.TimeProvider
+import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import javax.inject.Inject
 
 @Stable
+@ContributesScopedService
 class FavoriteScheduleViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val favoritesRepository: FavoritesRepository,

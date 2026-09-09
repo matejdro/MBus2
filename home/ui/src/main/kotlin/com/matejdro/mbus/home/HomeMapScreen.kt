@@ -69,9 +69,11 @@ import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
+import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 
 @OptIn(ExperimentalPermissionsApi::class)
+@InjectNavigationScreen
 class HomeMapScreen(
    private val viewModel: HomeMapViewModel,
    private val navigator: Navigator,

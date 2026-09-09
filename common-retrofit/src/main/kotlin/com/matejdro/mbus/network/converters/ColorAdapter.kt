@@ -1,12 +1,12 @@
 package com.matejdro.mbus.network.converters
 
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.network.di.MoshiAdapter
-import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonQualifier
 import com.squareup.moshi.ToJson
-import javax.inject.Inject
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
 
 /**
  * Conver color string to ARGB int
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @JsonQualifier
 annotation class HexColor
 
-@ContributesMultibinding(ApplicationScope::class)
+@ContributesIntoSet(AppScope::class)
 class ColorAdapter @Inject constructor() : MoshiAdapter {
    @FromJson
    @HexColor

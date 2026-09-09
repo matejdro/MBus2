@@ -13,20 +13,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
-import com.matejdro.mbus.di.ApplicationComponent
-import com.matejdro.mbus.di.DaggerMainApplicationComponent
+import com.matejdro.mbus.di.ApplicationGraph
+import com.matejdro.mbus.di.MainApplicationGraph
+import dev.zacsweers.metro.createGraphFactory
 import dispatch.core.DefaultCoroutineScope
 import dispatch.core.DefaultDispatcherProvider
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
 import si.inova.kotlinova.core.reporting.ErrorReporter
-import javax.inject.Inject
-import javax.inject.Provider
 
 open class MBusApplication : Application() {
-   @Inject
-   lateinit var errorReporter: Provider<ErrorReporter>
+   open val applicationGraph: ApplicationGraph by lazy {
+      createGraphFactory<MainApplicationGraph.Factory>().create(this)
+   }
 
-   @Inject
+   lateinit var errorReporter: ErrorReporter
    lateinit var defaultScope: DefaultCoroutineScope
 
    init {
@@ -46,7 +46,8 @@ open class MBusApplication : Application() {
          return
       }
 
-      applicationComponent.inject(this)
+      errorReporter = applicationGraph.getErrorReporter()
+      defaultScope = applicationGraph.getDefaultCoroutineScope()
 
       Composer.setDiagnosticStackTraceMode(
          if (isDebuggable()) {
@@ -145,12 +146,8 @@ open class MBusApplication : Application() {
       if (BuildConfig.DEBUG) {
          throw e
       } else {
-         errorReporter.get().report(e)
+         errorReporter.report(e)
       }
-   }
-
-   open val applicationComponent: ApplicationComponent by lazy {
-      DaggerMainApplicationComponent.factory().create(this)
    }
 
    private fun isMainProcess(): Boolean {

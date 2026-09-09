@@ -1,7 +1,6 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.accessors.dm.LibrariesForLibs
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 val libs = the<LibrariesForLibs>()
 
@@ -9,14 +8,6 @@ plugins {
    id("org.jetbrains.kotlin.jvm")
 
    id("all-modules-commons")
-}
-
-afterEvaluate {
-   if (pluginManager.hasPlugin("com.squareup.anvil")) {
-      configure<AnvilExtension> {
-         generateDaggerFactories.set(true)
-      }
-   }
 }
 
 val runDebugTestsTask = tasks.register("runDebugTests")

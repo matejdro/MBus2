@@ -3,15 +3,17 @@ package com.matejdro.mbus.favorites.ui
 import androidx.compose.runtime.Stable
 import com.matejdro.mbus.common.logging.ActionLogger
 import com.matejdro.mbus.favorites.FavoritesRepository
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.CoroutineScopedService
-import javax.inject.Inject
 
 @Stable
+@ContributesScopedService
 class AddToFavoritesDialogViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val favoritesRepository: FavoritesRepository,

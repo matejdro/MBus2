@@ -1,6 +1,8 @@
 plugins {
-   id("org.jetbrains.kotlin.jvm")
+   pureKotlinModule
 }
+
+
 
 dependencies {
    implementation(libs.detekt.api)

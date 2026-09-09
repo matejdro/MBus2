@@ -6,14 +6,9 @@ val libs = the<LibrariesForLibs>()
 plugins {
    id("com.android.application")
    id("android-module-commons")
-   id("kotlin-kapt")
    id("kotlinova")
    id("com.jraska.module.graph.assertion")
-   id("com.squareup.anvil")
-}
-
-anvil {
-   syncGeneratedSources.set(true)
+   id("di")
 }
 
 moduleGraphAssert {
@@ -37,8 +32,6 @@ android {
 }
 
 dependencies {
-   implementation(libs.dagger.runtime)
-   kapt(libs.dagger.compiler)
 }
 
 project.setupTooManyKotlinFilesTask()

@@ -1,15 +1,13 @@
 package com.matejdro.mbus.di
 
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.network.services.BaseServiceFactory
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.Provides
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
 
 @Suppress("unused")
-@ContributesTo(ApplicationScope::class)
-@Module
-class NetworkUrlModule {
+@ContributesTo(AppScope::class)
+interface NetworkUrlModuleProviders {
    @Provides
    @BaseServiceFactory.BaseUrl
    fun provideBaseUrl(): String {

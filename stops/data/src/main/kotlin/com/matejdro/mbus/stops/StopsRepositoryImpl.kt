@@ -7,13 +7,15 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.sqldelight.generated.DbStop
 import com.matejdro.mbus.sqldelight.generated.DbStopQueries
 import com.matejdro.mbus.stops.model.Stop
 import com.matejdro.mbus.stops.model.toDbStop
 import com.matejdro.mbus.stops.model.toStop
-import com.squareup.anvil.annotations.ContributesBinding
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import dispatch.core.flowOnDefault
 import dispatch.core.withDefault
 import kotlinx.coroutines.flow.Flow
@@ -28,13 +30,11 @@ import si.inova.kotlinova.core.outcome.catchIntoOutcome
 import si.inova.kotlinova.core.outcome.downgradeTo
 import si.inova.kotlinova.core.time.TimeProvider
 import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.toJavaDuration
 
-@Singleton
-@ContributesBinding(ApplicationScope::class)
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 class StopsRepositoryImpl @Inject constructor(
    private val stopsService: StopsService,
    private val dbStopQueries: DbStopQueries,

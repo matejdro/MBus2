@@ -8,6 +8,7 @@ import com.matejdro.mbus.location.LocationProvider
 import com.matejdro.mbus.navigation.keys.HomeMapScreenKey
 import com.matejdro.mbus.stops.StopsRepository
 import com.matejdro.mbus.stops.model.Stop
+import dev.zacsweers.metro.Inject
 import dispatch.core.dispatcherProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,10 +22,11 @@ import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.core.outcome.mapNullableData
 import si.inova.kotlinova.core.reporting.ErrorReporter
+import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
-import javax.inject.Inject
 
 @Stable
+@ContributesScopedService
 class HomeMapViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val stopsRepository: StopsRepository,

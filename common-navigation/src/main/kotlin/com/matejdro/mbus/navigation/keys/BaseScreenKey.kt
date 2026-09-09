@@ -11,11 +11,14 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.ui.graphics.TransformOrigin
 import com.matejdro.mbus.navigation.animation.PredictiveBackFadeAnimationSpec
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
-import si.inova.kotlinova.navigation.simplestack.StateChangeResult
 
 abstract class BaseScreenKey : ScreenKey() {
-   override fun backAnimation(scope: AnimatedContentTransitionScope<StateChangeResult>): ContentTransform {
-      val scaleTransformOrigin = when (scope.targetState.backSwipeEdge) {
+
+   override fun backAnimation(
+      scope: AnimatedContentTransitionScope<*>,
+      backSwipeEdge: @BackEventCompat.SwipeEdge Int?,
+   ): ContentTransform {
+      val scaleTransformOrigin = when (backSwipeEdge) {
          BackEventCompat.EDGE_LEFT -> TransformOrigin(pivotFractionX = 1f, pivotFractionY = 0.5f)
          BackEventCompat.EDGE_RIGHT -> TransformOrigin(pivotFractionX = 0f, pivotFractionY = 0.5f)
          else -> TransformOrigin.Center

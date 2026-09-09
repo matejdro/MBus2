@@ -29,8 +29,10 @@ import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.instructions.replaceTopWith
 import si.inova.kotlinova.navigation.navigator.Navigator
+import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 
+@InjectNavigationScreen
 class FavoriteListScreen(
    private val viewModel: FavoriteListViewModel,
    private val navigator: Navigator,

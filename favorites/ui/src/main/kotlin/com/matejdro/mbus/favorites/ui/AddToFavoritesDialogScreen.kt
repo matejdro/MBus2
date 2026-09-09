@@ -36,9 +36,11 @@ import si.inova.kotlinova.compose.result.LocalResultPassingStore
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
+import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 
 @ContributesScreenBinding
+@InjectNavigationScreen
 class AddToFavoritesDialogScreen(
    private val viewModel: AddToFavoritesDialogViewModel,
 ) : Screen<AddToFavouritesDialogScreenKey>() {

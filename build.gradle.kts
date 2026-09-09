@@ -73,12 +73,6 @@ dependencyAnalysis {
          includeGroup("app.cash.sqldelight")
       }
 
-      bundle("dagger") {
-         includeGroup("com.google.dagger")
-         includeGroup("com.squareup.anvil")
-         includeDependency("javax.inject:javax.inject")
-      }
-
       bundle("maps") {
          includeGroup("com.google.maps.android")
          includeDependency("com.google.android.gms:play-services-maps")

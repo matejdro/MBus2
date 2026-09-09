@@ -1,29 +1,25 @@
 package com.matejdro.mbus.network.di
 
 import android.content.Context
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.network.services.AndroidServiceFactory
 import com.matejdro.mbus.network.services.ServiceFactory
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Binds
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
 import si.inova.kotlinova.core.reporting.ErrorReporter
 import si.inova.kotlinova.retrofit.caching.GlobalOkHttpDiskCacheManager
 
-@Module
-@ContributesTo(ApplicationScope::class)
-abstract class AndroidNetworkModule {
+@ContributesTo(AppScope::class)
+interface AndroidNetworkProviders {
    @Binds
    abstract fun bindToServiceFactory(androidServiceFactory: AndroidServiceFactory): ServiceFactory
 
-   companion object {
-      @Provides
-      fun provideDiskCacheManager(
-         context: Context,
-         errorReporter: ErrorReporter,
-      ): GlobalOkHttpDiskCacheManager {
-         return GlobalOkHttpDiskCacheManager(context, errorReporter)
-      }
+   @Provides
+   fun provideDiskCacheManager(
+      context: Context,
+      errorReporter: ErrorReporter,
+   ): GlobalOkHttpDiskCacheManager {
+      return GlobalOkHttpDiskCacheManager(context, errorReporter)
    }
 }

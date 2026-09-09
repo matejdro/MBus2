@@ -6,7 +6,7 @@ import app.cash.turbine.test
 import com.matejdro.mbus.common.test.datastore.InMemoryDataStore
 import com.matejdro.mbus.lines.LinesRepositoryImpl
 import com.matejdro.mbus.live.FakeLiveArrivalRepository
-import com.matejdro.mbus.schedule.di.SchedulesModule
+import com.matejdro.mbus.schedule.di.SchedulesProviders
 import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
@@ -50,7 +50,7 @@ class ScheduleRepositoryImplTest {
    )
    private val linesRepo = LinesRepositoryImpl(
       service,
-      SchedulesModule.provideLineQueries(db),
+      SchedulesProviders.provideLineQueries(db),
       InMemoryDataStore(emptyPreferences()),
       timeProvider
    )
@@ -62,7 +62,7 @@ class ScheduleRepositoryImplTest {
       timeProvider,
       stopsRepository,
       linesRepo,
-      SchedulesModule.provideArrivalQueries(db),
+      SchedulesProviders.provideArrivalQueries(db),
       liveArrivalRepository
    )
 

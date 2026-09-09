@@ -7,14 +7,16 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.schedule.SchedulesService
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.models.toDbLine
 import com.matejdro.mbus.schedule.models.toLine
 import com.matejdro.mbus.sqldelight.generated.DbLine
 import com.matejdro.mbus.sqldelight.generated.DbLineQueries
-import com.squareup.anvil.annotations.ContributesBinding
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -27,13 +29,11 @@ import si.inova.kotlinova.core.outcome.catchIntoOutcome
 import si.inova.kotlinova.core.outcome.downgradeTo
 import si.inova.kotlinova.core.time.TimeProvider
 import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.toJavaDuration
 
-@Singleton
-@ContributesBinding(ApplicationScope::class)
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 class LinesRepositoryImpl @Inject constructor(
    private val schedulesService: SchedulesService,
    private val dbLineQueries: DbLineQueries,

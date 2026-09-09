@@ -1,26 +1,41 @@
 package com.matejdro.mbus.network.di
 
-import com.matejdro.mbus.common.di.ApplicationScope
-import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import dagger.Module
-import dagger.Provides
-import dagger.multibindings.Multibinds
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import okhttp3.OkHttpClient
 import si.inova.kotlinova.retrofit.interceptors.BypassCacheInterceptor
 import java.time.Duration
-import javax.inject.Singleton
 
-@Module
-@ContributesTo(ApplicationScope::class)
-abstract class NetworkModule {
-   @Multibinds
-   abstract fun multibindsMoshiAdapters(): Set<@JvmSuppressWildcards MoshiAdapter>
+@ContributesTo(AppScope::class)
+interface NetworkProviders {
+   // Uncomment when adding adapters
+   @Multibinds(allowEmpty = true)
+   val serializationAdapters: Set<MoshiAdapter>
+
+   @Provides
+   @SingleIn(AppScope::class)
+   fun provideMoshiInProviders(
+      adapters: Set<@JvmSuppressWildcards com.matejdro.mbus.network.di.MoshiAdapter>,
+   ): Moshi {
+      return provideMoshi(adapters)
+   }
+
+   @Provides
+   @SingleIn(AppScope::class)
+   fun provideOkHttpClient(): OkHttpClient {
+      if (Thread.currentThread().name == "main") {
+         error("OkHttp should not be initialized on the main thread")
+      }
+
+      return prepareDefaultOkHttpClient().build()
+   }
 
    companion object {
-      @Provides
-      @Singleton
       fun provideMoshi(
          adapters: Set<@JvmSuppressWildcards MoshiAdapter>,
       ): Moshi {
@@ -37,16 +52,6 @@ abstract class NetworkModule {
                }
             }
          }.build()
-      }
-
-      @Provides
-      @Singleton
-      fun provideOkHttpClient(): OkHttpClient {
-         if (Thread.currentThread().name == "main") {
-            error("OkHttp should not be initialized on the main thread")
-         }
-
-         return prepareDefaultOkHttpClient().build()
       }
 
       fun prepareDefaultOkHttpClient(): OkHttpClient.Builder {

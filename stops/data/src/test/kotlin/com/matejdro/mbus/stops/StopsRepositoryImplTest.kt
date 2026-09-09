@@ -6,7 +6,7 @@ import app.cash.turbine.test
 import com.matejdro.mbus.common.test.datastore.InMemoryDataStore
 import com.matejdro.mbus.sqldelight.generated.Database
 import com.matejdro.mbus.sqldelight.generated.DbStopQueries
-import com.matejdro.mbus.stops.di.StopsModule
+import com.matejdro.mbus.stops.di.StopsProviders
 import com.matejdro.mbus.stops.model.Stop
 import com.matejdro.mbus.stops.model.StopDto
 import com.matejdro.mbus.stops.model.Stops
@@ -719,5 +719,5 @@ private fun createTestStopQueries(): DbStopQueries {
    val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
    Database.Schema.create(driver)
 
-   return StopsModule.provideStopQueries(driver)
+   return StopsProviders.provideStopQueries(driver)
 }

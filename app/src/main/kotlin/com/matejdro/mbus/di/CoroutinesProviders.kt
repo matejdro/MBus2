@@ -1,9 +1,8 @@
 package com.matejdro.mbus.di
 
-import com.matejdro.mbus.common.di.ApplicationScope
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.Provides
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
 import dispatch.core.DefaultCoroutineScope
 import dispatch.core.DispatcherProvider
 import dispatch.core.IOCoroutineScope
@@ -12,9 +11,8 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.reporting.ErrorReporter
 
 @Suppress("unused")
-@ContributesTo(ApplicationScope::class)
-@Module
-class CoroutinesModule {
+@ContributesTo(AppScope::class)
+interface CoroutinesProviders {
    @Provides
    fun provideMainCoroutineScope(): MainImmediateCoroutineScope {
       return MainImmediateCoroutineScope(object : DispatcherProvider {})

@@ -22,6 +22,5 @@ dependencies {
    testImplementation(libs.turbine)
 
    testFixturesApi(libs.kotlinova.retrofit.test)
-   testFixturesImplementation(libs.dagger.runtime)
    testFixturesImplementation(libs.kotlinova.core.test)
 }

@@ -11,6 +11,7 @@ androidx-core = "1.17.0"
 androidx-core-splashscreen = "1.2.0"
 androidx-datastore = "1.2.0"
 androidx-lifecycle = "2.10.0"
+androidx-navigation3 = "1.0.0"
 androidx-perfetto = "1.0.1"
 androidx-profileInstaller = "1.4.1"
 android-securityLints = "1.0.3"
@@ -19,7 +20,6 @@ androidx-test-uiautomator = "2.3.0"
 anvil = "2.7.0"
 coil = "3.3.0"
 composeGuard = "2.4.0"
-dagger = "2.59.1"
 dependencyAnalysis = "3.5.1"
 desugarJdkLibs = "2.1.5"
 detekt = "1.23.8"
@@ -34,8 +34,9 @@ junit = "6.0.2"
 kotest = "6.1.2"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
-kotlinova = "3.7.0"
+kotlinova = "4.0.0-alpha11"
 ksp = "2.3.5"
+metro = "0.9.4"
 moduleGraphAssert = "2.9.0"
 moshi = "1.15.2"
 moshi-ir = "0.34.4"
@@ -83,6 +84,8 @@ androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-co
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-navigation3 = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidx-navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "androidx-navigation3" }
 androidx-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-perfetto" }
 androidx-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-perfetto" }
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
@@ -92,8 +95,6 @@ anvil = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
-dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
@@ -123,10 +124,12 @@ kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlin
 kotlinova-navigation = { module = "si.inova.kotlinova:navigation", version.ref = "kotlinova" }
 kotlinova-navigation-compiler = { module = "si.inova.kotlinova:navigation-compiler", version.ref = "kotlinova" }
 kotlinova-navigation-detekt = { module = "si.inova.kotlinova:navigation-detekt", version.ref = "kotlinova" }
+kotlinova-navigation-navigation3 = { module = "si.inova.kotlinova:navigation-navigation3", version.ref = "kotlinova" }
 kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", version.ref = "kotlinova" }
 kotlinova-retrofit = { module = "si.inova.kotlinova:retrofit", version.ref = "kotlinova" }
 kotlinova-retrofit-test = { module = "si.inova.kotlinova:retrofit-test", version.ref = "kotlinova" }
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+metro-plugin = { module = "dev.zacsweers.metro:gradle-plugin", version.ref = "metro" }
 moduleGraphAssert = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshi-ir = { module = "dev.zacsweers.moshix:dev.zacsweers.moshix.gradle.plugin", version.ref = "moshi-ir" }

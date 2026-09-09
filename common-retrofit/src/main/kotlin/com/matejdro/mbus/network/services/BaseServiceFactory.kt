@@ -3,6 +3,9 @@ package com.matejdro.mbus.network.services
 import com.matejdro.mbus.network.converters.DateConverterFactory
 import com.matejdro.mbus.network.exceptions.DefaultErrorHandler
 import com.squareup.moshi.Moshi
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Provider
+import dev.zacsweers.metro.Qualifier
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -12,9 +15,6 @@ import si.inova.kotlinova.core.reporting.ErrorReporter
 import si.inova.kotlinova.retrofit.callfactory.ErrorHandlingAdapterFactory
 import si.inova.kotlinova.retrofit.callfactory.StaleWhileRevalidateCallAdapterFactory
 import si.inova.kotlinova.retrofit.converter.LazyRetrofitConverterFactory
-import javax.inject.Inject
-import javax.inject.Provider
-import javax.inject.Qualifier
 
 open class BaseServiceFactory @Inject constructor(
    private val coroutineScope: CoroutineScope,
@@ -30,7 +30,7 @@ open class BaseServiceFactory @Inject constructor(
       configuration(scope)
 
       val updatedClient = lazy {
-         okHttpClient.get().newBuilder()
+         okHttpClient().newBuilder()
             .apply {
                if (scope.cache) {
                   createCache()?.let { cache(it) }
@@ -43,7 +43,7 @@ open class BaseServiceFactory @Inject constructor(
       }
 
       val moshiConverter = lazy {
-         MoshiConverterFactory.create(moshi.get()).withStreaming()
+         MoshiConverterFactory.create(moshi()).withStreaming()
       }
 
       return Retrofit.Builder()

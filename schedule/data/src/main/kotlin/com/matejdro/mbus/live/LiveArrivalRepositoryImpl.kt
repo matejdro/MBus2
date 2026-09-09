@@ -1,12 +1,13 @@
 package com.matejdro.mbus.live
 
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.live.models.LiveArrivalRepository
 import com.matejdro.mbus.live.models.LiveArrivalsDto
 import com.matejdro.mbus.schedule.SchedulesService
 import com.matejdro.mbus.schedule.exceptions.BrokenStationException
 import com.matejdro.mbus.schedule.model.Arrival
-import com.squareup.anvil.annotations.ContributesBinding
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +21,10 @@ import si.inova.kotlinova.core.flow.onlyFlowWhenUserPresent
 import si.inova.kotlinova.core.time.TimeProvider
 import java.time.Duration
 import java.time.LocalDateTime
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-@ContributesBinding(ApplicationScope::class)
+@ContributesBinding(AppScope::class)
 class LiveArrivalRepositoryImpl @Inject constructor(
    private val schedulesService: SchedulesService,
    private val timeProvider: TimeProvider,

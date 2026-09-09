@@ -28,7 +28,7 @@ dependencies {
    implementation(libs.androidGradleCacheFix)
    implementation(libs.android.agp)
    implementation(libs.composeGuard)
-   implementation(libs.anvil)
+   implementation(libs.metro.plugin)
    implementation(libs.dependencyAnalysis)
    implementation(libs.detekt.plugin)
    implementation(libs.kotlin.plugin)

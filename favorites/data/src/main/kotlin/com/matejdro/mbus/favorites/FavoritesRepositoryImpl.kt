@@ -7,7 +7,6 @@ import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.common.data.PaginationResult
 import com.matejdro.mbus.common.data.flattenOutcomes
 import com.matejdro.mbus.common.data.mapData
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.favorites.model.Favorite
 import com.matejdro.mbus.favorites.model.FavoriteSchedule
 import com.matejdro.mbus.favorites.model.LineStop
@@ -17,7 +16,9 @@ import com.matejdro.mbus.schedule.ScheduleRepository
 import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.sqldelight.generated.DbFavorite
 import com.matejdro.mbus.sqldelight.generated.DbFavoriteQueries
-import com.squareup.anvil.annotations.ContributesBinding
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import dispatch.core.flowOnDefault
 import dispatch.core.withDefault
 import kotlinx.coroutines.flow.Flow
@@ -29,9 +30,8 @@ import kotlinx.coroutines.flow.map
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import java.time.LocalDateTime
-import javax.inject.Inject
 
-@ContributesBinding(ApplicationScope::class)
+@ContributesBinding(AppScope::class)
 class FavoritesRepositoryImpl @Inject constructor(
    private val db: DbFavoriteQueries,
    private val scheduleRepository: ScheduleRepository,

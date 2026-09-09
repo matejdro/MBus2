@@ -9,6 +9,7 @@ import com.matejdro.mbus.schedule.model.Arrival
 import com.matejdro.mbus.schedule.model.Line
 import com.matejdro.mbus.schedule.model.StopSchedule
 import com.matejdro.mbus.stops.StopsRepository
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -17,12 +18,13 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.core.time.TimeProvider
+import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import javax.inject.Inject
 
 @Stable
+@ContributesScopedService
 class StopScheduleViewModel @Inject constructor(
    private val resources: CoroutineResourceManager,
    private val scheduleRepository: ScheduleRepository,

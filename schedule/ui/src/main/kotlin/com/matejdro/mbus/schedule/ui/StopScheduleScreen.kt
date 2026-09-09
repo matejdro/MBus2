@@ -42,6 +42,7 @@ import si.inova.kotlinova.core.outcome.LoadingStyle
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.time.FakeAndroidTimeProvider
 import si.inova.kotlinova.core.time.TimeProvider
+import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -50,6 +51,7 @@ import java.time.ZonedDateTime
 import com.matejdro.mbus.schedule.shared.R as scheduleScharedR
 
 @Stable
+@InjectNavigationScreen
 class StopScheduleScreen(
    private val viewModel: StopScheduleViewModel,
    private val timeProvider: TimeProvider,

@@ -31,13 +31,4 @@
 -keep class okio.** {
     *;
 }
-
--keep class dagger.** {
-    *;
-}
--keep @dagger.** class * {
-    *;
-}
--keep class * extends dagger.internal.Factory {
-    *;
 }

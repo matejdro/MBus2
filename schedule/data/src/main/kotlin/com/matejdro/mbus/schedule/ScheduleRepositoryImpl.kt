@@ -5,7 +5,6 @@ import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import com.matejdro.mbus.common.data.PaginatedDataStream
 import com.matejdro.mbus.common.data.awaitFirstSuccess
-import com.matejdro.mbus.common.di.ApplicationScope
 import com.matejdro.mbus.lines.LinesRepository
 import com.matejdro.mbus.live.models.LiveArrivalRepository
 import com.matejdro.mbus.schedule.exceptions.BrokenStationException
@@ -17,7 +16,9 @@ import com.matejdro.mbus.sqldelight.generated.DbArrivalQueries
 import com.matejdro.mbus.sqldelight.generated.SelectAllOnStop
 import com.matejdro.mbus.stops.StopsRepository
 import com.matejdro.mbus.stops.model.Stop
-import com.squareup.anvil.annotations.ContributesBinding
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import dispatch.core.flowOnDefault
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -41,11 +42,10 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.toJavaDuration
 
-@ContributesBinding(ApplicationScope::class)
+@ContributesBinding(AppScope::class)
 class ScheduleRepositoryImpl @Inject constructor(
    private val service: SchedulesService,
    private val timeProvider: TimeProvider,

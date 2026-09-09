@@ -18,6 +18,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.matejdro.mbus.ui.theme.MBusTheme
 import com.zhuinden.simplestack.Backstack
@@ -33,32 +35,33 @@ import si.inova.kotlinova.navigation.deeplink.HandleNewIntentDeepLinks
 import si.inova.kotlinova.navigation.deeplink.MainDeepLinkHandler
 import si.inova.kotlinova.navigation.di.NavigationContext
 import si.inova.kotlinova.navigation.di.NavigationInjection
+import si.inova.kotlinova.navigation.navigation3.NavDisplay
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
-import si.inova.kotlinova.navigation.simplestack.RootNavigationContainer
-import javax.inject.Inject
 
 @Stable
 class MainActivity : ComponentActivity() {
-   @Inject
    lateinit var navigationInjectionFactory: NavigationInjection.Factory
 
-   @Inject
    lateinit var mainDeepLinkHandler: MainDeepLinkHandler
 
-   @Inject
    lateinit var navigationContext: NavigationContext
 
-   @Inject
    lateinit var dateFormatter: AndroidDateTimeFormatter
 
-   @Inject
    lateinit var viewModelProvider: MainViewModel.Factory
 
    private val viewModel by viewModels<MainViewModel>() { ViewModelFactory() }
    private var initComplete = false
 
    override fun onCreate(savedInstanceState: Bundle?) {
-      (requireNotNull(application) as MBusApplication).applicationComponent.inject(this)
+      val appGraph = (requireNotNull(application) as MBusApplication).applicationGraph
+
+      navigationInjectionFactory = appGraph.getNavigationInjectionFactory()
+      mainDeepLinkHandler = appGraph.getMainDeepLinkHandler()
+      navigationContext = appGraph.getNavigationContext()
+      dateFormatter = appGraph.getDateFormatter()
+      viewModelProvider = appGraph.getMainViewModelFactory()
+
       super.onCreate(savedInstanceState)
       enableEdgeToEdge()
 
@@ -105,14 +108,19 @@ class MainActivity : ComponentActivity() {
                LocalDateFormatter provides ComposeAndroidDateTimeFormatter(dateFormatter),
                LocalResultPassingStore provides resultPassingStore
             ) {
-               val backstack = navigationInjectionFactory.RootNavigationContainer(
+               val backstack = navigationInjectionFactory.NavDisplay(
                   initialHistory = { initialHistory },
-                  screenWrapper = { _, screen ->
-                     Surface {
-                        screen()
-                     }
-                  }
-               )
+                  entryDecorators = listOf(
+                     rememberSaveableStateHolderNavEntryDecorator(),
+                     NavEntryDecorator<ScreenKey>(
+                        decorate = {
+                           Surface {
+                              it.Content()
+                           }
+                        }
+                     )
+
+                  ))
 
                LogCurrentScreen(backstack)
 
