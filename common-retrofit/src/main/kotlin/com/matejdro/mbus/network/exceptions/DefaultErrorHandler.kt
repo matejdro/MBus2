@@ -14,8 +14,12 @@ class DefaultErrorHandler @Inject constructor(
    private val moshi: Provider<Moshi>,
 ) : ErrorHandler {
    override fun generateExceptionFromErrorBody(response: Response<*>, parentException: Exception): CauseException? {
-      val errorResponse = requireNotNull(response.errorBody()).source().use { moshi().fromJson<BackendError>(it) }
+      val errorResponse = response.errorBody()?.use { errorBody ->
+         errorBody.source().use { source ->
+            moshi().fromJson<BackendError>(source)
+         }
+      }
 
-      return BackendErrorException(errorResponse.toString(), parentException)
+      return BackendErrorException(requireNotNull(errorResponse).toString(), parentException)
    }
 }

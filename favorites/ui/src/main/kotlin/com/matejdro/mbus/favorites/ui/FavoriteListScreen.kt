@@ -61,11 +61,11 @@ private fun FavoriteListScreenContent(data: () -> Outcome<List<Favorite>>?, sele
       ) { items ->
          Box(Modifier.fillMaxSize()) {
             LazyColumn(Modifier.fillMaxSize()) {
-               itemsWithDivider(items) {
+               itemsWithDivider(items) { favorite ->
                   Text(
-                     it.name,
+                     favorite.name,
                      Modifier
-                        .clickable { selectFavorite(it.id) }
+                        .clickable { selectFavorite(favorite.id) }
                         .padding(24.dp)
                         .fillMaxWidth()
                   )

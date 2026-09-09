@@ -46,7 +46,7 @@ class StopScheduleViewModel @Inject constructor(
       actionLogger.logAction { "StopScheduleViewModel.loadNextPage()" }
 
       val existingData = _schedule.value.data
-      if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
+      if (!existingData?.arrivals.isNullOrEmpty() && existingData.hasAnyDataLeft != false) {
          lastPaginator?.nextPage()
       }
    }
@@ -69,8 +69,8 @@ class StopScheduleViewModel @Inject constructor(
 
       emitAll(
          paginator.data.map { outcome ->
-            outcome.mapData {
-               with(it) {
+            outcome.mapData { schedule ->
+               with(schedule) {
                   StopScheduleUiState(
                      arrivals = arrivals,
                      stopName = stopName,

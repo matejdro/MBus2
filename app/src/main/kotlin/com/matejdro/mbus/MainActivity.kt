@@ -116,14 +116,14 @@ class MainActivity : ComponentActivity() {
                   entryDecorators = listOf(
                      rememberSaveableStateHolderNavEntryDecorator(),
                      NavEntryDecorator<ScreenKey>(
-                        decorate = {
+                        decorate = { entry ->
                            Surface {
-                              it.Content()
+                              entry.Content()
                            }
                         }
                      )
-
-                  ))
+                  )
+               )
 
                LogCurrentScreen(backstack)
 
@@ -143,7 +143,7 @@ class MainActivity : ComponentActivity() {
       val newTopKey = topScreenFlow.collectAsStateWithLifecycle(null).value
 
       SideEffect {
-         FirebaseCrashlytics.getInstance().setCustomKey("Screen", newTopKey.toString())
+         FirebaseCrashlytics.getInstance().setCustomKey("Screen", newTopKey?.toString() ?: "null")
       }
    }
 

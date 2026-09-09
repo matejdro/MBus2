@@ -68,9 +68,9 @@ class StopScheduleScreen(
                data.allLines,
                data.whitelistedLines,
                { filterDialogShown = false },
-               {
+               { selectedLines ->
                   filterDialogShown = false
-                  viewModel.setFilter(it)
+                  viewModel.setFilter(selectedLines)
                }
             )
          }
@@ -80,9 +80,9 @@ class StopScheduleScreen(
             TimePickerDialog(
                ZonedDateTime.now(),
                { timeDialogShown = false },
-               {
+               { selectedTime ->
                   timeDialogShown = false
-                  viewModel.changeDate(it.toLocalDateTime())
+                  viewModel.changeDate(selectedTime.toLocalDateTime())
                }
             )
          }
@@ -99,12 +99,12 @@ class StopScheduleScreen(
          }
 
          ScheduleScreenContent(
-            state,
-            timeProvider,
-            viewModel::loadNextPage,
-            { filterDialogShown = true },
-            { timeDialogShown = true },
-            { favoriteDialogShown = true }
+            data = state,
+            timeProvider = timeProvider,
+            loadNextPage = viewModel::loadNextPage,
+            showFilter = { filterDialogShown = true },
+            showTimePicker = { timeDialogShown = true },
+            showAddFavoritePicker = { favoriteDialogShown = true }
          )
       }
    }
@@ -167,13 +167,13 @@ private fun ScheduleScreenContent(
 
       if (stopSchedule != null) {
          StopList(
-            stopSchedule.arrivals,
-            stopSchedule.stopImage,
-            timeProvider,
-            stopSchedule.hasAnyDataLeft,
-            data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA,
-            loadNextPage,
-            Modifier.weight(1f)
+            arrivals = stopSchedule.arrivals,
+            stopImage = stopSchedule.stopImage,
+            timeProvider = timeProvider,
+            hasAnyDataLeftToLoad = stopSchedule.hasAnyDataLeft,
+            loadingMore = data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA,
+            loadNextPage = loadNextPage,
+            modifier = Modifier.weight(1f)
          )
       }
    }

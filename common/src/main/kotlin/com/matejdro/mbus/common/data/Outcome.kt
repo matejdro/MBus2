@@ -7,11 +7,11 @@ import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.Outcome
 
 suspend fun <T> Flow<Outcome<T>>.awaitFirstSuccess(): T {
-   return mapNotNull {
-      when (it) {
-         is Outcome.Error -> throw it.exception
+   return mapNotNull { outcome ->
+      when (outcome) {
+         is Outcome.Error -> throw outcome.exception
          is Outcome.Progress -> null
-         is Outcome.Success -> it
+         is Outcome.Success -> outcome
       }
    }.first().data
 }
@@ -27,10 +27,10 @@ fun <T> Collection<Outcome<T>>.flattenOutcomes(): Outcome<List<T?>> {
    var exception: CauseException? = null
    var anyLoading = false
 
-   val datas = map {
-      when (it) {
+   val datas = map { outcome ->
+      when (outcome) {
          is Outcome.Error -> {
-            exception = it.exception
+            exception = outcome.exception
          }
 
          is Outcome.Progress -> {
@@ -40,11 +40,11 @@ fun <T> Collection<Outcome<T>>.flattenOutcomes(): Outcome<List<T?>> {
          is Outcome.Success -> {}
       }
 
-      it.data
+      outcome.data
    }
 
    return if (exception != null) {
-      Outcome.Error(exception!!, datas)
+      Outcome.Error(exception, datas)
    } else if (anyLoading) {
       Outcome.Progress(datas)
    } else {

@@ -57,11 +57,11 @@ class LiveArrivalRepositoryImpl @Inject constructor(
                   null
                }
             } else {
-               arrival.takeIf {
+               arrival.takeIf { candidate ->
                   val defaultCutoffPoint = timeProvider.currentLocalDateTime()
                      .minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW_WITHOUT_LIVE_DATA)
 
-                  it.arrival >= defaultCutoffPoint
+                  candidate.arrival >= defaultCutoffPoint
                }
             }
          }.sortedBy { it.arrival }
@@ -71,16 +71,16 @@ class LiveArrivalRepositoryImpl @Inject constructor(
    private fun LiveArrivalsDto.LiveArrivalDto?.arrivalDateTime(): LocalDateTime? {
       // If time differs is more 12 hours in the past, assume that it's actually the schedule for the next day
 
-      return this?.arrivalTime?.let {
-         val date = if (it < timeProvider.currentLocalTime() &&
-            (Duration.between(it, timeProvider.currentLocalTime())) > HALF_DAY
+      return this?.arrivalTime?.let { arrivalTime ->
+         val date = if (arrivalTime < timeProvider.currentLocalTime() &&
+            (Duration.between(arrivalTime, timeProvider.currentLocalTime())) > HALF_DAY
          ) {
             timeProvider.currentLocalDate().plusDays(1)
          } else {
             timeProvider.currentLocalDate()
          }
 
-         it.atDate(date)
+         arrivalTime.atDate(date)
       }
    }
 

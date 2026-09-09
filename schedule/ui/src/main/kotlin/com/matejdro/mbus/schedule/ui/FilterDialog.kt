@@ -81,8 +81,8 @@ private fun FilterRow(
             }
          }
    ) {
-      Checkbox(selectedLinesInDialog.contains(line.id), onCheckedChange = {
-         if (it) {
+      Checkbox(selectedLinesInDialog.contains(line.id), onCheckedChange = { checked ->
+         if (checked) {
             selectedLinesInDialog.add(line.id)
          } else {
             selectedLinesInDialog.remove(line.id)

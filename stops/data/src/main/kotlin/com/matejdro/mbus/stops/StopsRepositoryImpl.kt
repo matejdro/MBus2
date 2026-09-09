@@ -111,7 +111,7 @@ class StopsRepositoryImpl @Inject constructor(
          dbStopQueries.deleteNotMatching(onlineStops.map { it.id.toLong() })
          for (stop in onlineStops) {
             if (dbStopQueries.exists(stop.id).executeAsOne()) {
-               dbStopQueries.update(stop.name, stop.lat, stop.lon, stop.id)
+               dbStopQueries.update(name = stop.name, lat = stop.lat, lon = stop.lon, id = stop.id)
             } else {
                dbStopQueries.insert(stop)
             }

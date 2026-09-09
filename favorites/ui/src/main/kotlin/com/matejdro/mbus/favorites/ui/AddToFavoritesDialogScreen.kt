@@ -94,9 +94,9 @@ private fun AddToFavoritesDialogScreenContent(
          }
       }
 
-      ProgressErrorSuccessScaffold({ outcome }) { data ->
+      ProgressErrorSuccessScaffold({ outcome }) { dialogData ->
          Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            for (favorite in data.favorites) {
+            for (favorite in dialogData.favorites) {
                FavoriteRow(favorite.name) {
                   select(favorite.id)
                }

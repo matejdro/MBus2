@@ -26,12 +26,12 @@ class FakeScheduleRepository : ScheduleRepository {
       return ListPaginatedDataStream(schedulePages.arrivals) { list, hasAnyDataLeft ->
          Outcome.Success(
             StopSchedule(
-               list,
-               schedulePages.stopName,
-               schedulePages.stopImage,
-               schedulePages.stopDescription,
-               hasAnyDataLeft,
-               list.map { it.line }.distinctBy { it.id },
+               arrivals = list,
+               stopName = schedulePages.stopName,
+               stopImage = schedulePages.stopImage,
+               stopDescription = schedulePages.stopDescription,
+               hasAnyDataLeft = hasAnyDataLeft,
+               allLines = list.map { it.line }.distinctBy { it.id },
             )
          )
       }

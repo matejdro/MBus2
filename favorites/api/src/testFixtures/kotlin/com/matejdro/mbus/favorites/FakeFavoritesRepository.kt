@@ -42,11 +42,11 @@ class FakeFavoritesRepository : FavoritesRepository {
 
    override suspend fun updateFavoriteName(favoriteId: Long, newName: String) {
       favorites.update { list ->
-         list.map {
-            if (it.id == favoriteId) {
-               it.copy(name = newName)
+         list.map { favorite ->
+            if (favorite.id == favoriteId) {
+               favorite.copy(name = newName)
             } else {
-               it
+               favorite
             }
          }
       }
@@ -57,11 +57,11 @@ class FakeFavoritesRepository : FavoritesRepository {
 
    override suspend fun addStopToFavourite(favouriteId: Long, stopId: Int) {
       favorites.update { list ->
-         list.map {
-            if (it.id == favouriteId) {
-               it.copy(stopsIds = it.stopsIds + stopId)
+         list.map { favorite ->
+            if (favorite.id == favouriteId) {
+               favorite.copy(stopsIds = favorite.stopsIds + stopId)
             } else {
-               it
+               favorite
             }
          }
       }
@@ -69,11 +69,11 @@ class FakeFavoritesRepository : FavoritesRepository {
 
    override suspend fun removeStopToFavourite(favouriteId: Long, stopId: Int) {
       favorites.update { list ->
-         list.map {
-            if (it.id == favouriteId) {
-               it.copy(stopsIds = it.stopsIds - stopId)
+         list.map { favorite ->
+            if (favorite.id == favouriteId) {
+               favorite.copy(stopsIds = favorite.stopsIds - stopId)
             } else {
-               it
+               favorite
             }
          }
       }

@@ -13,7 +13,7 @@ import si.inova.kotlinova.retrofit.caching.GlobalOkHttpDiskCacheManager
 @ContributesTo(AppScope::class)
 interface AndroidNetworkProviders {
    @Binds
-   abstract fun bindToServiceFactory(androidServiceFactory: AndroidServiceFactory): ServiceFactory
+   fun bindToServiceFactory(androidServiceFactory: AndroidServiceFactory): ServiceFactory
 
    @Provides
    fun provideDiskCacheManager(

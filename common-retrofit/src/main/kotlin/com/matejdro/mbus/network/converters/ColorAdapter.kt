@@ -31,7 +31,7 @@ class ColorAdapter @Inject constructor() : MoshiAdapter {
 
    @ToJson
    fun fromIntToHex(
-      @Suppress("UNUSED_PARAMETER")
+      @Suppress("UNUSED_PARAMETER", "UnusedParameter")
       @HexColor
       value: Int?,
    ): String {

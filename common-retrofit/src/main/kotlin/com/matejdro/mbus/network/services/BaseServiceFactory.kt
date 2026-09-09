@@ -33,6 +33,8 @@ open class BaseServiceFactory @Inject constructor(
          okHttpClient().newBuilder()
             .apply {
                if (scope.cache) {
+                  // Cache is owned by the OkHttp client, so it must not be closed here
+                  @Suppress("MissingUseCall")
                   createCache()?.let { cache(it) }
                }
             }

@@ -106,16 +106,20 @@ class ScheduleRepositoryImpl @Inject constructor(
                      }
                   }
 
-                  val allLines = data.map { it.line }.distinctBy { it.id }.sortedBy { it.label.toIntOrNull() ?: it.id }
+                  val allLines = data.asSequence()
+                     .map { it.line }
+                     .distinctBy { it.id }
+                     .sortedBy { it.label.toIntOrNull() ?: it.id }
+                     .toList()
 
                   StopSchedule(
-                     filteredData,
-                     scheduleMetadata.stopName,
-                     scheduleMetadata.stopImage,
-                     scheduleMetadata.stopDescription,
-                     scheduleMetadata.hasAnyDataLeft,
-                     allLines,
-                     scheduleMetadata.whitelistedLines
+                     arrivals = filteredData,
+                     stopName = scheduleMetadata.stopName,
+                     stopImage = scheduleMetadata.stopImage,
+                     stopDescription = scheduleMetadata.stopDescription,
+                     hasAnyDataLeft = scheduleMetadata.hasAnyDataLeft,
+                     allLines = allLines,
+                     whitelistedLines = scheduleMetadata.whitelistedLines
                   )
                }
             }.flowOnDefault()
@@ -133,20 +137,20 @@ class ScheduleRepositoryImpl @Inject constructor(
       stopId: Int,
    ): Flow<Query<SelectAllOnStop>> {
       val minTimeIsoString = from
-         .let {
+         .let { time ->
             if (includeLive) {
-               it.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
+               time.minusMinutes(CUTOFF_POINT_MINUTES_BEFORE_NOW)
             } else {
-               it
+               time
             }
          }
          .let { DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(it) }
       val maxTimeString = maxTime.toIsoString()
 
       return dbArrivalQueries.selectAllOnStop(
-         stopId.toLong(),
-         minTimeIsoString,
-         maxTimeString
+         stopId = stopId.toLong(),
+         startTime = minTimeIsoString,
+         endTime = maxTimeString
       ).asFlow()
    }
 
@@ -164,20 +168,20 @@ class ScheduleRepositoryImpl @Inject constructor(
          val dayEnd = currentDate.plusDays(1).atStartOfDay().toIsoString()
 
          val existingData = dbArrivalQueries.selectAllOnStop(
-            stopId.toLong(),
-            dayStart,
-            dayEnd
+            stopId = stopId.toLong(),
+            startTime = dayStart,
+            endTime = dayEnd
          ).executeAsList()
 
          val description = existingStopMetadata.description
          val cacheExpirationDate = existingStopMetadata.lastScheduleUpdate?.plus(CACHE_DURATION)
 
          val existingMetadata = ScheduleMetadata(
-            existingStopMetadata.name,
-            existingStopMetadata.imageUrl,
-            description.orEmpty(),
-            true,
-            existingStopMetadata.whitelistedLines,
+            stopName = existingStopMetadata.name,
+            stopImage = existingStopMetadata.imageUrl,
+            stopDescription = description.orEmpty(),
+            hasAnyDataLeft = true,
+            whitelistedLines = existingStopMetadata.whitelistedLines,
          )
 
          if (existingData.isNotEmpty() &&
@@ -218,9 +222,9 @@ class ScheduleRepositoryImpl @Inject constructor(
 
       dbArrivalQueries.transaction {
          dbArrivalQueries.clearStop(
-            stop.id.toLong(),
-            dayStart,
-            dayEnd
+            stopId = stop.id.toLong(),
+            startTime = dayStart,
+            endTime = dayEnd
          )
 
          for (lineSchedule in onlineSchedule.schedules) {
@@ -228,10 +232,10 @@ class ScheduleRepositoryImpl @Inject constructor(
                for (departure in route.departures) {
                   dbArrivalQueries.insert(
                      DbArrival(
-                        lineSchedule.lineId.toLong(),
-                        stop.id.toLong(),
-                        departure.atDate(today).toIsoString(),
-                        route.direction
+                        lineId = lineSchedule.lineId.toLong(),
+                        stopId = stop.id.toLong(),
+                        arrivalTime = departure.atDate(today).toIsoString(),
+                        direction = route.direction
                      )
                   )
                }
@@ -255,11 +259,11 @@ class ScheduleRepositoryImpl @Inject constructor(
       emit(
          Outcome.Success(
             ScheduleMetadata(
-               stop.name,
-               onlineSchedule.staticData.image,
-               description,
-               true,
-               emptySet()
+               stopName = stop.name,
+               stopImage = onlineSchedule.staticData.image,
+               stopDescription = description,
+               hasAnyDataLeft = true,
+               whitelistedLines = emptySet()
             )
          )
       )

@@ -26,10 +26,10 @@ import si.inova.kotlinova.core.time.TimeProvider
 @ContributesTo(AppScope::class)
 interface AppProviders {
    @Binds
-   abstract fun bindToContext(application: Application): Context
+   fun bindToContext(application: Application): Context
 
    @Binds
-   abstract fun bindToTimeProvider(androidTimeProvider: AndroidTimeProvider): TimeProvider
+   fun bindToTimeProvider(androidTimeProvider: AndroidTimeProvider): TimeProvider
 
    @Provides
    fun provideAndroidDateTimeFormatter(

@@ -118,10 +118,10 @@ class FavoritesRepositoryImpl @Inject constructor(
                         val allLines =
                            stops.flatMap { (stopId, stopSchedule) ->
                               val stopInfo = StopInfo(
-                                 stopId,
-                                 stopSchedule.stopName,
-                                 stopSchedule.stopDescription,
-                                 stopSchedule.stopImage
+                                 id = stopId,
+                                 name = stopSchedule.stopName,
+                                 description = stopSchedule.stopDescription,
+                                 imageUrl = stopSchedule.stopImage
                               )
 
                               stopSchedule.allLines.map { LineStop(it, stopInfo) }
@@ -129,16 +129,17 @@ class FavoritesRepositoryImpl @Inject constructor(
 
                         FavoriteSchedule(
                            favorite = favorite,
-                           arrivals = stops.map { (stopId, stop) ->
+                           arrivals = stops.flatMap { (stopId, stop) ->
                               stop.arrivals
                                  .filter {
                                     whitelistedLines.isEmpty() || whitelistedLines.contains(it.line.id to stopId)
-                                 }.map {
-                                    it.copy(
-                                       direction = "${stop.stopName}\n${it.direction}"
+                                 }
+                                 .map { arrival ->
+                                    arrival.copy(
+                                       direction = "${stop.stopName}\n${arrival.direction}"
                                     )
                                  }
-                           }.flatten().sortedBy { it.arrival },
+                           }.sortedBy { it.arrival },
                            allLines = allLines,
                            hasAnyDataLeft = stops.any { it.hasAnyDataLeft },
                            whitelistedLines = allLines.filterTo(HashSet()) { lineStop ->

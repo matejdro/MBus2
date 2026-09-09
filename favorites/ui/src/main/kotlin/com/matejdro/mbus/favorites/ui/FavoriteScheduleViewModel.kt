@@ -11,6 +11,7 @@ import com.matejdro.mbus.favorites.model.StopInfo
 import com.matejdro.mbus.navigation.keys.FavoriteScheduleScreenKey
 import com.matejdro.mbus.schedule.model.Arrival
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -48,7 +49,7 @@ class FavoriteScheduleViewModel @Inject constructor(
    fun loadNextPage() {
       actionLogger.logAction { "FavoriteScheduleViewModel.loadNextPage()" }
       val existingData = _schedule.value.data
-      if (!existingData?.arrivals.isNullOrEmpty() && existingData?.hasAnyDataLeft != false) {
+      if (!existingData?.arrivals.isNullOrEmpty() && existingData.hasAnyDataLeft != false) {
          lastPaginator?.nextPage()
       }
    }
@@ -71,8 +72,12 @@ class FavoriteScheduleViewModel @Inject constructor(
             favoritesRepository.removeStopToFavourite(key.favoriteId, stop.id)
          }
          favoritesRepository.updateFavoriteName(key.favoriteId, newName)
+      } catch (e: CancellationException) {
+         throw e
+      } catch (e: CauseException) {
+         _schedule.update { Outcome.Error(e, it.data) }
       } catch (e: Exception) {
-         _schedule.update { Outcome.Error(if (e is CauseException) e else UnknownCauseException(cause = e), it.data) }
+         _schedule.update { Outcome.Error(UnknownCauseException(cause = e), it.data) }
       }
    }
 
@@ -92,8 +97,8 @@ class FavoriteScheduleViewModel @Inject constructor(
 
       emitAll(
          paginator.data.map { outcome ->
-            outcome.mapData {
-               with(it) {
+            outcome.mapData { schedule ->
+               with(schedule) {
                   FavoriteScheduleUiState(
                      favorite = favorite,
                      arrivals = arrivals,

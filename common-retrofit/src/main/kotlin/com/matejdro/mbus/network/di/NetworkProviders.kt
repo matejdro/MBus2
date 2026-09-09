@@ -43,12 +43,12 @@ interface NetworkProviders {
             error("Moshi should not be initialized on the main thread")
          }
 
-         return Moshi.Builder().also {
+         return Moshi.Builder().also { builder ->
             for (adapter in adapters) {
                if (adapter is JsonAdapter.Factory) {
-                  it.addLast(adapter)
+                  builder.addLast(adapter)
                } else {
-                  it.addLast(adapter)
+                  builder.addLast(adapter)
                }
             }
          }.build()

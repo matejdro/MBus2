@@ -55,4 +55,5 @@ configure<KotlinovaExtension> {
 dependencies {
    add("detektPlugins", libs.detekt.ktlint)
    add("detektPlugins", libs.detekt.compose)
-   add("detektPlugins", libs.kotlinova.navigation.detekt)}
+   add("detektPlugins", libs.kotlinova.navigation.detekt)
+}

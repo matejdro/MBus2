@@ -25,7 +25,7 @@ class MainViewModel @AssistedInject constructor(
          val forcedLocation = if (startIntent.hasExtra(EXTRA_FORCED_LAT) && startIntent.hasExtra(EXTRA_FORCED_LON)) {
             val forcedLat = startIntent.getDoubleExtra(EXTRA_FORCED_LAT, 0.0)
             val forcedLon = startIntent.getDoubleExtra(EXTRA_FORCED_LON, 0.0)
-            Location(forcedLat, forcedLon)
+            Location(lat = forcedLat, lon = forcedLon)
          } else {
             null
          }

@@ -79,8 +79,8 @@ class HomeMapViewModel @Inject constructor(
          val location = locationProvider.getUserLocation() ?: return@launch
 
          _stops.update { outcome ->
-            outcome.mapNullableData {
-               (it ?: HomeState(emptyList())).copy(
+            outcome.mapNullableData { homeState ->
+               (homeState ?: HomeState(emptyList())).copy(
                   event = HomeEvent.MoveMap(
                      LatLng(
                         location.latitude,
@@ -123,8 +123,8 @@ data class HomeState(
    val event: HomeEvent? = null,
 )
 
-sealed class HomeEvent {
-   data class MoveMap(val latLng: LatLng) : HomeEvent()
+sealed interface HomeEvent {
+   data class MoveMap(val latLng: LatLng) : HomeEvent
 }
 
 private fun LatLngBounds.contains(other: LatLngBounds): Boolean {

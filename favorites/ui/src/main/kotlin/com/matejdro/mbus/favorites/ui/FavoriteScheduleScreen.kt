@@ -72,9 +72,9 @@ class FavoriteScheduleScreen(
                data.allLines,
                data.whitelistedLines,
                { filterDialogShown = false },
-               {
+               { selectedLines ->
                   filterDialogShown = false
-                  viewModel.setFilter(it)
+                  viewModel.setFilter(selectedLines)
                }
             )
          }
@@ -84,9 +84,9 @@ class FavoriteScheduleScreen(
             TimePickerDialog(
                ZonedDateTime.now(),
                { timeDialogShown = false },
-               {
+               { selectedTime ->
                   timeDialogShown = false
-                  viewModel.changeDate(it.toLocalDateTime())
+                  viewModel.changeDate(selectedTime.toLocalDateTime())
                }
             )
          }
@@ -106,12 +106,12 @@ class FavoriteScheduleScreen(
          }
 
          ScheduleScreenContent(
-            state,
-            timeProvider,
-            viewModel::loadNextPage,
-            { filterDialogShown = true },
-            { timeDialogShown = true },
-            { editDialogShown = true }
+            data = state,
+            timeProvider = timeProvider,
+            loadNextPage = viewModel::loadNextPage,
+            showFilter = { filterDialogShown = true },
+            showTimePicker = { timeDialogShown = true },
+            showEditFavorite = { editDialogShown = true }
          )
 
          LaunchedEffect(state.data?.closeScreenAfterDeletion) {
@@ -180,13 +180,13 @@ private fun ScheduleScreenContent(
 
       if (stopSchedule != null) {
          StopList(
-            stopSchedule.arrivals,
-            null,
-            timeProvider,
-            stopSchedule.hasAnyDataLeft,
-            data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA,
-            loadNextPage,
-            Modifier.weight(1f)
+            arrivals = stopSchedule.arrivals,
+            stopImage = null,
+            timeProvider = timeProvider,
+            hasAnyDataLeftToLoad = stopSchedule.hasAnyDataLeft,
+            loadingMore = data is Outcome.Progress && data.style == LoadingStyle.ADDITIONAL_DATA,
+            loadNextPage = loadNextPage,
+            modifier = Modifier.weight(1f)
          )
       }
    }
@@ -357,17 +357,17 @@ internal val PREVIEW_EXPECTED_LINE_6 = Line(6, "6", 0xFF00FF00.toInt())
 internal val PREVIEW_EXPECTED_LINE_18 = Line(18, "18", 0xFF00000.toInt())
 
 internal val PREVIEW_STOP_7 = StopInfo(
-   7,
-   "Forest 7",
-   "A stop in the forest",
-   "http://stopimage.com"
+   id = 7,
+   name = "Forest 7",
+   description = "A stop in the forest",
+   imageUrl = "http://stopimage.com"
 )
 
 internal val PREVIEW_STOP_8 = StopInfo(
-   8,
-   "Forest 8",
-   "Another stop in the forest",
-   "http://stopimage88.com"
+   id = 8,
+   name = "Forest 8",
+   description = "Another stop in the forest",
+   imageUrl = "http://stopimage88.com"
 )
 
 val PREVIEW_FAKE_LIST = FavoriteScheduleUiState(

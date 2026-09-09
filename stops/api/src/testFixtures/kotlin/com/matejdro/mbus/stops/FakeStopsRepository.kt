@@ -37,11 +37,11 @@ class FakeStopsRepository : StopsRepository {
    override suspend fun update(stop: Stop) {
       providedStops.update { outcome ->
          outcome?.mapData { list ->
-            list.map {
-               if (it.id == stop.id) {
+            list.map { existingStop ->
+               if (existingStop.id == stop.id) {
                   stop
                } else {
-                  it
+                  existingStop
                }
             }
          }
