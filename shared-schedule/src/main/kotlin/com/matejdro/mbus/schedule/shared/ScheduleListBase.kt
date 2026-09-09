@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -202,13 +203,15 @@ private fun Arrival.timeText(today: LocalDate, plusMinutes: Int = 0): String {
    val timeText = dateFormatter.ofLocalizedTime().format(arrival.plusMinutes(plusMinutes.toLong()))
    val arrivalDate = arrival.toLocalDate()
 
+   val locale = LocalLocale.current
+
    val dateText = when {
       arrivalDate == today -> ""
       arrivalDate == today.plusDays(1) -> stringResource(R.string.tomorrow)
       arrivalDate < today.plusDays(DAYS_IN_A_WEEK_MINUS_ONE) -> {
          arrivalDate.dayOfWeek.getDisplayName(
             java.time.format.TextStyle.FULL,
-            java.util.Locale.getDefault()
+            locale.platformLocale,
          )
       }
 
